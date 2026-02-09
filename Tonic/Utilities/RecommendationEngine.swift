@@ -52,8 +52,10 @@ struct RecommendationEngine {
             addIfMissing("Vitamin D3 + K2", to: &selected, excluded: excludedSupplements)
         }
 
-        // Step 5: Build plan supplements with dosage adjustments and timing
-        let planSupplements = selected.enumerated().map { index, supplement in
+        // Step 5: Build plan supplements with dosage adjustments, timing, and tier data
+        let userGoalKeys = Set(profile.healthGoals.map { $0.rawValue })
+
+        var planSupplements = selected.enumerated().map { index, supplement -> PlanSupplement in
             var dosage = supplement.recommendedDosageMg
             var dosageText = supplement.commonDosageRange
 
@@ -64,6 +66,12 @@ struct RecommendationEngine {
             // Timing — keep recommended, resolve conflicts
             let timing = resolveTiming(for: supplement, profile: profile)
 
+            // Compute matched goals: which of the user's goals map to this supplement
+            let matched = userGoalKeys.filter { goalKey in
+                SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains(supplement.name) == true
+            }
+            let overlapScore = matched.count
+
             return PlanSupplement(
                 supplementId: supplement.id,
                 name: supplement.name,
@@ -71,13 +79,63 @@ struct RecommendationEngine {
                 dosageMg: dosage,
                 timing: timing,
                 category: supplement.category,
-                sortOrder: index
+                sortOrder: index,
+                matchedGoals: Array(matched).sorted(),
+                goalOverlapScore: overlapScore,
+                researchNote: supplement.notes
             )
         }
 
-        return SupplementPlan(
-            supplements: planSupplements.sorted { $0.timing.sortOrder < $1.timing.sortOrder }
-        )
+        // Assign tiers based on goal overlap score
+        assignTiers(to: &planSupplements)
+
+        // Sort by tier first, then timing within tier
+        planSupplements.sort { a, b in
+            if a.tier.sortOrder != b.tier.sortOrder {
+                return a.tier.sortOrder < b.tier.sortOrder
+            }
+            return a.timing.sortOrder < b.timing.sortOrder
+        }
+
+        // Update sort order to reflect final ordering
+        for i in planSupplements.indices {
+            planSupplements[i].sortOrder = i
+        }
+
+        return SupplementPlan(supplements: planSupplements)
+    }
+
+    // MARK: - Tier Assignment
+
+    private func assignTiers(to supplements: inout [PlanSupplement]) {
+        // Standard thresholds: 3+ = core, 2 = targeted, 1 = supporting
+        let hasNaturalCore = supplements.contains { $0.goalOverlapScore >= 3 }
+
+        if hasNaturalCore {
+            for i in supplements.indices {
+                let score = supplements[i].goalOverlapScore
+                if score >= 3 {
+                    supplements[i].tier = .core
+                } else if score == 2 {
+                    supplements[i].tier = .targeted
+                } else {
+                    supplements[i].tier = .supporting
+                }
+            }
+        } else {
+            // Edge case: no supplements score 3+, promote highest-scoring to core
+            let maxScore = supplements.map(\.goalOverlapScore).max() ?? 1
+            for i in supplements.indices {
+                let score = supplements[i].goalOverlapScore
+                if score == maxScore {
+                    supplements[i].tier = .core
+                } else if score == maxScore - 1, maxScore > 1 {
+                    supplements[i].tier = .targeted
+                } else {
+                    supplements[i].tier = .supporting
+                }
+            }
+        }
     }
 
     // MARK: - Private Helpers

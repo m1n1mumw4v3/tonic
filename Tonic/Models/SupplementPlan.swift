@@ -24,12 +24,59 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
     var sortOrder: Int = 0
     var isTaken: Bool = false
 
+    // Plan reveal fields
+    var tier: SupplementTier = .supporting
+    var matchedGoals: [String] = []
+    var goalOverlapScore: Int = 0
+    var isIncluded: Bool = true
+    var researchNote: String?
+
     static func == (lhs: PlanSupplement, rhs: PlanSupplement) -> Bool {
         lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+}
+
+enum SupplementTier: String, Codable, CaseIterable, Identifiable {
+    case core
+    case targeted
+    case supporting
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .core: return "CORE"
+        case .targeted: return "TARGETED"
+        case .supporting: return "SUPPORTING"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .core: return "Works across multiple goals"
+        case .targeted: return "Focused on a specific goal"
+        case .supporting: return "Rounds out your plan"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .core: return "star.fill"
+        case .targeted: return "scope"
+        case .supporting: return "plus.circle"
+        }
+    }
+
+    var sortOrder: Int {
+        switch self {
+        case .core: return 0
+        case .targeted: return 1
+        case .supporting: return 2
+        }
     }
 }
 

@@ -20,7 +20,7 @@ struct BaselineScreen: View {
                         .opacity(showHeadline ? 1 : 0)
                         .offset(y: showHeadline ? 0 : 12)
 
-                    Text("Be honest — there are no wrong answers.")
+                    Text("Be honest — this helps establish a baseline.")
                         .font(DesignTokens.captionFont)
                         .foregroundStyle(DesignTokens.textSecondary)
                         .opacity(showSubtitle ? 1 : 0)

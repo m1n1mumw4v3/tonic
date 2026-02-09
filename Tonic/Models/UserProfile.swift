@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct UserProfile: Codable, Identifiable {
     var id: UUID = UUID()
@@ -102,6 +103,34 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         case .fitnessRecovery: return "figure.run"
         case .skinHairNails: return "sparkles"
         case .longevity: return "infinity"
+        }
+    }
+
+    var accentColor: Color {
+        switch self {
+        case .sleep:           return DesignTokens.accentSleep
+        case .energy:          return DesignTokens.accentEnergy
+        case .focus:           return DesignTokens.accentClarity
+        case .stressAnxiety:   return DesignTokens.accentMood
+        case .gutHealth:       return DesignTokens.accentGut
+        case .immunity:        return DesignTokens.info
+        case .fitnessRecovery: return DesignTokens.positive
+        case .skinHairNails:   return DesignTokens.negative
+        case .longevity:       return DesignTokens.accentLongevity
+        }
+    }
+
+    var shortLabel: String {
+        switch self {
+        case .sleep: return "Sleep"
+        case .energy: return "Energy"
+        case .focus: return "Focus"
+        case .stressAnxiety: return "Stress"
+        case .gutHealth: return "Gut"
+        case .immunity: return "Immunity"
+        case .fitnessRecovery: return "Recovery"
+        case .skinHairNails: return "Skin"
+        case .longevity: return "Longevity"
         }
     }
 }

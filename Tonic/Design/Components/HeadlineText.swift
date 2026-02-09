@@ -1,44 +1,74 @@
 import SwiftUI
 import UIKit
 
-/// A text view that renders headline text with a precise line-height multiplier.
-/// SwiftUI's `.lineSpacing()` cannot reduce below the font default,
-/// so this uses NSAttributedString paragraph style for exact control.
+/// A text view that renders headline text with a precise line height.
+/// Uses a `UILabel` via `UIViewRepresentable` because SwiftUI's `Text`
+/// silently ignores `NSParagraphStyle` line-height attributes from `AttributedString`.
 struct HeadlineText: View {
     let text: String
     var alignment: TextAlignment = .leading
-
-    private static let fontSize: CGFloat = 28
+    var fontSize: CGFloat? = nil
 
     var body: some View {
-        Text(attributed)
-            .multilineTextAlignment(alignment)
+        HeadlineLabel(text: text, alignment: alignment, fontSize: fontSize)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct HeadlineLabel: UIViewRepresentable {
+    let text: String
+    let alignment: TextAlignment
+    var fontSize: CGFloat? = nil
+
+    static let defaultFontSize: CGFloat = 28
+    static let defaultLineHeight: CGFloat = 32
+
+    func makeUIView(context: Context) -> UILabel {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        return label
     }
 
-    private var attributed: AttributedString {
-        let font = UIFont(name: "Geist-Light", size: Self.fontSize)
-            ?? UIFont.systemFont(ofSize: Self.fontSize, weight: .light)
+    func updateUIView(_ label: UILabel, context: Context) {
+        label.attributedText = makeAttributedString()
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UILabel, context: Context) -> CGSize? {
+        let width = proposal.width ?? UIScreen.main.bounds.width
+        let size = uiView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        return size
+    }
+
+    private func makeAttributedString() -> NSAttributedString {
+        let size = fontSize ?? Self.defaultFontSize
+        let lineHeight = fontSize != nil ? (fontSize! * (Self.defaultLineHeight / Self.defaultFontSize)).rounded() : Self.defaultLineHeight
+        let font = UIFont(name: "Geist-Light", size: size)
+            ?? UIFont.systemFont(ofSize: size, weight: .light)
 
         let style = NSMutableParagraphStyle()
-        style.lineHeightMultiple = 0.78
+        style.minimumLineHeight = lineHeight
+        style.maximumLineHeight = lineHeight
         style.alignment = alignment.nsAlignment
+
+        let baselineOffset = (lineHeight - font.lineHeight) / 2
 
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .paragraphStyle: style,
-            .foregroundColor: UIColor(DesignTokens.textPrimary)
+            .foregroundColor: UIColor(DesignTokens.textPrimary),
+            .baselineOffset: baselineOffset
         ]
 
-        return AttributedString(
-            NSAttributedString(string: text, attributes: attributes)
-        )
+        return NSAttributedString(string: text, attributes: attributes)
     }
 }
 
 private extension TextAlignment {
     var nsAlignment: NSTextAlignment {
         switch self {
-        case .leading: .left
+        case .leading: .natural
         case .center: .center
         case .trailing: .right
         }

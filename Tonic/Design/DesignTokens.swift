@@ -11,8 +11,8 @@ enum DesignTokens {
     static let bgElevated   = Color(hex: "#1B1F42")
 
     // MARK: - Text
-    static let textPrimary   = Color(hex: "#D6DEEB")
-    static let textSecondary = Color(hex: "#7E8CA8")
+    static let textPrimary   = Color(hex: "#E2E8F0")
+    static let textSecondary = Color(hex: "#8E9BB5")
     static let textTertiary  = Color(hex: "#4A5274")
 
     // MARK: - Borders
@@ -35,7 +35,7 @@ enum DesignTokens {
     // MARK: - Typography
     static let displayFont   = Font.custom("Geist-Light", size: 32)
     static let sectionHeader = Font.custom("Geist-SemiBold", size: 13)
-    static let bodyFont      = Font.custom("Geist-Regular", size: 16)
+    static let bodyFont      = Font.custom("Geist-Regular", size: 17)
     static let dataMono      = Font.custom("GeistMono-Medium", size: 16)
     static let labelMono     = Font.custom("GeistMono-Regular", size: 11)
 

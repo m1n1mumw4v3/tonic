@@ -21,7 +21,7 @@ struct GoalsScreen: View {
                             HeadlineText(text: "What are your top health goals?")
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("Select all that apply")
+                            Text("Select all that apply.")
                                 .font(DesignTokens.captionFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,24 +51,10 @@ struct GoalsScreen: View {
 
     // MARK: - Goal Card
 
-    private func accentColor(for goal: HealthGoal) -> Color {
-        switch goal {
-        case .sleep:           return DesignTokens.accentSleep
-        case .energy:          return DesignTokens.accentEnergy
-        case .focus:           return DesignTokens.accentClarity
-        case .stressAnxiety:   return DesignTokens.accentMood
-        case .gutHealth:       return DesignTokens.accentGut
-        case .immunity:        return DesignTokens.info
-        case .fitnessRecovery: return DesignTokens.positive
-        case .skinHairNails:   return DesignTokens.negative
-        case .longevity:       return DesignTokens.accentLongevity
-        }
-    }
-
     @ViewBuilder
     private func goalCard(for goal: HealthGoal) -> some View {
         let isSelected = viewModel.healthGoals.contains(goal)
-        let accent = accentColor(for: goal)
+        let accent = goal.accentColor
 
         Button {
             HapticManager.selection()

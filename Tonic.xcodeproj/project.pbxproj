@@ -66,6 +66,7 @@
 		F2F384086F634F6485DF818F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A5A77C34774F68AF7D74A4AB /* Supabase */; };
 		F7D3FF27D2839FF75412B495 /* CurrentSuppsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43E5305DBC57CB345FD6769 /* CurrentSuppsScreen.swift */; };
 		FD09DC4B52C1CEFAF1338BF5 /* AIInterstitialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */; };
+		A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */; };
 		F0A1B2C3D4E5F6A7B8C9D2E1 /* Geist-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E1 /* Geist-Light.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E2 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E2 /* Geist-Regular.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E3 /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E3 /* Geist-Medium.ttf */; };
@@ -74,6 +75,7 @@
 		F0A1B2C3D4E5F6A7B8C9D2E6 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E6 /* GeistMono-Regular.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E7 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E7 /* GeistMono-Medium.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E8 /* GeistPixel-Grid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E8 /* GeistPixel-Grid.ttf */; };
+		F0A1B2C3D4E5F6A7B8C9D2F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0F0 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -142,6 +144,7 @@
 		F5992B1C12E7F03251C7BC86 /* CheckInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInViewModel.swift; sourceTree = "<group>"; };
 		FA5FB43DC143DC7A5458830F /* SupplementPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPickerSheet.swift; sourceTree = "<group>"; };
 		FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInterstitialScreen.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanRevealScreen.swift; sourceTree = "<group>"; };
 		FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		FDBE2DE2BA286AC921521E63 /* DietScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietScreen.swift; sourceTree = "<group>"; };
 		FE88964207A2AED6C269B375 /* InsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCard.swift; sourceTree = "<group>"; };
@@ -153,6 +156,7 @@
 		F0A1B2C3D4E5F6A7B8C9D0E6 /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Regular.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E7 /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Medium.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E8 /* GeistPixel-Grid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistPixel-Grid.ttf"; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F6A7B8C9D0F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +210,7 @@
 				AD8C0FBCFD3C6D91C2670C93 /* MedicationPickerSheet.swift */,
 				9239156F1B82111DC3B8C9A4 /* MedicationsScreen.swift */,
 				961830A0C45E00AEFF1219D7 /* NameScreen.swift */,
+				A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */,
 				842166692CEFFE10D224F15B /* SexScreen.swift */,
 				F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */,
 				FA5FB43DC143DC7A5458830F /* SupplementPickerSheet.swift */,
@@ -428,6 +433,7 @@
 		F0A1B2C3D4E5F6A7B8C9D1A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F0A1B2C3D4E5F6A7B8C9D0F0 /* Assets.xcassets */,
 				F0A1B2C3D4E5F6A7B8C9D1A0 /* Fonts */,
 			);
 			path = Resources;
@@ -448,6 +454,7 @@
 				F0A1B2C3D4E5F6A7B8C9D2E6 /* GeistMono-Regular.ttf in Resources */,
 				F0A1B2C3D4E5F6A7B8C9D2E7 /* GeistMono-Medium.ttf in Resources */,
 				F0A1B2C3D4E5F6A7B8C9D2E8 /* GeistPixel-Grid.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2F0 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +584,7 @@
 				09A53F614300A00966B12C1B /* OnboardingFlow.swift in Sources */,
 				C3A750A3991D7A93BD95946E /* OnboardingViewModel.swift in Sources */,
 				6EE9D6E5436022ED853C6C41 /* PlanScreen.swift in Sources */,
+				A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */,
 				C162A5DBBC6F229F7CA79E50 /* PlanViewModel.swift in Sources */,
 				D82470B7AC37D5B9087A1912 /* RecommendationEngine.swift in Sources */,
 				E56A33E513291B12957229F0 /* RemovableChip.swift in Sources */,

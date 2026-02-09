@@ -21,6 +21,15 @@ struct CaffeineScreen: View {
                 Spacer()
 
                 VStack(spacing: 0) {
+                    // None option
+                    noneCard
+
+                    // Divider
+                    Rectangle()
+                        .fill(DesignTokens.borderDefault)
+                        .frame(height: 1)
+                        .padding(.vertical, DesignTokens.spacing12)
+
                     // Coffee stepper
                     stepperRow(
                         label: "Coffee",
@@ -50,15 +59,6 @@ struct CaffeineScreen: View {
                             viewModel.teaCupsDaily += 1
                         }
                     )
-
-                    // Divider
-                    Rectangle()
-                        .fill(DesignTokens.borderDefault)
-                        .frame(height: 1)
-                        .padding(.vertical, DesignTokens.spacing12)
-
-                    // None option
-                    noneCard
                 }
                 .padding(.horizontal, DesignTokens.spacing24)
 

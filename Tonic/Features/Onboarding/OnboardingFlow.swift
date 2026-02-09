@@ -6,7 +6,7 @@ struct OnboardingFlow: View {
     @State private var currentScreen: Int = 0
     @State private var navigatingForward: Bool = true
 
-    private let totalScreens = 18
+    private let totalScreens = 19
 
     var body: some View {
         ZStack {
@@ -14,7 +14,7 @@ struct OnboardingFlow: View {
 
             VStack(spacing: 0) {
                 // Back button + progress bar
-                if currentScreen > 0 && currentScreen < totalScreens - 1 {
+                if currentScreen > 0 && currentScreen < totalScreens - 2 {
                     HStack(spacing: DesignTokens.spacing12) {
                         Button(action: previousScreen) {
                             Image(systemName: "chevron.left")
@@ -66,7 +66,9 @@ struct OnboardingFlow: View {
                     case 16:
                         HealthKitScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 17:
-                        AIInterstitialScreen(viewModel: viewModel, onComplete: completeOnboarding)
+                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
+                    case 18:
+                        PlanRevealScreen(viewModel: viewModel, onConfirm: completeOnboarding)
                     default:
                         EmptyView()
                     }
@@ -94,14 +96,29 @@ struct OnboardingFlow: View {
         }
     }
 
+    private func onInterstitialComplete() {
+        // Build profile and generate plan, store on viewModel for the Plan Reveal screen
+        let profile = viewModel.buildUserProfile()
+        let engine = RecommendationEngine()
+        let plan = engine.generatePlan(for: profile)
+        viewModel.generatedPlan = plan
+        nextScreen()
+    }
+
     private func completeOnboarding() {
         let profile = viewModel.buildUserProfile()
         appState.currentUser = profile
 
-        // Generate plan using recommendation engine
-        let engine = RecommendationEngine()
-        let plan = engine.generatePlan(for: profile)
-        appState.activePlan = plan
+        // Use the generated plan from the reveal screen, filtering out excluded supplements
+        if var plan = viewModel.generatedPlan {
+            plan.supplements = plan.supplements.filter(\.isIncluded)
+            appState.activePlan = plan
+        } else {
+            // Fallback: generate fresh if somehow missing
+            let engine = RecommendationEngine()
+            let plan = engine.generatePlan(for: profile)
+            appState.activePlan = plan
+        }
 
         appState.isOnboardingComplete = true
     }

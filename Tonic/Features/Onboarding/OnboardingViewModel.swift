@@ -42,6 +42,9 @@ class OnboardingViewModel {
 
     var healthKitEnabled: Bool = false
 
+    // Generated plan (held between AI Interstitial and Plan Reveal)
+    var generatedPlan: SupplementPlan?
+
     // Common allergies
     static let commonAllergies = ["Shellfish", "Soy", "Gluten", "Dairy", "Tree Nuts", "Fish"]
 

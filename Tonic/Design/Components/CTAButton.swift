@@ -4,6 +4,7 @@ struct CTAButton: View {
     let title: String
     let style: Style
     let action: () -> Void
+    var spectrumBorder: Bool = false
 
     enum Style {
         case primary
@@ -31,7 +32,7 @@ struct CTAButton: View {
     private var background: some View {
         switch style {
         case .primary:
-            Color(hex: "#D6DEEB")
+            Color(hex: "#E2E8F0")
         case .secondary:
             Color.white.opacity(0.08)
                 .background(.ultraThinMaterial)
@@ -49,12 +50,30 @@ struct CTAButton: View {
 
     @ViewBuilder
     private var border: some View {
-        switch style {
-        case .primary:
-            EmptyView()
-        case .secondary:
+        if spectrumBorder {
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            DesignTokens.accentSleep,
+                            DesignTokens.accentEnergy,
+                            DesignTokens.accentClarity,
+                            DesignTokens.accentMood,
+                            DesignTokens.accentGut
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ),
+                    lineWidth: 1.5
+                )
+        } else {
+            switch style {
+            case .primary:
+                EmptyView()
+            case .secondary:
+                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+            }
         }
     }
 }
