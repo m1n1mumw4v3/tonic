@@ -320,7 +320,7 @@ struct PlanRevealScreen: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .frame(height: 32)
+            .frame(height: 20)
 
             VStack(spacing: 0) {
                 CTAButton(
@@ -333,7 +333,7 @@ struct PlanRevealScreen: View {
                 .disabled(includedCount == 0)
                 .scaleEffect(showCTA || reduceMotion ? 1.0 : 0.95)
                 .padding(.horizontal, DesignTokens.spacing24)
-                .padding(.bottom, DesignTokens.spacing48)
+                .padding(.bottom, DesignTokens.spacing16)
             }
             .background(DesignTokens.bgDeepest)
         }

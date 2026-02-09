@@ -78,9 +78,8 @@ struct BaselineScreen: View {
                         .offset(y: sliderVisible[4] ? 0 : 16)
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
+                    .padding(.bottom, 100)
                 }
-
-                Spacer()
 
                 // CTA
                 CTAButton(title: "Continue", style: .primary, action: onContinue)
