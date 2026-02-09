@@ -539,18 +539,6 @@ private struct RevealSupplementCard: View {
                     SupplementToggle(isOn: supplement.isIncluded, action: onToggle)
                 }
 
-                // Chevron hint
-                HStack(spacing: 4) {
-                    Text(isExpanded ? "Show less" : "Learn more")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(DesignTokens.textTertiary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 6)
-
                 // Expanded content
                 if isExpanded {
                     VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
@@ -636,6 +624,18 @@ private struct RevealSupplementCard: View {
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
+
+                // Chevron hint — sits below expanded content when open
+                HStack(spacing: 4) {
+                    Text(isExpanded ? "Show less" : "Learn more")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textTertiary)
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(DesignTokens.textTertiary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 6)
             }
             .padding(DesignTokens.spacing16)
             .background(cardBackground)
