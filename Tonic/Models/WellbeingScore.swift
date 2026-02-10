@@ -75,17 +75,16 @@ enum WellnessDimension: String, CaseIterable, Codable, Identifiable, Hashable {
 // MARK: - Wellbeing Score Calculator
 
 enum WellbeingScore {
-    static func calculate(sleep: Int, energy: Int, clarity: Int, mood: Int, gut: Int) -> Int {
-        let raw = Double(sleep + energy + clarity + mood + gut) / 5.0
-        return Int(round(raw))
+    static func calculate(sleep: Int, energy: Int, clarity: Int, mood: Int, gut: Int) -> Double {
+        Double(sleep + energy + clarity + mood + gut) / 5.0
     }
 
-    static func calculate(scores: [WellnessDimension: Int]) -> Int {
-        let sleep = scores[.sleep] ?? 50
-        let energy = scores[.energy] ?? 50
-        let clarity = scores[.clarity] ?? 50
-        let mood = scores[.mood] ?? 50
-        let gut = scores[.gut] ?? 50
+    static func calculate(scores: [WellnessDimension: Int]) -> Double {
+        let sleep = scores[.sleep] ?? 5
+        let energy = scores[.energy] ?? 5
+        let clarity = scores[.clarity] ?? 5
+        let mood = scores[.mood] ?? 5
+        let gut = scores[.gut] ?? 5
         return calculate(sleep: sleep, energy: energy, clarity: clarity, mood: mood, gut: gut)
     }
 }

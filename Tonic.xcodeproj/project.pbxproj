@@ -36,6 +36,7 @@
 		715F1EE3185A8E55644086D8 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F69C6254275F9967C8F329 /* DataStore.swift */; };
 		719ED9A6C5307F82551DB46A /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17D350F88446754381EE0BD /* DesignTokens.swift */; };
 		809160AF34D0280833CDFAAA /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC27F1CA86DD29615CB93C6 /* HomeViewModel.swift */; };
+		81A2B3C4D5E6F7081234ABCD /* BaselineWelcomeHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */; };
 		85AFBE234E9366DB35C83B87 /* StressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */; };
 		87B6E3C2C099E05759CBC60B /* SupplementCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */; };
 		97B6BC0AC2814B8C2A55734F /* SpectrumBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */; };
@@ -67,6 +68,8 @@
 		F7D3FF27D2839FF75412B495 /* CurrentSuppsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43E5305DBC57CB345FD6769 /* CurrentSuppsScreen.swift */; };
 		FD09DC4B52C1CEFAF1338BF5 /* AIInterstitialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */; };
 		A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */; };
+		B1A2C3D4E5F6A7B800000001 /* CheckInInsightGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */; };
+		B1A2C3D4E5F6A7B800000003 /* CompactInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */; };
 		F0A1B2C3D4E5F6A7B8C9D2E1 /* Geist-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E1 /* Geist-Light.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E2 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E2 /* Geist-Regular.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E3 /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E3 /* Geist-Medium.ttf */; };
@@ -91,6 +94,7 @@
 /* Begin PBXFileReference section */
 		09DB0058057F193831D8BEA4 /* LocalStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageService.swift; sourceTree = "<group>"; };
 		0AC27F1CA86DD29615CB93C6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineWelcomeHero.swift; sourceTree = "<group>"; };
 		1DDA87A00EA666F1A5FDA4AE /* HapticModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticModifiers.swift; sourceTree = "<group>"; };
 		2B530063A29F9C992A79DDC0 /* HeightScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightScreen.swift; sourceTree = "<group>"; };
 		2C964C061909FE33E23E4696 /* MedicationKnowledgeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationKnowledgeBase.swift; sourceTree = "<group>"; };
@@ -145,6 +149,8 @@
 		FA5FB43DC143DC7A5458830F /* SupplementPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPickerSheet.swift; sourceTree = "<group>"; };
 		FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInterstitialScreen.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanRevealScreen.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInInsightGenerator.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactInsightCard.swift; sourceTree = "<group>"; };
 		FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		FDBE2DE2BA286AC921521E63 /* DietScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietScreen.swift; sourceTree = "<group>"; };
 		FE88964207A2AED6C269B375 /* InsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCard.swift; sourceTree = "<group>"; };
@@ -255,6 +261,7 @@
 		3F11CF546F133A3D5C4519A0 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */,
 				979FFF2EED899300A1D85404 /* Extensions.swift */,
 				2C964C061909FE33E23E4696 /* MedicationKnowledgeBase.swift */,
 				AA7845270BE43C638D6535BB /* RecommendationEngine.swift */,
@@ -365,6 +372,7 @@
 		C9014D4FC1780CA5C50E5D03 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */,
 				32E4626808351F71C54EEE16 /* HomeScreen.swift */,
 				0AC27F1CA86DD29615CB93C6 /* HomeViewModel.swift */,
 			);
@@ -401,6 +409,7 @@
 			isa = PBXGroup;
 			children = (
 				CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */,
+				B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */,
 				568286142008218185A0599F /* FlowLayout.swift */,
 				4B912E54BA9425B931F54F07 /* HeadlineText.swift */,
 				FE88964207A2AED6C269B375 /* InsightCard.swift */,
@@ -556,8 +565,10 @@
 				CA17234DA89D916FB34F5A3F /* BaselineScreen.swift in Sources */,
 				A75636A0788C45D1C96A9EDD /* CTAButton.swift in Sources */,
 				14F1F9AEE44EF3F0C3DD08C4 /* CaffeineScreen.swift in Sources */,
+				B1A2C3D4E5F6A7B800000001 /* CheckInInsightGenerator.swift in Sources */,
 				24D8028120E4840724F750AD /* CheckInFlow.swift in Sources */,
 				C952A7F63496CFC750E452AD /* CheckInViewModel.swift in Sources */,
+				B1A2C3D4E5F6A7B800000003 /* CompactInsightCard.swift in Sources */,
 				E2A32596C8BE951396979E12 /* ContentView.swift in Sources */,
 				F7D3FF27D2839FF75412B495 /* CurrentSuppsScreen.swift in Sources */,
 				A29B538E7B4E61A3347CA544 /* DailyCheckIn.swift in Sources */,
@@ -572,6 +583,7 @@
 				093FC92B278E4F4649ACB8C8 /* HeadlineText.swift in Sources */,
 				367C3753E695E0A0E2C51C35 /* HealthKitScreen.swift in Sources */,
 				05A57119DEE259A595BC58CA /* HeightScreen.swift in Sources */,
+				81A2B3C4D5E6F7081234ABCD /* BaselineWelcomeHero.swift in Sources */,
 				9C20490F6C688BDEB86E6912 /* HomeScreen.swift in Sources */,
 				809160AF34D0280833CDFAAA /* HomeViewModel.swift in Sources */,
 				0B37DD2417B97433E0023071 /* Insight.swift in Sources */,

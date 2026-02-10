@@ -34,11 +34,11 @@ class OnboardingViewModel {
     var alcoholWeekly: AlcoholIntake = .none
     var stressLevel: StressLevel = .moderate
 
-    var baselineSleep: Double = 50
-    var baselineEnergy: Double = 50
-    var baselineClarity: Double = 50
-    var baselineMood: Double = 50
-    var baselineGut: Double = 50
+    var baselineSleep: Double = 5
+    var baselineEnergy: Double = 5
+    var baselineClarity: Double = 5
+    var baselineMood: Double = 5
+    var baselineGut: Double = 5
 
     var healthKitEnabled: Bool = false
 

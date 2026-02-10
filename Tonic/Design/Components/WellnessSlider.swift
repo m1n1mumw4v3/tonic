@@ -5,11 +5,12 @@ struct WellnessSlider: View {
     @Binding var value: Double
     let lowLabel: String
     let highLabel: String
+    var averageValue: Double? = nil
 
     @State private var isDragging = false
     @GestureState private var dragOffset: CGFloat = 0
 
-    private let detentInterval: Double = 10
+    private let detentInterval: Double = 1
     @State private var lastDetent: Int = -1
 
     private let trackHeightIdle: CGFloat = 6
@@ -44,7 +45,7 @@ struct WellnessSlider: View {
             // Custom slider
             GeometryReader { geometry in
                 let width = geometry.size.width
-                let thumbX = width * value / 100
+                let thumbX = width * value / 10
                 let trackHeight = isDragging ? trackHeightActive : trackHeightIdle
 
                 ZStack(alignment: .leading) {
@@ -67,6 +68,23 @@ struct WellnessSlider: View {
                         .frame(width: max(0, thumbX), height: trackHeight)
                         .animation(springCurve, value: isDragging)
 
+                    // 7-day average marker
+                    if let avg = averageValue {
+                        let avgX = width * avg / 10
+
+                        Text("7D avg")
+                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                            .foregroundStyle(dimension.color.opacity(0.55))
+                            .position(x: avgX, y: -1)
+                            .allowsHitTesting(false)
+
+                        Image(systemName: "arrowtriangle.down.fill")
+                            .font(.system(size: 8))
+                            .foregroundStyle(dimension.color.opacity(0.55))
+                            .position(x: avgX, y: 8)
+                            .allowsHitTesting(false)
+                    }
+
                     // Thumb glow bloom
                     Circle()
                         .fill(dimension.color)
@@ -88,7 +106,7 @@ struct WellnessSlider: View {
                             DragGesture(minimumDistance: 0)
                                 .onChanged { gesture in
                                     isDragging = true
-                                    let newValue = max(0, min(100, Double(gesture.location.x / width) * 100))
+                                    let newValue = max(0, min(10, Double(gesture.location.x / width) * 10))
                                     value = newValue
 
                                     // Haptic detents every 10 units
@@ -128,15 +146,17 @@ struct WellnessSlider: View {
     VStack(spacing: 24) {
         WellnessSlider(
             dimension: .sleep,
-            value: .constant(65),
+            value: .constant(7),
             lowLabel: "Restless / Broken",
-            highLabel: "Deep & Restorative"
+            highLabel: "Deep & Restorative",
+            averageValue: 5.3
         )
         WellnessSlider(
             dimension: .energy,
-            value: .constant(40),
+            value: .constant(4),
             lowLabel: "Drained / Fatigued",
-            highLabel: "Vibrant & Sustained"
+            highLabel: "Vibrant & Sustained",
+            averageValue: 6.8
         )
     }
     .padding()

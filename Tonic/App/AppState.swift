@@ -25,7 +25,11 @@ class AppState {
         return Calendar.current.isDateInToday(checkIn.checkInDate)
     }
 
-    var todayWellbeingScore: Int? {
+    var hasEverCheckedIn: Bool {
+        !recentCheckIns.isEmpty
+    }
+
+    var todayWellbeingScore: Double? {
         todayCheckIn?.wellbeingScore
     }
 }

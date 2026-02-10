@@ -35,7 +35,7 @@ enum DesignTokens {
     // MARK: - Typography
     static let displayFont   = Font.custom("Geist-Light", size: 32)
     static let sectionHeader = Font.custom("Geist-SemiBold", size: 13)
-    static let bodyFont      = Font.custom("Geist-Regular", size: 17)
+    static let bodyFont      = Font.custom("Geist-Regular", size: 16)
     static let dataMono      = Font.custom("GeistMono-Medium", size: 16)
     static let labelMono     = Font.custom("GeistMono-Regular", size: 11)
 

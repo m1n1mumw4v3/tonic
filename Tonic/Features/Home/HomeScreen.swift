@@ -13,15 +13,18 @@ struct HomeScreen: View {
                     // Header
                     headerSection
 
-                    // Wellbeing Score Card
+                    // Wellbeing Score Card + Check-In
                     if let checkIn = appState.todayCheckIn {
                         wellbeingCard(checkIn: checkIn)
+                        checkInSection
+                    } else if !appState.hasEverCheckedIn, let user = appState.currentUser {
+                        BaselineWelcomeHero(user: user) {
+                            appState.showCheckInFlow = true
+                        }
                     } else {
                         emptyWellbeingCard
+                        checkInSection
                     }
-
-                    // Check-In CTA
-                    checkInSection
 
                     // Today's Supplements
                     supplementsSection
@@ -34,6 +37,13 @@ struct HomeScreen: View {
                 .padding(.horizontal, DesignTokens.spacing16)
                 .padding(.bottom, DesignTokens.spacing32)
             }
+        }
+        .sheet(isPresented: Binding(
+            get: { appState.showCheckInFlow },
+            set: { appState.showCheckInFlow = $0 }
+        )) {
+            CheckInFlow()
+                .environment(appState)
         }
         .onAppear {
             viewModel.load(appState: appState)
@@ -139,13 +149,6 @@ struct HomeScreen: View {
                 }
                 .cardStyle()
             }
-        }
-        .sheet(isPresented: Binding(
-            get: { appState.showCheckInFlow },
-            set: { appState.showCheckInFlow = $0 }
-        )) {
-            CheckInFlow()
-                .environment(appState)
         }
     }
 

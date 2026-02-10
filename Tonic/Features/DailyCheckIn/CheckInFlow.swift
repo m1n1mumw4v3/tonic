@@ -41,6 +41,7 @@ struct CheckInFlow: View {
         }
         .onAppear {
             viewModel.initializeSupplements(from: appState.activePlan)
+            viewModel.loadTrailingAverages(from: appState)
         }
         .animation(.easeInOut(duration: 0.35), value: viewModel.currentStep)
         .presentationDetents([.large])
@@ -51,55 +52,67 @@ struct CheckInFlow: View {
     // MARK: - Step 1: Wellness Sliders
 
     private var wellnessStep: some View {
-        ScrollView {
-            VStack(spacing: DesignTokens.spacing24) {
-                Text("How are you feeling?")
-                    .font(DesignTokens.headlineFont)
-                    .foregroundStyle(DesignTokens.textPrimary)
-                    .padding(.top, DesignTokens.spacing24)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: DesignTokens.spacing24) {
+                    Text("How are you feeling?")
+                        .font(DesignTokens.headlineFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .padding(.top, DesignTokens.spacing24)
 
-                VStack(spacing: DesignTokens.spacing20) {
-                    WellnessSlider(
-                        dimension: .sleep,
-                        value: $viewModel.sleepScore,
-                        lowLabel: WellnessDimension.sleep.lowLabel,
-                        highLabel: WellnessDimension.sleep.highLabel
-                    )
-                    WellnessSlider(
-                        dimension: .energy,
-                        value: $viewModel.energyScore,
-                        lowLabel: WellnessDimension.energy.lowLabel,
-                        highLabel: WellnessDimension.energy.highLabel
-                    )
-                    WellnessSlider(
-                        dimension: .clarity,
-                        value: $viewModel.clarityScore,
-                        lowLabel: WellnessDimension.clarity.lowLabel,
-                        highLabel: WellnessDimension.clarity.highLabel
-                    )
-                    WellnessSlider(
-                        dimension: .mood,
-                        value: $viewModel.moodScore,
-                        lowLabel: WellnessDimension.mood.lowLabel,
-                        highLabel: WellnessDimension.mood.highLabel
-                    )
-                    WellnessSlider(
-                        dimension: .gut,
-                        value: $viewModel.gutScore,
-                        lowLabel: WellnessDimension.gut.lowLabel,
-                        highLabel: WellnessDimension.gut.highLabel
-                    )
-                }
-
-                CTAButton(title: "Continue", style: .primary) {
-                    withAnimation {
-                        viewModel.currentStep = 1
+                    VStack(spacing: DesignTokens.spacing20) {
+                        WellnessSlider(
+                            dimension: .sleep,
+                            value: $viewModel.sleepScore,
+                            lowLabel: WellnessDimension.sleep.lowLabel,
+                            highLabel: WellnessDimension.sleep.highLabel,
+                            averageValue: viewModel.trailingAverages[.sleep]
+                        )
+                        WellnessSlider(
+                            dimension: .energy,
+                            value: $viewModel.energyScore,
+                            lowLabel: WellnessDimension.energy.lowLabel,
+                            highLabel: WellnessDimension.energy.highLabel,
+                            averageValue: viewModel.trailingAverages[.energy]
+                        )
+                        WellnessSlider(
+                            dimension: .clarity,
+                            value: $viewModel.clarityScore,
+                            lowLabel: WellnessDimension.clarity.lowLabel,
+                            highLabel: WellnessDimension.clarity.highLabel,
+                            averageValue: viewModel.trailingAverages[.clarity]
+                        )
+                        WellnessSlider(
+                            dimension: .mood,
+                            value: $viewModel.moodScore,
+                            lowLabel: WellnessDimension.mood.lowLabel,
+                            highLabel: WellnessDimension.mood.highLabel,
+                            averageValue: viewModel.trailingAverages[.mood]
+                        )
+                        WellnessSlider(
+                            dimension: .gut,
+                            value: $viewModel.gutScore,
+                            lowLabel: WellnessDimension.gut.lowLabel,
+                            highLabel: WellnessDimension.gut.highLabel,
+                            averageValue: viewModel.trailingAverages[.gut]
+                        )
                     }
+                }
+                .padding(.horizontal, DesignTokens.spacing16)
+            }
+
+            Spacer()
+
+            CTAButton(title: "Continue", style: .primary) {
+                withAnimation {
+                    viewModel.currentStep = 1
                 }
             }
             .padding(.horizontal, DesignTokens.spacing16)
-            .padding(.bottom, DesignTokens.spacing32)
+
+            Spacer()
         }
+        .padding(.bottom, DesignTokens.spacing32)
     }
 
     // MARK: - Step 2: Supplement Logging
@@ -192,6 +205,11 @@ struct CheckInFlow: View {
                     .foregroundStyle(DesignTokens.textSecondary)
             }
 
+            if let insight = viewModel.completionInsight {
+                CompactInsightCard(insight: insight)
+                    .padding(.horizontal, DesignTokens.spacing16)
+            }
+
             Spacer()
 
             CTAButton(title: "Done", style: .secondary) {
@@ -199,12 +217,6 @@ struct CheckInFlow: View {
             }
             .padding(.horizontal, DesignTokens.spacing16)
             .padding(.bottom, DesignTokens.spacing32)
-        }
-        .onAppear {
-            // Auto-dismiss after 3 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                dismiss()
-            }
         }
     }
 }

@@ -12,7 +12,7 @@ struct WellbeingScoreRing: View {
 
     @State private var animationProgress: CGFloat = 0
 
-    private var wellbeingScore: Int {
+    private var wellbeingScore: Double {
         WellbeingScore.calculate(
             sleep: sleepScore, energy: energyScore,
             clarity: clarityScore, mood: moodScore, gut: gutScore
@@ -60,11 +60,11 @@ struct WellbeingScoreRing: View {
 
                 // Center score
                 VStack(spacing: 2) {
-                    Text("\(wellbeingScore)")
-                        .font(.custom("GeistMono-Medium", size: size * 0.25))
+                    Text(String(format: "%.1f", wellbeingScore))
+                        .font(.custom("Geist-Medium", size: size * 0.25))
                         .foregroundStyle(DesignTokens.textPrimary)
 
-                    Text("WELLBEING")
+                    Text("OVERALL")
                         .font(DesignTokens.smallMono)
                         .tracking(1.2)
                         .foregroundStyle(DesignTokens.textSecondary)
@@ -118,11 +118,11 @@ struct WellbeingScoreRing: View {
 
 #Preview {
     WellbeingScoreRing(
-        sleepScore: 72,
-        energyScore: 65,
-        clarityScore: 80,
-        moodScore: 70,
-        gutScore: 68
+        sleepScore: 7,
+        energyScore: 6,
+        clarityScore: 8,
+        moodScore: 7,
+        gutScore: 7
     )
     .padding()
     .background(DesignTokens.bgDeepest)

@@ -6,15 +6,15 @@ struct DailyCheckIn: Codable, Identifiable {
     var checkInDate: Date = Date()
     var createdAt: Date = Date()
 
-    // Wellness scores (0-100)
-    var sleepScore: Int = 50
-    var energyScore: Int = 50
-    var clarityScore: Int = 50
-    var moodScore: Int = 50
-    var gutScore: Int = 50
+    // Wellness scores (0-10)
+    var sleepScore: Int = 5
+    var energyScore: Int = 5
+    var clarityScore: Int = 5
+    var moodScore: Int = 5
+    var gutScore: Int = 5
 
     // Computed wellbeing score
-    var wellbeingScore: Int {
+    var wellbeingScore: Double {
         WellbeingScore.calculate(
             sleep: sleepScore, energy: energyScore,
             clarity: clarityScore, mood: moodScore, gut: gutScore
@@ -65,5 +65,19 @@ struct UserStreak: Codable {
 
         longestStreak = max(longestStreak, currentStreak)
         lastCheckInDate = date
+    }
+}
+
+// MARK: - Dimension Score Accessor
+
+extension DailyCheckIn {
+    func score(for dimension: WellnessDimension) -> Int {
+        switch dimension {
+        case .sleep: return sleepScore
+        case .energy: return energyScore
+        case .clarity: return clarityScore
+        case .mood: return moodScore
+        case .gut: return gutScore
+        }
     }
 }

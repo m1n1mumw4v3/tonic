@@ -34,12 +34,12 @@ struct UserProfile: Codable, Identifiable {
     var alcoholWeekly: AlcoholIntake = .none
     var stressLevel: StressLevel = .moderate
 
-    // Baselines (0-100)
-    var baselineSleep: Int = 50
-    var baselineEnergy: Int = 50
-    var baselineClarity: Int = 50
-    var baselineMood: Int = 50
-    var baselineGut: Int = 50
+    // Baselines (0-10)
+    var baselineSleep: Int = 5
+    var baselineEnergy: Int = 5
+    var baselineClarity: Int = 5
+    var baselineMood: Int = 5
+    var baselineGut: Int = 5
 
     // Apple Health
     var healthKitEnabled: Bool = false
