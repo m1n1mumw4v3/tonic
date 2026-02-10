@@ -2,8 +2,14 @@ import SwiftUI
 
 @Observable
 class PlanViewModel {
-    var activePlan: SupplementPlan?
+    private var appState: AppState?
     var userName: String = ""
+    var lastRemovedSupplement: PlanSupplement?
+
+    var activePlan: SupplementPlan? {
+        get { appState?.activePlan }
+        set { appState?.activePlan = newValue }
+    }
 
     var morningSupplements: [PlanSupplement] {
         activePlan?.supplements.filter {
@@ -22,8 +28,48 @@ class PlanViewModel {
         return plan.createdAt.fullDateString
     }
 
+    var planVersionLabel: String {
+        guard let plan = activePlan, plan.version > 1 else { return "" }
+        return " · V\(plan.version)"
+    }
+
     func load(appState: AppState) {
-        activePlan = appState.activePlan
+        self.appState = appState
         userName = appState.userName
+    }
+
+    func removeSupplement(_ supplement: PlanSupplement) {
+        guard var plan = activePlan else { return }
+        plan.supplements.removeAll { $0.id == supplement.id }
+        // Re-assign sort orders
+        for i in plan.supplements.indices {
+            plan.supplements[i].sortOrder = i
+        }
+        plan.version += 1
+        lastRemovedSupplement = supplement
+        activePlan = plan
+    }
+
+    func addSupplements(_ newSupplements: [PlanSupplement]) {
+        guard var plan = activePlan else { return }
+        plan.supplements.append(contentsOf: newSupplements)
+        // Re-sort by tier then timing
+        plan.supplements.sort { a, b in
+            if a.tier.sortOrder != b.tier.sortOrder {
+                return a.tier.sortOrder < b.tier.sortOrder
+            }
+            return a.timing.sortOrder < b.timing.sortOrder
+        }
+        for i in plan.supplements.indices {
+            plan.supplements[i].sortOrder = i
+        }
+        plan.version += 1
+        activePlan = plan
+    }
+
+    func undoRemoval() {
+        guard let removed = lastRemovedSupplement else { return }
+        lastRemovedSupplement = nil
+        addSupplements([removed])
     }
 }

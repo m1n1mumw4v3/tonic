@@ -39,6 +39,11 @@ enum DesignTokens {
     static let dataMono      = Font.custom("GeistMono-Medium", size: 16)
     static let labelMono     = Font.custom("GeistMono-Regular", size: 11)
 
+    // Pixel icon fonts (GeistPixel-Grid)
+    static let pixelIconFont  = Font.custom("GeistPixel-Grid", size: 18)
+    static let pixelIconSmall = Font.custom("GeistPixel-Grid", size: 14)
+    static let pixelIconLarge = Font.custom("GeistPixel-Grid", size: 22)
+
     // Additional type sizes
     static let headlineFont  = Font.custom("Geist-Light", size: 28)
     static let titleFont     = Font.custom("Geist-SemiBold", size: 20)
@@ -47,6 +52,7 @@ enum DesignTokens {
     static let smallMono     = Font.custom("GeistMono-Regular", size: 10)
 
     // MARK: - Spacing
+    static let spacing2:  CGFloat = 2
     static let spacing4:  CGFloat = 4
     static let spacing8:  CGFloat = 8
     static let spacing12: CGFloat = 12

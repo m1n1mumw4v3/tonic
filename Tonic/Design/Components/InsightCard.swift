@@ -2,6 +2,7 @@ import SwiftUI
 
 struct InsightCard: View {
     let insight: Insight
+    var onDismiss: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
@@ -23,6 +24,15 @@ struct InsightCard: View {
                     Circle()
                         .fill(DesignTokens.info)
                         .frame(width: 8, height: 8)
+                }
+
+                if let onDismiss {
+                    Button(action: onDismiss) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(DesignTokens.textTertiary)
+                            .frame(width: 24, height: 24)
+                    }
                 }
             }
 

@@ -39,6 +39,10 @@
 		81A2B3C4D5E6F7081234ABCD /* BaselineWelcomeHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */; };
 		85AFBE234E9366DB35C83B87 /* StressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */; };
 		87B6E3C2C099E05759CBC60B /* SupplementCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */; };
+		D4F5A6B7C8D9E0F1A2B3C4D5 /* PillboxCompartment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */; };
+		F6B7C8D9E0F1A2B3C4D5E6F7 /* PillboxGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */; };
+		G7C8D9E0F1A2B3C4D5E6F7A8 /* PillboxLid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */; };
+		B2D3E4F5A6B7C8D9E0F1A2B3 /* SupplementIconography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */; };
 		97B6BC0AC2814B8C2A55734F /* SpectrumBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */; };
 		97CA4F780CA6F64543180F9C /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A01A13048D548BD408F2D7D /* WelcomeScreen.swift */; };
 		987575630F71462FE6BB2E7F /* AllergiesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3580B4A355064C1EC76E71A /* AllergiesScreen.swift */; };
@@ -70,6 +74,10 @@
 		A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */; };
 		B1A2C3D4E5F6A7B800000001 /* CheckInInsightGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */; };
 		B1A2C3D4E5F6A7B800000003 /* CompactInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */; };
+		D1A505C7000000000000DC01 /* DiscoveryTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC02 /* DiscoveryTip.swift */; };
+		D1A505C7000000000000DC03 /* DiscoveryTipProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC04 /* DiscoveryTipProvider.swift */; };
+		D1A505C7000000000000DC05 /* DiscoveryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC06 /* DiscoveryCard.swift */; };
+		D1A505C7000000000000DC07 /* DiscoveryCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */; };
 		F0A1B2C3D4E5F6A7B8C9D2E1 /* Geist-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E1 /* Geist-Light.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E2 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E2 /* Geist-Regular.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E3 /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E3 /* Geist-Medium.ttf */; };
@@ -79,6 +87,11 @@
 		F0A1B2C3D4E5F6A7B8C9D2E7 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E7 /* GeistMono-Medium.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E8 /* GeistPixel-Grid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E8 /* GeistPixel-Grid.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0F0 /* Assets.xcassets */; };
+		E1A505C7000000000000PR01 /* InsightsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A505C7000000000000PR02 /* InsightsScreen.swift */; };
+		E1A505C7000000000000PR03 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A505C7000000000000PR04 /* InsightsViewModel.swift */; };
+		AA1B2C3D4E5F000000000001 /* RecommendationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */; };
+		AA1B2C3D4E5F000000000003 /* UndoToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000004 /* UndoToast.swift */; };
+		AA1B2C3D4E5F000000000005 /* AddSupplementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +128,10 @@
 		7EC590B2626E069C32BBC1FD /* PlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanViewModel.swift; sourceTree = "<group>"; };
 		842166692CEFFE10D224F15B /* SexScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SexScreen.swift; sourceTree = "<group>"; };
 		8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCard.swift; sourceTree = "<group>"; };
+		C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxCompartment.swift; sourceTree = "<group>"; };
+		E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxGrid.swift; sourceTree = "<group>"; };
+		F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxLid.swift; sourceTree = "<group>"; };
+		A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementIconography.swift; sourceTree = "<group>"; };
 		9239156F1B82111DC3B8C9A4 /* MedicationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationsScreen.swift; sourceTree = "<group>"; };
 		93F69C6254275F9967C8F329 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		961830A0C45E00AEFF1219D7 /* NameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameScreen.swift; sourceTree = "<group>"; };
@@ -151,9 +168,18 @@
 		A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanRevealScreen.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInInsightGenerator.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactInsightCard.swift; sourceTree = "<group>"; };
+		D1A505C7000000000000DC02 /* DiscoveryTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryTip.swift; sourceTree = "<group>"; };
+		D1A505C7000000000000DC04 /* DiscoveryTipProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryTipProvider.swift; sourceTree = "<group>"; };
+		D1A505C7000000000000DC06 /* DiscoveryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCard.swift; sourceTree = "<group>"; };
+		D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCarousel.swift; sourceTree = "<group>"; };
 		FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		FDBE2DE2BA286AC921521E63 /* DietScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietScreen.swift; sourceTree = "<group>"; };
+		E1A505C7000000000000PR02 /* InsightsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsScreen.swift; sourceTree = "<group>"; };
+		E1A505C7000000000000PR04 /* InsightsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
 		FE88964207A2AED6C269B375 /* InsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCard.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCard.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F000000000004 /* UndoToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToast.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSupplementSheet.swift; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E1 /* Geist-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Light.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E2 /* Geist-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Regular.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E3 /* Geist-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Medium.ttf"; sourceTree = "<group>"; };
@@ -190,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				C37EBD0B56551BF20F34C739 /* DailyCheckIn.swift */,
+				D1A505C7000000000000DC02 /* DiscoveryTip.swift */,
 				EF51FAB43DEAD4AFBEA40C8E /* Insight.swift */,
 				53EFB8675B8B9E5E38A13575 /* SupplementPlan.swift */,
 				FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */,
@@ -262,6 +289,7 @@
 			isa = PBXGroup;
 			children = (
 				B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */,
+				D1A505C7000000000000DC04 /* DiscoveryTipProvider.swift */,
 				979FFF2EED899300A1D85404 /* Extensions.swift */,
 				2C964C061909FE33E23E4696 /* MedicationKnowledgeBase.swift */,
 				AA7845270BE43C638D6535BB /* RecommendationEngine.swift */,
@@ -312,11 +340,13 @@
 			path = Tonic;
 			sourceTree = "<group>";
 		};
-		64877A5621A39831098922D0 /* Progress */ = {
+		64877A5621A39831098922D0 /* Insights */ = {
 			isa = PBXGroup;
 			children = (
+				E1A505C7000000000000PR02 /* InsightsScreen.swift */,
+				E1A505C7000000000000PR04 /* InsightsViewModel.swift */,
 			);
-			path = Progress;
+			path = Insights;
 			sourceTree = "<group>";
 		};
 		6F75996380DA736BEFD83B2C /* Config */ = {
@@ -354,7 +384,7 @@
 				CAFFD9C922C2F7E6E22E7C8A /* Onboarding */,
 				CAC1E7D573846EE3E1187390 /* Paywall */,
 				C3023A9EC7197EE3C1AE4A37 /* Plan */,
-				64877A5621A39831098922D0 /* Progress */,
+				64877A5621A39831098922D0 /* Insights */,
 				05D6D0932E658E51DC2A1EE8 /* Settings */,
 			);
 			path = Features;
@@ -363,6 +393,7 @@
 		C3023A9EC7197EE3C1AE4A37 /* Plan */ = {
 			isa = PBXGroup;
 			children = (
+				AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */,
 				C238CD0128B9897C12C9E119 /* PlanScreen.swift */,
 				7EC590B2626E069C32BBC1FD /* PlanViewModel.swift */,
 			);
@@ -410,13 +441,21 @@
 			children = (
 				CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */,
 				B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */,
+				D1A505C7000000000000DC06 /* DiscoveryCard.swift */,
+				D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */,
 				568286142008218185A0599F /* FlowLayout.swift */,
 				4B912E54BA9425B931F54F07 /* HeadlineText.swift */,
 				FE88964207A2AED6C269B375 /* InsightCard.swift */,
+				AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */,
 				A6B187670B2873874FE34301 /* RemovableChip.swift */,
 				696EF0FA6639241E4B5777B0 /* ScrollWheelPicker.swift */,
 				2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */,
 				8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */,
+				C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */,
+				E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */,
+				F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */,
+				A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */,
+				AA1B2C3D4E5F000000000004 /* UndoToast.swift */,
 				C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */,
 				63C1F605B08FD1BED775D2F7 /* WellbeingScoreRing.swift */,
 				D08FD87C2CAEB5113C9AF2C7 /* WellnessSlider.swift */,
@@ -557,6 +596,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1B2C3D4E5F000000000005 /* AddSupplementSheet.swift in Sources */,
 				FD09DC4B52C1CEFAF1338BF5 /* AIInterstitialScreen.swift in Sources */,
 				55D93EAA1CF254BBDE1C434F /* AgeScreen.swift in Sources */,
 				E57A34A78DA935FDE4B27D39 /* AlcoholScreen.swift in Sources */,
@@ -574,6 +614,10 @@
 				A29B538E7B4E61A3347CA544 /* DailyCheckIn.swift in Sources */,
 				715F1EE3185A8E55644086D8 /* DataStore.swift in Sources */,
 				719ED9A6C5307F82551DB46A /* DesignTokens.swift in Sources */,
+				D1A505C7000000000000DC05 /* DiscoveryCard.swift in Sources */,
+				D1A505C7000000000000DC07 /* DiscoveryCarousel.swift in Sources */,
+				D1A505C7000000000000DC01 /* DiscoveryTip.swift in Sources */,
+				D1A505C7000000000000DC03 /* DiscoveryTipProvider.swift in Sources */,
 				BB1CD1118A057AD89A7D8520 /* DietScreen.swift in Sources */,
 				578C000FB7E4D3FC50B031FE /* ExerciseScreen.swift in Sources */,
 				095FC07811BF60252CD68F60 /* Extensions.swift in Sources */,
@@ -598,6 +642,9 @@
 				6EE9D6E5436022ED853C6C41 /* PlanScreen.swift in Sources */,
 				A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */,
 				C162A5DBBC6F229F7CA79E50 /* PlanViewModel.swift in Sources */,
+				E1A505C7000000000000PR01 /* InsightsScreen.swift in Sources */,
+				E1A505C7000000000000PR03 /* InsightsViewModel.swift in Sources */,
+				AA1B2C3D4E5F000000000001 /* RecommendationCard.swift in Sources */,
 				D82470B7AC37D5B9087A1912 /* RecommendationEngine.swift in Sources */,
 				E56A33E513291B12957229F0 /* RemovableChip.swift in Sources */,
 				EA7968AED600D0DFCB624B51 /* ScrollWheelPicker.swift in Sources */,
@@ -605,10 +652,15 @@
 				97B6BC0AC2814B8C2A55734F /* SpectrumBar.swift in Sources */,
 				85AFBE234E9366DB35C83B87 /* StressScreen.swift in Sources */,
 				87B6E3C2C099E05759CBC60B /* SupplementCard.swift in Sources */,
+				D4F5A6B7C8D9E0F1A2B3C4D5 /* PillboxCompartment.swift in Sources */,
+				F6B7C8D9E0F1A2B3C4D5E6F7 /* PillboxGrid.swift in Sources */,
+				G7C8D9E0F1A2B3C4D5E6F7A8 /* PillboxLid.swift in Sources */,
+				B2D3E4F5A6B7C8D9E0F1A2B3 /* SupplementIconography.swift in Sources */,
 				E089AFFD59FB0C674F9EB7B8 /* SupplementKnowledgeBase.swift in Sources */,
 				0417D7AE9EF1520857BA587D /* SupplementPickerSheet.swift in Sources */,
 				6E49C829C53153BEAB0A055D /* SupplementPlan.swift in Sources */,
 				26E9261423A983526C72C52A /* TonicApp.swift in Sources */,
+				AA1B2C3D4E5F000000000003 /* UndoToast.swift in Sources */,
 				D0ED6B5E2BB16897DF2B7136 /* UnitPicker.swift in Sources */,
 				AB92A6FF2B5FF748D2D359D5 /* UserProfile.swift in Sources */,
 				C2D1E4D5C37013468CB94D80 /* WeightScreen.swift in Sources */,

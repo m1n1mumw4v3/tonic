@@ -34,11 +34,11 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.plan)
 
-            ProgressPlaceholderScreen()
+            InsightsScreen()
                 .tabItem {
-                    Label(AppTab.progress.label, systemImage: AppTab.progress.icon)
+                    Label(AppTab.insights.label, systemImage: AppTab.insights.icon)
                 }
-                .tag(AppTab.progress)
+                .tag(AppTab.insights)
 
             SettingsPlaceholderScreen()
                 .tabItem {
@@ -47,29 +47,11 @@ struct MainTabView: View {
                 .tag(AppTab.settings)
         }
         .tint(DesignTokens.info)
+        .preferredColorScheme(.dark)
     }
 }
 
-// MARK: - Placeholder Screens (M4)
-
-struct ProgressPlaceholderScreen: View {
-    var body: some View {
-        ZStack {
-            DesignTokens.bgDeepest.ignoresSafeArea()
-            VStack(spacing: DesignTokens.spacing16) {
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.system(size: 48))
-                    .foregroundStyle(DesignTokens.textTertiary)
-                Text("Progress")
-                    .font(DesignTokens.headlineFont)
-                    .foregroundStyle(DesignTokens.textPrimary)
-                Text("Track your trends over time")
-                    .font(DesignTokens.bodyFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
-            }
-        }
-    }
-}
+// MARK: - Placeholder Screens
 
 struct SettingsPlaceholderScreen: View {
     var body: some View {
@@ -90,7 +72,16 @@ struct SettingsPlaceholderScreen: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .environment(AppState())
+#Preview("Main Tabs") {
+    let appState = AppState()
+    appState.loadDemoData()
+    return MainTabView()
+        .environment(appState)
+}
+
+#Preview("Full App") {
+    let appState = AppState()
+    appState.loadDemoData()
+    return ContentView()
+        .environment(appState)
 }

@@ -105,9 +105,47 @@ struct RecommendationEngine {
         return SupplementPlan(supplements: planSupplements)
     }
 
+    // MARK: - Build Single Plan Supplement
+
+    func buildPlanSupplement(from supplement: Supplement, for profile: UserProfile, existingSupplements: [PlanSupplement]) -> PlanSupplement {
+        let userGoalKeys = Set(profile.healthGoals.map { $0.rawValue })
+
+        var dosage = supplement.recommendedDosageMg
+        dosage = adjustDosage(baseDosage: dosage, supplement: supplement, profile: profile)
+        let dosageText = formatDosage(dosage: dosage, supplement: supplement)
+        let timing = resolveTiming(for: supplement, profile: profile)
+
+        let matched = userGoalKeys.filter { goalKey in
+            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains(supplement.name) == true
+        }
+        let overlapScore = matched.count
+
+        var planSupplement = PlanSupplement(
+            supplementId: supplement.id,
+            name: supplement.name,
+            dosage: dosageText,
+            dosageMg: dosage,
+            timing: timing,
+            category: supplement.category,
+            sortOrder: existingSupplements.count,
+            matchedGoals: Array(matched).sorted(),
+            goalOverlapScore: overlapScore,
+            researchNote: supplement.notes
+        )
+
+        // Assign tier based on score
+        var tempList = existingSupplements + [planSupplement]
+        assignTiers(to: &tempList)
+        if let assigned = tempList.last {
+            planSupplement.tier = assigned.tier
+        }
+
+        return planSupplement
+    }
+
     // MARK: - Tier Assignment
 
-    private func assignTiers(to supplements: inout [PlanSupplement]) {
+    func assignTiers(to supplements: inout [PlanSupplement]) {
         // Standard thresholds: 3+ = core, 2 = targeted, 1 = supporting
         let hasNaturalCore = supplements.contains { $0.goalOverlapScore >= 3 }
 
@@ -138,9 +176,9 @@ struct RecommendationEngine {
         }
     }
 
-    // MARK: - Private Helpers
+    // MARK: - Helpers
 
-    private func extractMedicationKeywords(from profile: UserProfile) -> [String] {
+    func extractMedicationKeywords(from profile: UserProfile) -> [String] {
         let meds = profile.medications
         return meds.flatMap { med in
             med.lowercased()
@@ -149,7 +187,7 @@ struct RecommendationEngine {
         }
     }
 
-    private func findExcludedSupplements(medications: [String], allergies: [String]) -> Set<String> {
+    func findExcludedSupplements(medications: [String], allergies: [String]) -> Set<String> {
         var excluded: Set<String> = []
 
         // Check medication interactions
@@ -181,7 +219,7 @@ struct RecommendationEngine {
         }
     }
 
-    private func adjustDosage(baseDosage: Double, supplement: Supplement, profile: UserProfile) -> Double {
+    func adjustDosage(baseDosage: Double, supplement: Supplement, profile: UserProfile) -> Double {
         var dosage = baseDosage
 
         // Age adjustments
@@ -209,7 +247,7 @@ struct RecommendationEngine {
         return dosage
     }
 
-    private func formatDosage(dosage: Double, supplement: Supplement) -> String {
+    func formatDosage(dosage: Double, supplement: Supplement) -> String {
         // Special cases
         if supplement.name == "Vitamin D3 + K2" {
             return "\(Int(dosage)) IU"
@@ -234,7 +272,7 @@ struct RecommendationEngine {
         return "\(Int(dosage))mg"
     }
 
-    private func resolveTiming(for supplement: Supplement, profile: UserProfile) -> SupplementTiming {
+    func resolveTiming(for supplement: Supplement, profile: UserProfile) -> SupplementTiming {
         // Use the recommended timing from knowledge base
         return supplement.recommendedTiming
     }

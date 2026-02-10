@@ -118,45 +118,61 @@ struct CheckInFlow: View {
     // MARK: - Step 2: Supplement Logging
 
     private var supplementStep: some View {
-        ScrollView {
-            VStack(spacing: DesignTokens.spacing20) {
-                Text("Log your supplements")
-                    .font(DesignTokens.headlineFont)
-                    .foregroundStyle(DesignTokens.textPrimary)
-                    .padding(.top, DesignTokens.spacing24)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: DesignTokens.spacing20) {
+                    Text("Log your supplements")
+                        .font(DesignTokens.headlineFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .padding(.top, DesignTokens.spacing24)
 
-                // Take All button
-                if let plan = appState.activePlan, !plan.supplements.isEmpty {
-                    Button {
-                        viewModel.takeAll(plan: plan)
-                    } label: {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                            Text("Took Everything")
-                        }
-                        .font(DesignTokens.bodyFont)
-                        .foregroundStyle(DesignTokens.info)
-                        .padding(.vertical, DesignTokens.spacing8)
-                    }
-                }
-
-                // Supplement cards
-                if let plan = appState.activePlan {
-                    ForEach(plan.supplements) { supplement in
-                        SupplementCard(
-                            name: supplement.name,
-                            dosage: supplement.dosage,
-                            timing: supplement.timing.label,
-                            isTaken: viewModel.supplementStates[supplement.id] ?? false,
-                            onToggle: { viewModel.toggleSupplement(supplement.id) }
+                    if let plan = appState.activePlan {
+                        PillboxGrid(
+                            supplements: plan.supplements,
+                            supplementStates: viewModel.supplementStates,
+                            onToggle: { id in viewModel.toggleSupplement(id) },
+                            allJustCompleted: viewModel.allJustCompleted
                         )
                     }
-                }
 
-                // Count
-                Text("\(viewModel.takenCount) of \(appState.activePlan?.supplements.count ?? 0) taken")
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
+                    // Footer: progress count + Took Everything
+                    if let plan = appState.activePlan, !plan.supplements.isEmpty {
+                        HStack {
+                            Text("\(viewModel.takenCount) of \(plan.supplements.count) taken")
+                                .font(DesignTokens.dataMono)
+                                .foregroundStyle(DesignTokens.textSecondary)
+                                .contentTransition(.numericText())
+                                .animation(.snappy, value: viewModel.takenCount)
+
+                            Spacer()
+
+                            Button {
+                                viewModel.takeAll(plan: plan)
+                            } label: {
+                                HStack(spacing: DesignTokens.spacing4) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 14))
+                                    Text("Took Everything")
+                                        .font(DesignTokens.captionFont)
+                                }
+                                .foregroundStyle(DesignTokens.info)
+                            }
+                        }
+                        .padding(.top, DesignTokens.spacing4)
+                    }
+                }
+                .padding(.horizontal, DesignTokens.spacing16)
+                .padding(.bottom, 100) // Space for fixed CTA
+            }
+
+            // Fixed CTA with gradient fade
+            VStack(spacing: 0) {
+                LinearGradient(
+                    colors: [DesignTokens.bgDeepest.opacity(0), DesignTokens.bgDeepest],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 32)
 
                 CTAButton(title: "Done", style: .primary) {
                     viewModel.completeCheckIn(appState: appState)
@@ -164,9 +180,10 @@ struct CheckInFlow: View {
                         viewModel.currentStep = 2
                     }
                 }
+                .padding(.horizontal, DesignTokens.spacing16)
+                .padding(.bottom, DesignTokens.spacing32)
+                .background(DesignTokens.bgDeepest)
             }
-            .padding(.horizontal, DesignTokens.spacing16)
-            .padding(.bottom, DesignTokens.spacing32)
         }
     }
 

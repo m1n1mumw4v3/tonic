@@ -235,7 +235,7 @@ struct CheckInInsightGenerator {
 
     // MARK: - Rule 6: Supplement Fun Fact
 
-    private static let supplementFunFacts: [String: [String]] = [
+    static let supplementFunFacts: [String: [String]] = [
         "Magnesium Glycinate": [
             "Magnesium is involved in 300+ enzymatic reactions in your body.",
             "Glycinate is the most bioavailable form — it crosses the blood-brain barrier easily.",

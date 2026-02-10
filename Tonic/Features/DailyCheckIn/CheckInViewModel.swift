@@ -13,6 +13,7 @@ class CheckInViewModel {
 
     // Step 2: Supplement states
     var supplementStates: [UUID: Bool] = [:]
+    var allJustCompleted: Bool = false
 
     // Step 3: Completion
     var wellbeingScore: Double = 0
@@ -44,16 +45,23 @@ class CheckInViewModel {
     }
 
     func toggleSupplement(_ id: UUID) {
+        allJustCompleted = false
         supplementStates[id] = !(supplementStates[id] ?? false)
-        HapticManager.impact(.medium)
+
+        // Check if all supplements are now taken
+        let allTaken = !supplementStates.isEmpty && supplementStates.values.allSatisfy { $0 }
+        if allTaken {
+            allJustCompleted = true
+        }
     }
 
     func takeAll(plan: SupplementPlan?) {
         guard let plan = plan else { return }
+        allJustCompleted = false
         for supplement in plan.supplements {
             supplementStates[supplement.id] = true
         }
-        HapticManager.notification(.success)
+        allJustCompleted = true
     }
 
     var takenCount: Int {
@@ -143,6 +151,16 @@ class CheckInViewModel {
         completionInsight = insight
         if let key = insight?.key {
             RecentInsightTracker.record(key)
+        }
+
+        // Persist insight to storage
+        if let checkInInsight = insight {
+            let persistedInsight = Insight(from: checkInInsight)
+            var allInsights = (try? dataStore.getInsights()) ?? []
+            allInsights.insert(persistedInsight, at: 0)
+            if allInsights.count > 50 { allInsights = Array(allInsights.prefix(50)) }
+            try? dataStore.saveInsights(allInsights)
+            appState.insights = allInsights
         }
 
         isComplete = true

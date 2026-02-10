@@ -4,6 +4,10 @@ struct PlanScreen: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = PlanViewModel()
     @State private var selectedSupplement: PlanSupplement?
+    @State private var isOverviewExpanded = true
+    @State private var showAddSheet = false
+    @State private var showUndoToast = false
+    @State private var undoMessage = ""
 
     var body: some View {
         ZStack {
@@ -15,27 +19,56 @@ struct PlanScreen: View {
                     planHeader
 
                     if viewModel.activePlan != nil {
-                        // Morning section
-                        if !viewModel.morningSupplements.isEmpty {
-                            supplementSection(title: "MORNING", supplements: viewModel.morningSupplements)
-                        }
-
-                        // Evening section
-                        if !viewModel.eveningSupplements.isEmpty {
-                            supplementSection(title: "EVENING", supplements: viewModel.eveningSupplements)
-                        }
-
-                        // Overall plan reasoning
+                        // Plan overview (collapsible)
                         if let reasoning = viewModel.activePlan?.aiReasoning {
                             planReasoningCard(reasoning: reasoning)
                         }
 
+                        // Morning section
+                        if !viewModel.morningSupplements.isEmpty {
+                            supplementSection(title: "MORNING", icon: "sun.max.fill", tint: DesignTokens.accentEnergy, supplements: viewModel.morningSupplements)
+                        }
+
+                        // Evening section
+                        if !viewModel.eveningSupplements.isEmpty {
+                            supplementSection(title: "EVENING", icon: "moon.fill", tint: DesignTokens.accentSleep, supplements: viewModel.eveningSupplements)
+                        }
+
+                        // Explore / add supplements CTA
+                        Button {
+                            HapticManager.selection()
+                            showAddSheet = true
+                        } label: {
+                            HStack(spacing: DesignTokens.spacing8) {
+                                Image(systemName: "plus.circle")
+                                    .font(.system(size: 15))
+                                Text("Add Supplements to Your Plan")
+                                    .font(DesignTokens.bodyFont)
+                            }
+                            .foregroundStyle(DesignTokens.positive)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                            .background(DesignTokens.positive.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                    .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
+                            )
+                        }
+
                         // Disclaimer
-                        Text("This plan is informational, not medical advice.")
-                            .font(.custom("GeistMono-Regular", size: 9))
-                            .foregroundStyle(DesignTokens.textTertiary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, DesignTokens.spacing8)
+                        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+                            Image(systemName: "info.circle")
+                                .font(.system(size: 14))
+                                .foregroundStyle(DesignTokens.textSecondary)
+                                .padding(.top, 2)
+
+                            Text("This plan is informational, not medical advice. Always consult your doctor before taking anything new.")
+                                .font(DesignTokens.captionFont)
+                                .foregroundStyle(DesignTokens.textSecondary)
+                                .lineSpacing(2)
+                        }
+                        .padding(.top, DesignTokens.spacing4)
                     } else {
                         emptyState
                     }
@@ -43,54 +76,90 @@ struct PlanScreen: View {
                 .padding(.horizontal, DesignTokens.spacing16)
                 .padding(.bottom, DesignTokens.spacing32)
             }
+
+            // Undo toast overlay
+            if showUndoToast {
+                VStack {
+                    Spacer()
+                    UndoToast(
+                        message: undoMessage,
+                        onUndo: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                viewModel.undoRemoval()
+                            }
+                            HapticManager.notification(.success)
+                        },
+                        isPresented: $showUndoToast
+                    )
+                    .padding(.bottom, DesignTokens.spacing48)
+                }
+                .animation(.easeInOut(duration: 0.3), value: showUndoToast)
+            }
         }
         .onAppear {
             viewModel.load(appState: appState)
         }
         .sheet(item: $selectedSupplement) { supplement in
-            SupplementDetailSheet(supplement: supplement)
+            SupplementDetailSheet(supplement: supplement) { removed in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    viewModel.removeSupplement(removed)
+                    undoMessage = "\(removed.name) removed"
+                    showUndoToast = true
+                }
+            }
+        }
+        .sheet(isPresented: $showAddSheet) {
+            if let profile = appState.currentUser {
+                AddSupplementSheet(
+                    profile: profile,
+                    existingSupplements: viewModel.activePlan?.supplements ?? []
+                ) { newSupplements in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        viewModel.addSupplements(newSupplements)
+                    }
+                }
+            }
         }
     }
 
     // MARK: - Header
 
     private var planHeader: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-            Text("\(viewModel.userName)'s Supplement Plan")
-                .font(DesignTokens.headlineFont)
-                .foregroundStyle(DesignTokens.textPrimary)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+                Text("\(viewModel.userName)'s Supplement Plan")
+                    .font(DesignTokens.headlineFont)
+                    .foregroundStyle(DesignTokens.textPrimary)
 
-            if let plan = viewModel.activePlan {
-                HStack(spacing: DesignTokens.spacing8) {
-                    Text("v\(plan.version)".uppercased())
-                        .font(DesignTokens.labelMono)
-                        .tracking(1.2)
-                        .foregroundStyle(DesignTokens.textTertiary)
-
-                    Text("·")
-                        .foregroundStyle(DesignTokens.textTertiary)
-
-                    Text(viewModel.planDateString.uppercased())
+                if viewModel.activePlan != nil {
+                    Text("\(viewModel.planDateString.uppercased())\(viewModel.planVersionLabel)")
                         .font(DesignTokens.labelMono)
                         .tracking(1.2)
                         .foregroundStyle(DesignTokens.textTertiary)
                 }
+
+                SpectrumBar(height: 2)
+                    .padding(.top, DesignTokens.spacing4)
             }
 
-            SpectrumBar(height: 2)
-                .padding(.top, DesignTokens.spacing4)
         }
         .padding(.top, DesignTokens.spacing8)
     }
 
     // MARK: - Supplement Section
 
-    private func supplementSection(title: String, supplements: [PlanSupplement]) -> some View {
+    private func supplementSection(title: String, icon: String, tint: Color, supplements: [PlanSupplement]) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-            Text(title)
-                .font(DesignTokens.sectionHeader)
-                .tracking(1.5)
-                .foregroundStyle(DesignTokens.textSecondary)
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12))
+                    .foregroundStyle(tint)
+
+                Text(title)
+                    .font(DesignTokens.sectionHeader)
+                    .tracking(1.5)
+                    .foregroundStyle(DesignTokens.textSecondary)
+            }
 
             ForEach(supplements) { supplement in
                 Button {
@@ -99,6 +168,10 @@ struct PlanScreen: View {
                     planSupplementRow(supplement: supplement)
                 }
                 .buttonStyle(.plain)
+                .transition(.asymmetric(
+                    insertion: .scale.combined(with: .opacity),
+                    removal: .move(edge: .trailing).combined(with: .opacity)
+                ))
             }
         }
     }
@@ -144,16 +217,41 @@ struct PlanScreen: View {
     // MARK: - Plan Reasoning
 
     private func planReasoningCard(reasoning: String) -> some View {
-        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-            Text("PLAN OVERVIEW")
-                .font(DesignTokens.sectionHeader)
-                .tracking(1.5)
-                .foregroundStyle(DesignTokens.textSecondary)
+        VStack(alignment: .leading, spacing: isOverviewExpanded ? DesignTokens.spacing12 : 0) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isOverviewExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 12))
+                            .foregroundStyle(DesignTokens.textSecondary)
 
-            Text(reasoning)
-                .font(DesignTokens.bodyFont)
-                .foregroundStyle(DesignTokens.textPrimary)
-                .lineSpacing(4)
+                        Text("PLAN OVERVIEW")
+                            .font(DesignTokens.sectionHeader)
+                            .tracking(1.5)
+                            .foregroundStyle(DesignTokens.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(DesignTokens.textTertiary)
+                        .rotationEffect(.degrees(isOverviewExpanded ? 0 : -90))
+                }
+            }
+            .buttonStyle(.plain)
+
+            if isOverviewExpanded {
+                Text(reasoning)
+                    .font(DesignTokens.bodyFont)
+                    .foregroundStyle(DesignTokens.textPrimary)
+                    .lineSpacing(4)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .cardStyle()
     }
@@ -181,7 +279,9 @@ struct PlanScreen: View {
 
 struct SupplementDetailSheet: View {
     let supplement: PlanSupplement
+    var onRemove: ((PlanSupplement) -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
+    @State private var showRemoveConfirmation = false
 
     var body: some View {
         ZStack {
@@ -256,12 +356,53 @@ struct SupplementDetailSheet: View {
                                 .lineSpacing(4)
                         }
                     }
+
+                    // Remove button
+                    if onRemove != nil {
+                        Button {
+                            HapticManager.impact(.medium)
+                            showRemoveConfirmation = true
+                        } label: {
+                            HStack(spacing: DesignTokens.spacing8) {
+                                Image(systemName: "minus.circle")
+                                    .font(.system(size: 16, weight: .medium))
+                                Text("Remove from Plan")
+                                    .font(DesignTokens.ctaFont)
+                            }
+                            .foregroundStyle(DesignTokens.negative)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                            .background(DesignTokens.negative.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                    .stroke(DesignTokens.negative.opacity(0.2), lineWidth: 1)
+                            )
+                        }
+                        .padding(.top, DesignTokens.spacing8)
+                    }
                 }
                 .padding(DesignTokens.spacing20)
             }
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        .alert(
+            "Remove \(supplement.name)?",
+            isPresented: $showRemoveConfirmation
+        ) {
+            Button("Remove", role: .destructive) {
+                onRemove?(supplement)
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            let goals = supplement.matchedGoals
+                .compactMap { key in HealthGoal(rawValue: key)?.shortLabel }
+                .joined(separator: " and ")
+            let goalsText = goals.isEmpty ? "" : "This supplement was recommended for your \(goals) goals. "
+            Text("\(goalsText)It was categorized as \(supplement.tier.label) in your plan.")
+        }
     }
 
     private func detailRow(label: String, value: String) -> some View {

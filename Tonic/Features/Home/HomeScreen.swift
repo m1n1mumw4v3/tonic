@@ -26,13 +26,8 @@ struct HomeScreen: View {
                         checkInSection
                     }
 
-                    // Today's Supplements
-                    supplementsSection
-
-                    // Latest Insight
-                    if let insight = viewModel.latestInsight {
-                        insightSection(insight: insight)
-                    }
+                    // Insights or Discovery
+                    insightsSection
                 }
                 .padding(.horizontal, DesignTokens.spacing16)
                 .padding(.bottom, DesignTokens.spacing32)
@@ -96,6 +91,7 @@ struct HomeScreen: View {
                 gutScore: checkIn.gutScore
             )
         }
+        .frame(maxWidth: .infinity)
         .cardStyle()
     }
 
@@ -116,6 +112,7 @@ struct HomeScreen: View {
                 .foregroundStyle(DesignTokens.textSecondary)
                 .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity)
         .cardStyle()
     }
 
@@ -152,63 +149,37 @@ struct HomeScreen: View {
         }
     }
 
-    // MARK: - Supplements
+    // MARK: - Insights Section
 
-    private var supplementsSection: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-            HStack {
-                Text("TODAY'S SUPPLEMENTS")
-                    .font(DesignTokens.sectionHeader)
-                    .tracking(1.5)
-                    .foregroundStyle(DesignTokens.textSecondary)
-
-                Spacer()
-
-                if viewModel.totalSupplements > 0 {
-                    Button("Take All") {
-                        viewModel.takeAll()
-                    }
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.info)
-                }
-            }
-
-            if let plan = viewModel.activePlan {
-                ForEach(plan.supplements) { supplement in
-                    SupplementCard(
-                        name: supplement.name,
-                        dosage: supplement.dosage,
-                        timing: supplement.timing.label,
-                        isTaken: viewModel.supplementStates[supplement.id] ?? false,
-                        onToggle: { viewModel.toggleSupplement(supplement.id) }
-                    )
-                }
-
-                // Completion indicator
-                HStack {
-                    Text("\(viewModel.takenCount) of \(viewModel.totalSupplements) taken")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textSecondary)
-                    Spacer()
-                }
-            } else {
-                Text("No plan generated yet")
-                    .font(DesignTokens.bodyFont)
-                    .foregroundStyle(DesignTokens.textTertiary)
-            }
+    @ViewBuilder
+    private var insightsSection: some View {
+        if !viewModel.insightFeed.isEmpty {
+            insightFeedSection
+        } else if !viewModel.discoveryTips.isEmpty {
+            DiscoveryCarousel(tips: viewModel.discoveryTips)
         }
     }
 
-    // MARK: - Insight
+    // MARK: - Insight Feed
 
-    private func insightSection(insight: Insight) -> some View {
-        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-            Text("LATEST INSIGHT")
+    private var insightFeedSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+            Text("RECENT INSIGHTS")
                 .font(DesignTokens.sectionHeader)
                 .tracking(1.5)
                 .foregroundStyle(DesignTokens.textSecondary)
 
-            InsightCard(insight: insight)
+            ForEach(viewModel.insightFeed) { insight in
+                InsightCard(insight: insight, onDismiss: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        viewModel.dismissInsight(insight.id)
+                    }
+                })
+                .transition(.opacity.combined(with: .move(edge: .trailing)))
+                .onAppear {
+                    viewModel.markInsightRead(insight.id)
+                }
+            }
         }
     }
 }

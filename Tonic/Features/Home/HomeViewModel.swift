@@ -9,21 +9,12 @@ class HomeViewModel {
     var dateLabel: String = ""
     var streak: UserStreak = UserStreak()
     var todayCheckIn: DailyCheckIn?
-    var activePlan: SupplementPlan?
-    var supplementStates: [UUID: Bool] = [:]
-    var latestInsight: Insight?
+    var insightFeed: [Insight] = []
+    var discoveryTips: [DiscoveryTip] = []
 
     var hasCheckedInToday: Bool {
         guard let checkIn = todayCheckIn else { return false }
         return Calendar.current.isDateInToday(checkIn.checkInDate)
-    }
-
-    var takenCount: Int {
-        supplementStates.values.filter { $0 }.count
-    }
-
-    var totalSupplements: Int {
-        activePlan?.supplements.count ?? 0
     }
 
     init(dataStore: DataStore = LocalStorageService()) {
@@ -35,37 +26,40 @@ class HomeViewModel {
         greeting = "\(Date().greetingPrefix), \(userName)"
         dateLabel = Date().monoDateLabel
 
-        // Load from AppState (which may be populated from local storage)
-        activePlan = appState.activePlan
         todayCheckIn = appState.todayCheckIn
         streak = appState.streak
 
-        // Initialize supplement states from today's check-in
-        if let plan = activePlan {
-            for supplement in plan.supplements {
-                if let checkIn = todayCheckIn {
-                    supplementStates[supplement.id] = checkIn.supplementLogs.first(where: { $0.planSupplementId == supplement.id })?.taken ?? false
-                } else {
-                    supplementStates[supplement.id] = false
-                }
+        // Load insight feed — non-dismissed, up to 3
+        let allInsights = (try? dataStore.getInsights()) ?? []
+        insightFeed = Array(allInsights.filter { !$0.isDismissed }.prefix(3))
+
+        // Generate discovery tips when no real insights exist
+        if insightFeed.isEmpty {
+            discoveryTips = DiscoveryTipProvider.tips(for: appState.activePlan)
+        } else {
+            discoveryTips = []
+        }
+    }
+
+    func dismissInsight(_ id: UUID) {
+        insightFeed.removeAll { $0.id == id }
+
+        var allInsights = (try? dataStore.getInsights()) ?? []
+        if let index = allInsights.firstIndex(where: { $0.id == id }) {
+            allInsights[index].isDismissed = true
+            try? dataStore.saveInsights(allInsights)
+        }
+    }
+
+    func markInsightRead(_ id: UUID) {
+        if let feedIndex = insightFeed.firstIndex(where: { $0.id == id }), !insightFeed[feedIndex].isRead {
+            insightFeed[feedIndex].isRead = true
+
+            var allInsights = (try? dataStore.getInsights()) ?? []
+            if let index = allInsights.firstIndex(where: { $0.id == id }) {
+                allInsights[index].isRead = true
+                try? dataStore.saveInsights(allInsights)
             }
         }
-
-        // Load latest insight
-        if let insights = try? dataStore.getInsights(), let latest = insights.first(where: { !$0.isDismissed }) {
-            latestInsight = latest
-        }
-    }
-
-    func toggleSupplement(_ id: UUID) {
-        supplementStates[id] = !(supplementStates[id] ?? false)
-    }
-
-    func takeAll() {
-        guard let plan = activePlan else { return }
-        for supplement in plan.supplements {
-            supplementStates[supplement.id] = true
-        }
-        HapticManager.notification(.success)
     }
 }
