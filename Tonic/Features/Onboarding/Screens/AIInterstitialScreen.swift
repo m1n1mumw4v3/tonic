@@ -6,8 +6,11 @@ struct AIInterstitialScreen: View {
 
     @State private var currentStage: Int = 0
     @State private var progress: CGFloat = 0
-    @State private var particles: [Particle] = []
+    @State private var displayPercent: Int = 0
+    @State private var blobs: [GradientBlob] = []
     @State private var hasCompleted = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let stages: [String] = [
         "Analyzing your profile...",
@@ -20,75 +23,51 @@ struct AIInterstitialScreen: View {
     private let totalDuration: Double = 9.6
 
     var body: some View {
-        ZStack {
-            DesignTokens.bgDeepest.ignoresSafeArea()
+        GeometryReader { geometry in
+            ZStack {
+                DesignTokens.bgDeepest.ignoresSafeArea()
 
-            // Background particles
-            particleField
+                gradientBackground
 
-            // Main content
-            VStack(spacing: DesignTokens.spacing40) {
-                Spacer()
-
-                // Greeting
+                // Greeting — pinned at ~1/4 down the screen
                 HeadlineText(
-                    text: "Hang tight, \(viewModel.firstName.trimmingCharacters(in: .whitespaces).isEmpty ? "friend" : viewModel.firstName)...",
+                    text: "Hang tight, \(viewModel.firstName.trimmingCharacters(in: .whitespaces).isEmpty ? "friend" : viewModel.firstName).",
                     alignment: .center
                 )
+                .position(x: geometry.size.width / 2, y: geometry.size.height * 0.25)
 
-                // Stage messages
-                VStack(spacing: DesignTokens.spacing16) {
+                // Single rotating step with shimmer — vertically centered
+                ZStack {
                     ForEach(Array(stages.enumerated()), id: \.offset) { index, message in
-                        HStack(spacing: 8) {
-                            if index < currentStage {
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(DesignTokens.positive)
-                                    .transition(.scale.combined(with: .opacity))
-                            }
-                            Text(message)
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                        }
-                        .opacity(stageOpacity(for: index))
-                        .scaleEffect(currentStage == index ? 1.0 : 0.95)
-                        .animation(.easeInOut(duration: 0.6), value: currentStage)
+                        Text(message)
+                            .font(DesignTokens.headlineFont)
+                            .foregroundStyle(DesignTokens.textPrimary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .modifier(ShimmerModifier(isActive: !reduceMotion && index == currentStage))
+                            .opacity(index == currentStage ? 1 : 0)
+                            .animation(.easeInOut(duration: 1.4), value: currentStage)
                     }
                 }
-                .frame(height: 120)
+                .frame(width: geometry.size.width - DesignTokens.spacing32 * 2, height: 80)
+                .position(x: geometry.size.width / 2, y: geometry.size.height * 0.5)
 
-                Spacer()
-
-                // Progress bar
+                // Progress bar — near the bottom
                 VStack(spacing: DesignTokens.spacing12) {
                     SpectrumBar(height: 4, progress: progress)
                         .padding(.horizontal, DesignTokens.spacing48)
-                        .animation(.linear(duration: 0.3), value: progress)
 
-                    Text("\(Int(progress * 100))%")
-                        .font(DesignTokens.labelMono)
-                        .foregroundStyle(DesignTokens.textTertiary)
+                    Text("\(displayPercent)%")
+                        .font(.custom("GeistMono-Medium", size: 15))
+                        .foregroundStyle(DesignTokens.textPrimary)
                 }
-
-                Spacer()
-                    .frame(height: DesignTokens.spacing48)
+                .position(x: geometry.size.width / 2, y: geometry.size.height - DesignTokens.spacing48 - 30)
             }
         }
+        .ignoresSafeArea()
         .onAppear {
-            generateParticles()
+            blobs = Self.generateBlobs()
             startSequence()
-        }
-    }
-
-    // MARK: - Stage Opacity
-
-    private func stageOpacity(for index: Int) -> Double {
-        if index == currentStage {
-            return 1.0
-        } else if index < currentStage {
-            return 0.7
-        } else {
-            return 0.0
         }
     }
 
@@ -96,32 +75,29 @@ struct AIInterstitialScreen: View {
 
     private func startSequence() {
         Task {
+            // 4 stages, 25% each, tick 1% at a time = 100 ticks total
+            // Each stage is 2.4s → each tick is 2.4s / 25 = 96ms
+            let tickDuration: UInt64 = 96_000_000
+
             for stage in 0..<stages.count {
                 guard !Task.isCancelled else { return }
 
-                withAnimation(.easeInOut(duration: 0.4)) {
+                withAnimation(.easeInOut(duration: 1.4)) {
                     currentStage = stage
                 }
 
-                // Animate progress over this stage
-                let stageStart = CGFloat(stage) / CGFloat(stages.count)
-                let stageEnd = CGFloat(stage + 1) / CGFloat(stages.count)
-                let steps = 20
-                let stepDuration = stageDuration / UInt64(steps)
+                let percentStart = stage * 25
+                let percentEnd = (stage + 1) * 25
 
-                for step in 0...steps {
+                for pct in (percentStart + 1)...percentEnd {
                     guard !Task.isCancelled else { return }
-                    let fraction = CGFloat(step) / CGFloat(steps)
-                    let newProgress = stageStart + (stageEnd - stageStart) * fraction
+                    try? await Task.sleep(nanoseconds: tickDuration)
 
                     await MainActor.run {
-                        withAnimation(.linear(duration: 0.15)) {
-                            progress = newProgress
+                        displayPercent = pct
+                        withAnimation(.linear(duration: 0.1)) {
+                            progress = CGFloat(pct) / 100.0
                         }
-                    }
-
-                    if step < steps {
-                        try? await Task.sleep(nanoseconds: stepDuration)
                     }
                 }
             }
@@ -138,16 +114,21 @@ struct AIInterstitialScreen: View {
         }
     }
 
-    // MARK: - Particles
+    // MARK: - Gradient Blobs
 
-    private struct Particle: Identifiable {
+    private struct GradientBlob: Identifiable {
         let id = UUID()
         var x: CGFloat
         var y: CGFloat
         var size: CGFloat
-        var opacity: Double
-        var duration: Double
         var color: Color
+        var duration: Double
+        var delay: Double
+        // Pre-computed drift targets so they don't change on re-render
+        var driftX: CGFloat
+        var driftY: CGFloat
+        var targetScale: CGFloat
+        var initialScale: CGFloat
     }
 
     private static let spectrumColors: [Color] = [
@@ -158,54 +139,120 @@ struct AIInterstitialScreen: View {
         DesignTokens.accentGut
     ]
 
-    private func generateParticles() {
-        particles = (0..<30).map { _ in
-            Particle(
-                x: CGFloat.random(in: 0...1),
-                y: CGFloat.random(in: 0...1),
-                size: CGFloat.random(in: 3...8),
-                opacity: Double.random(in: 0.15...0.4),
-                duration: Double.random(in: 3...7),
-                color: Self.spectrumColors.randomElement()!
+    private static func generateBlobs() -> [GradientBlob] {
+        (0..<5).map { index in
+            GradientBlob(
+                x: CGFloat.random(in: 0.1...0.9),
+                y: CGFloat.random(in: 0.05...0.55),
+                size: CGFloat.random(in: 250...400),
+                color: spectrumColors[index % spectrumColors.count],
+                duration: Double.random(in: 10...15),
+                delay: Double(index) * 0.6,
+                driftX: CGFloat.random(in: -1...1) * 0.15,
+                driftY: CGFloat.random(in: -1...1) * 0.15,
+                targetScale: CGFloat.random(in: 1.0...1.2),
+                initialScale: CGFloat.random(in: 0.8...1.0)
             )
         }
     }
 
-    private var particleField: some View {
+    private var gradientBackground: some View {
         GeometryReader { geometry in
-            ForEach(particles) { particle in
-                Circle()
-                    .fill(particle.color)
-                    .frame(width: particle.size, height: particle.size)
+            ForEach(blobs) { blob in
+                Ellipse()
+                    .fill(blob.color)
+                    .frame(width: blob.size, height: blob.size)
+                    .blur(radius: 60)
+                    .opacity(0.3)
                     .position(
-                        x: particle.x * geometry.size.width,
-                        y: particle.y * geometry.size.height
+                        x: blob.x * geometry.size.width,
+                        y: blob.y * geometry.size.height
                     )
-                    .opacity(particle.opacity)
-                    .modifier(PulseModifier(duration: particle.duration))
+                    .modifier(DriftModifier(
+                        targetOffsetX: blob.driftX * geometry.size.width,
+                        targetOffsetY: blob.driftY * geometry.size.height,
+                        targetScale: blob.targetScale,
+                        initialScale: blob.initialScale,
+                        duration: blob.duration,
+                        delay: blob.delay,
+                        isActive: !reduceMotion
+                    ))
             }
         }
         .ignoresSafeArea()
     }
 }
 
-// MARK: - Pulse Animation Modifier
+// MARK: - Drift Animation Modifier
 
-private struct PulseModifier: ViewModifier {
+private struct DriftModifier: ViewModifier {
+    let targetOffsetX: CGFloat
+    let targetOffsetY: CGFloat
+    let targetScale: CGFloat
+    let initialScale: CGFloat
     let duration: Double
+    let delay: Double
+    let isActive: Bool
+
     @State private var isAnimating = false
 
     func body(content: Content) -> some View {
         content
-            .opacity(isAnimating ? 1.0 : 0.2)
-            .scaleEffect(isAnimating ? 1.3 : 0.8)
+            .offset(
+                x: isAnimating ? targetOffsetX : 0,
+                y: isAnimating ? targetOffsetY : 0
+            )
+            .scaleEffect(isAnimating ? targetScale : initialScale)
             .animation(
-                .easeInOut(duration: duration).repeatForever(autoreverses: true),
+                isActive
+                    ? .easeInOut(duration: duration).repeatForever(autoreverses: true).delay(delay)
+                    : .default,
                 value: isAnimating
             )
             .onAppear {
-                isAnimating = true
+                if isActive {
+                    isAnimating = true
+                }
             }
+    }
+}
+
+// MARK: - Shimmer Effect Modifier
+
+private struct ShimmerModifier: ViewModifier {
+    let isActive: Bool
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        if isActive {
+            content
+                .overlay {
+                    GeometryReader { geometry in
+                        let width = geometry.size.width
+
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0),
+                                .init(color: .white.opacity(0.4), location: 0.4),
+                                .init(color: .white.opacity(0.4), location: 0.6),
+                                .init(color: .clear, location: 1.0)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(width: width * 0.6)
+                        .offset(x: -width * 0.6 + phase * (width + width * 0.6))
+                        .onAppear {
+                            withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
+                                phase = 1
+                            }
+                        }
+                    }
+                    .mask(content)
+                }
+        } else {
+            content
+        }
     }
 }
 
