@@ -40,7 +40,7 @@ struct ValuePropProblemScreen: View {
                 .padding(.bottom, 8)
 
                 // Headline
-                VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
+                VStack(alignment: .leading, spacing: DesignTokens.spacing32) {
                     (Text("92% of people are deficient in at least one essential vitamin or mineral. ")
                         .font(.custom("Geist-Light", size: 22))
                         .foregroundStyle(DesignTokens.textPrimary)
