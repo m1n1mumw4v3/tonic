@@ -43,6 +43,12 @@ struct UserProfile: Codable, Identifiable {
 
     // Apple Health
     var healthKitEnabled: Bool = false
+
+    // Notification reminders
+    var morningReminderEnabled: Bool = false
+    var eveningReminderEnabled: Bool = false
+    var morningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 8, minute: 0))!
+    var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 21, minute: 0))!
 }
 
 // MARK: - Enums
@@ -71,7 +77,7 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
     case focus
     case gutHealth = "gut_health"
     case immunity
-    case fitnessRecovery = "fitness_recovery"
+    case muscleDevelopment = "fitness_recovery"
     case stressAnxiety = "stress_anxiety"
     case skinHairNails = "skin_hair_nails"
     case longevity
@@ -86,7 +92,7 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         case .stressAnxiety: return "Stress & anxiety relief"
         case .gutHealth: return "Gut health & digestion"
         case .immunity: return "Immune support"
-        case .fitnessRecovery: return "Fitness recovery"
+        case .muscleDevelopment: return "Muscle growth & recovery"
         case .skinHairNails: return "Skin, hair & nails"
         case .longevity: return "Longevity"
         }
@@ -100,7 +106,7 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         case .stressAnxiety: return "heart.fill"
         case .gutHealth: return "leaf.fill"
         case .immunity: return "shield.fill"
-        case .fitnessRecovery: return "figure.run"
+        case .muscleDevelopment: return "figure.strengthtraining.traditional"
         case .skinHairNails: return "sparkles"
         case .longevity: return "infinity"
         }
@@ -114,7 +120,7 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         case .stressAnxiety:   return DesignTokens.accentMood
         case .gutHealth:       return DesignTokens.accentGut
         case .immunity:        return DesignTokens.info
-        case .fitnessRecovery: return DesignTokens.positive
+        case .muscleDevelopment: return DesignTokens.positive
         case .skinHairNails:   return DesignTokens.negative
         case .longevity:       return DesignTokens.accentLongevity
         }
@@ -128,7 +134,7 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         case .stressAnxiety: return "Stress"
         case .gutHealth: return "Gut"
         case .immunity: return "Immunity"
-        case .fitnessRecovery: return "Recovery"
+        case .muscleDevelopment: return "Muscle"
         case .skinHairNails: return "Skin"
         case .longevity: return "Longevity"
         }

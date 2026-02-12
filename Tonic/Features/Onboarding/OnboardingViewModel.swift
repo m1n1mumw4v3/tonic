@@ -42,6 +42,12 @@ class OnboardingViewModel {
 
     var healthKitEnabled: Bool = false
 
+    // Notification reminders
+    var morningReminderEnabled: Bool = true
+    var eveningReminderEnabled: Bool = true
+    var morningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 8, minute: 0))!
+    var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 21, minute: 0))!
+
     // Generated plan (held between AI Interstitial and Plan Reveal)
     var generatedPlan: SupplementPlan?
 
@@ -110,6 +116,10 @@ class OnboardingViewModel {
         profile.baselineMood = Int(baselineMood)
         profile.baselineGut = Int(baselineGut)
         profile.healthKitEnabled = healthKitEnabled
+        profile.morningReminderEnabled = morningReminderEnabled
+        profile.eveningReminderEnabled = eveningReminderEnabled
+        profile.morningReminderTime = morningReminderTime
+        profile.eveningReminderTime = eveningReminderTime
         return profile
     }
 }

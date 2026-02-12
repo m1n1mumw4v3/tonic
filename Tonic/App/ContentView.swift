@@ -48,6 +48,28 @@ struct MainTabView: View {
         }
         .tint(DesignTokens.info)
         .preferredColorScheme(.dark)
+        .fullScreenCover(isPresented: $state.showPaywall) {
+            PaywallScreen(
+                viewModel: Self.paywallViewModel(from: appState),
+                onSubscribe: {
+                    appState.isSubscribed = true
+                    appState.showPaywall = false
+                },
+                onDismiss: {
+                    appState.showPaywall = false
+                }
+            )
+        }
+    }
+
+    private static func paywallViewModel(from appState: AppState) -> OnboardingViewModel {
+        let vm = OnboardingViewModel()
+        if let user = appState.currentUser {
+            vm.firstName = user.firstName
+            vm.healthGoals = Set(user.healthGoals)
+        }
+        vm.generatedPlan = appState.activePlan
+        return vm
     }
 }
 
@@ -82,6 +104,7 @@ struct SettingsPlaceholderScreen: View {
 #Preview("Full App") {
     let appState = AppState()
     appState.loadDemoData()
+    appState.isOnboardingComplete = false
     return ContentView()
         .environment(appState)
 }

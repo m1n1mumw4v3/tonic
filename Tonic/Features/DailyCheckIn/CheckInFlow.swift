@@ -12,9 +12,11 @@ struct CheckInFlow: View {
             VStack(spacing: 0) {
                 // Progress dots
                 HStack(spacing: DesignTokens.spacing8) {
-                    ForEach(0..<3) { step in
+                    let stepCount = appState.isSubscribed ? 3 : 2
+                    ForEach(0..<stepCount, id: \.self) { step in
+                        let progress = appState.isSubscribed ? viewModel.currentStep : (viewModel.currentStep == 0 ? 0 : 1)
                         Circle()
-                            .fill(step <= viewModel.currentStep ? DesignTokens.info : DesignTokens.bgElevated)
+                            .fill(step <= progress ? DesignTokens.info : DesignTokens.bgElevated)
                             .frame(width: 8, height: 8)
                     }
                 }
@@ -104,8 +106,15 @@ struct CheckInFlow: View {
             Spacer()
 
             CTAButton(title: "Continue", style: .primary) {
-                withAnimation {
-                    viewModel.currentStep = 1
+                if appState.isSubscribed {
+                    withAnimation {
+                        viewModel.currentStep = 1
+                    }
+                } else {
+                    viewModel.completeCheckIn(appState: appState)
+                    withAnimation {
+                        viewModel.currentStep = 2
+                    }
                 }
             }
             .padding(.horizontal, DesignTokens.spacing16)
@@ -193,16 +202,22 @@ struct CheckInFlow: View {
         VStack(spacing: DesignTokens.spacing24) {
             Spacer()
 
-            // Animated score
-            WellbeingScoreRing(
-                sleepScore: Int(viewModel.sleepScore),
-                energyScore: Int(viewModel.energyScore),
-                clarityScore: Int(viewModel.clarityScore),
-                moodScore: Int(viewModel.moodScore),
-                gutScore: Int(viewModel.gutScore),
-                size: 160,
-                lineWidth: 12
-            )
+            if appState.isSubscribed {
+                // Animated score
+                WellbeingScoreRing(
+                    sleepScore: Int(viewModel.sleepScore),
+                    energyScore: Int(viewModel.energyScore),
+                    clarityScore: Int(viewModel.clarityScore),
+                    moodScore: Int(viewModel.moodScore),
+                    gutScore: Int(viewModel.gutScore),
+                    size: 160,
+                    lineWidth: 12
+                )
+            } else {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 64))
+                    .foregroundStyle(DesignTokens.positive)
+            }
 
             Text("Great check-in!")
                 .font(DesignTokens.headlineFont)
@@ -222,9 +237,26 @@ struct CheckInFlow: View {
                     .foregroundStyle(DesignTokens.textSecondary)
             }
 
-            if let insight = viewModel.completionInsight {
+            if appState.isSubscribed, let insight = viewModel.completionInsight {
                 CompactInsightCard(insight: insight)
                     .padding(.horizontal, DesignTokens.spacing16)
+            }
+
+            if !appState.isSubscribed {
+                VStack(spacing: DesignTokens.spacing12) {
+                    Text("See how your supplements can improve these scores")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .multilineTextAlignment(.center)
+
+                    CTAButton(title: "Unlock My Plan", style: .primary) {
+                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            appState.showPaywall = true
+                        }
+                    }
+                }
+                .padding(.horizontal, DesignTokens.spacing16)
             }
 
             Spacer()

@@ -19,56 +19,62 @@ struct PlanScreen: View {
                     planHeader
 
                     if viewModel.activePlan != nil {
-                        // Plan overview (collapsible)
-                        if let reasoning = viewModel.activePlan?.aiReasoning {
-                            planReasoningCard(reasoning: reasoning)
-                        }
-
-                        // Morning section
-                        if !viewModel.morningSupplements.isEmpty {
-                            supplementSection(title: "MORNING", icon: "sun.max.fill", tint: DesignTokens.accentEnergy, supplements: viewModel.morningSupplements)
-                        }
-
-                        // Evening section
-                        if !viewModel.eveningSupplements.isEmpty {
-                            supplementSection(title: "EVENING", icon: "moon.fill", tint: DesignTokens.accentSleep, supplements: viewModel.eveningSupplements)
-                        }
-
-                        // Explore / add supplements CTA
-                        Button {
-                            HapticManager.selection()
-                            showAddSheet = true
-                        } label: {
-                            HStack(spacing: DesignTokens.spacing8) {
-                                Image(systemName: "plus.circle")
-                                    .font(.system(size: 15))
-                                Text("Add Supplements to Your Plan")
-                                    .font(DesignTokens.bodyFont)
+                        VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
+                            // Plan overview (collapsible)
+                            if let reasoning = viewModel.activePlan?.aiReasoning {
+                                planReasoningCard(reasoning: reasoning)
                             }
-                            .foregroundStyle(DesignTokens.positive)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 48)
-                            .background(DesignTokens.positive.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                    .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
-                            )
-                        }
 
-                        // Disclaimer
-                        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
-                            Image(systemName: "info.circle")
-                                .font(.system(size: 14))
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .padding(.top, 2)
+                            // Morning section
+                            if !viewModel.morningSupplements.isEmpty {
+                                supplementSection(title: "MORNING", icon: "sun.max.fill", tint: DesignTokens.accentEnergy, supplements: viewModel.morningSupplements)
+                            }
 
-                            Text("This plan is informational, not medical advice. Always consult your doctor before taking anything new.")
-                                .font(DesignTokens.captionFont)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .lineSpacing(2)
+                            // Evening section
+                            if !viewModel.eveningSupplements.isEmpty {
+                                supplementSection(title: "EVENING", icon: "moon.fill", tint: DesignTokens.accentSleep, supplements: viewModel.eveningSupplements)
+                            }
+
+                            // Explore / add supplements CTA
+                            Button {
+                                HapticManager.selection()
+                                showAddSheet = true
+                            } label: {
+                                HStack(spacing: DesignTokens.spacing8) {
+                                    Image(systemName: "plus.circle")
+                                        .font(.system(size: 15))
+                                    Text("Add Supplements to Your Plan")
+                                        .font(DesignTokens.bodyFont)
+                                }
+                                .foregroundStyle(DesignTokens.positive)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 48)
+                                .background(DesignTokens.positive.opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
+                                )
+                            }
+
+                            // Disclaimer
+                            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+                                Image(systemName: "info.circle")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(DesignTokens.textSecondary)
+                                    .padding(.top, 2)
+
+                                Text("This plan is informational, not medical advice. Always consult your doctor before taking anything new.")
+                                    .font(DesignTokens.captionFont)
+                                    .foregroundStyle(DesignTokens.textSecondary)
+                                    .lineSpacing(2)
+                            }
+                            .padding(.top, DesignTokens.spacing4)
                         }
-                        .padding(.top, DesignTokens.spacing4)
+                        .lockedOverlay(
+                            title: "Your Plan",
+                            subtitle: "Subscribe to see your full supplement plan"
+                        )
                     } else {
                         emptyState
                     }

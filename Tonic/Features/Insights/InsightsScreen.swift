@@ -31,29 +31,35 @@ struct InsightsScreen: View {
 
                     // Weekly wellbeing trend
                     if !viewModel.periodData.isEmpty {
-                        weeklyTrendCard
-                            .opacity(showTrendCard ? 1 : 0)
-                            .offset(y: showTrendCard || reduceMotion ? 0 : 12)
+                        VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
+                            weeklyTrendCard
+                                .opacity(showTrendCard ? 1 : 0)
+                                .offset(y: showTrendCard || reduceMotion ? 0 : 12)
 
-                        Rectangle()
-                            .fill(DesignTokens.borderDefault)
-                            .frame(height: 1)
-                            .opacity(showDimensions ? 1 : 0)
+                            Rectangle()
+                                .fill(DesignTokens.borderDefault)
+                                .frame(height: 1)
+                                .opacity(showDimensions ? 1 : 0)
 
-                        // Dimension breakdown
-                        dimensionBreakdown
-                            .opacity(showDimensions ? 1 : 0)
-                            .offset(y: showDimensions || reduceMotion ? 0 : 12)
+                            // Dimension breakdown
+                            dimensionBreakdown
+                                .opacity(showDimensions ? 1 : 0)
+                                .offset(y: showDimensions || reduceMotion ? 0 : 12)
 
-                        Rectangle()
-                            .fill(DesignTokens.borderDefault)
-                            .frame(height: 1)
-                            .opacity(showStats ? 1 : 0)
+                            Rectangle()
+                                .fill(DesignTokens.borderDefault)
+                                .frame(height: 1)
+                                .opacity(showStats ? 1 : 0)
 
-                        // Streak & adherence
-                        statsRow
-                            .opacity(showStats ? 1 : 0)
-                            .offset(y: showStats || reduceMotion ? 0 : 12)
+                            // Streak & adherence
+                            statsRow
+                                .opacity(showStats ? 1 : 0)
+                                .offset(y: showStats || reduceMotion ? 0 : 12)
+                        }
+                        .lockedOverlay(
+                            title: "Your Insights",
+                            subtitle: "Subscribe to unlock wellness trends"
+                        )
                     } else {
                         emptyState
                     }

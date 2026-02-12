@@ -6,7 +6,7 @@ struct OnboardingFlow: View {
     @State private var currentScreen: Int = 0
     @State private var navigatingForward: Bool = true
 
-    private let totalScreens = 19
+    private let totalScreens = 21
 
     var body: some View {
         ZStack {
@@ -14,7 +14,7 @@ struct OnboardingFlow: View {
 
             VStack(spacing: 0) {
                 // Back button + progress bar
-                if currentScreen > 0 && currentScreen < totalScreens - 2 {
+                if currentScreen > 0 && currentScreen < totalScreens - 3 {
                     HStack(spacing: DesignTokens.spacing12) {
                         Button(action: previousScreen) {
                             Image(systemName: "chevron.left")
@@ -66,9 +66,13 @@ struct OnboardingFlow: View {
                     case 16:
                         HealthKitScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 17:
-                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
+                        NotificationReminderScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 18:
-                        PlanRevealScreen(viewModel: viewModel, onConfirm: completeOnboarding)
+                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
+                    case 19:
+                        PlanRevealScreen(viewModel: viewModel, onConfirm: nextScreen)
+                    case 20:
+                        PaywallScreen(viewModel: viewModel, onSubscribe: completeOnboarding, onDismiss: dismissPaywall)
                     default:
                         EmptyView()
                     }
@@ -121,6 +125,23 @@ struct OnboardingFlow: View {
         }
 
         appState.isOnboardingComplete = true
+    }
+
+    private func dismissPaywall() {
+        let profile = viewModel.buildUserProfile()
+        appState.currentUser = profile
+
+        if var plan = viewModel.generatedPlan {
+            plan.supplements = plan.supplements.filter(\.isIncluded)
+            appState.activePlan = plan
+        } else {
+            let engine = RecommendationEngine()
+            let plan = engine.generatePlan(for: profile)
+            appState.activePlan = plan
+        }
+
+        appState.isOnboardingComplete = true
+        // isSubscribed remains false — user gets limited home screen
     }
 }
 

@@ -16,6 +16,10 @@ struct HomeScreen: View {
                     // Wellbeing Score Card + Check-In
                     if let checkIn = appState.todayCheckIn {
                         wellbeingCard(checkIn: checkIn)
+                            .lockedOverlay(
+                                title: "Wellbeing Score",
+                                subtitle: "Subscribe to see your daily score"
+                            )
                         checkInSection
                     } else if !appState.hasEverCheckedIn, let user = appState.currentUser {
                         BaselineWelcomeHero(user: user) {
@@ -23,11 +27,19 @@ struct HomeScreen: View {
                         }
                     } else {
                         emptyWellbeingCard
+                            .lockedOverlay(
+                                title: "Wellbeing Score",
+                                subtitle: "Subscribe to see your daily score"
+                            )
                         checkInSection
                     }
 
                     // Insights or Discovery
                     insightsSection
+                        .lockedOverlay(
+                            title: "Insights",
+                            subtitle: "Subscribe to unlock personalized insights"
+                        )
                 }
                 .padding(.horizontal, DesignTokens.spacing16)
                 .padding(.bottom, DesignTokens.spacing32)

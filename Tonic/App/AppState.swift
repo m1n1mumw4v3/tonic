@@ -14,6 +14,7 @@ class AppState {
     // Navigation
     var selectedTab: AppTab = .home
     var showCheckInFlow: Bool = false
+    var showPaywall: Bool = false
 
     // Computed
     var userName: String {

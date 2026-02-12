@@ -86,7 +86,8 @@ struct GoalsScreen: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(DesignTokens.spacing12)
-            .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
+            .frame(height: 88)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
             .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .overlay(

@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0310AA1B2C3D4E5F00LOCK01 /* LockedOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310AA1B2C3D4E5F00LOCK02 /* LockedOverlay.swift */; };
 		0320DB9C3E62D1AD8841EEED /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = EDB1F1BCCC0818FF7D155076 /* RevenueCat */; };
 		0417D7AE9EF1520857BA587D /* SupplementPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5FB43DC143DC7A5458830F /* SupplementPickerSheet.swift */; };
 		05A57119DEE259A595BC58CA /* HeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B530063A29F9C992A79DDC0 /* HeightScreen.swift */; };
@@ -26,6 +27,7 @@
 		367C3753E695E0A0E2C51C35 /* HealthKitScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F874EA884FD144D94B23B16 /* HealthKitScreen.swift */; };
 		378F499F29AA7F6509E21FD5 /* MedicationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8C0FBCFD3C6D91C2670C93 /* MedicationPickerSheet.swift */; };
 		37C9B72CE2EF22C9567E1F5D /* NameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961830A0C45E00AEFF1219D7 /* NameScreen.swift */; };
+		3A1B2C3D4E5F60718293A4B5 /* NotificationReminderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D7E8F90A1B2C3D4E5F6A7 /* NotificationReminderScreen.swift */; };
 		47465A1CC72B88E4094548CD /* SexScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842166692CEFFE10D224F15B /* SexScreen.swift */; };
 		4D80C5B1929505FA805708B4 /* MedicationsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9239156F1B82111DC3B8C9A4 /* MedicationsScreen.swift */; };
 		55D93EAA1CF254BBDE1C434F /* AgeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E12F0FE9884FE3DF200ED /* AgeScreen.swift */; };
@@ -39,18 +41,22 @@
 		81A2B3C4D5E6F7081234ABCD /* BaselineWelcomeHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */; };
 		85AFBE234E9366DB35C83B87 /* StressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */; };
 		87B6E3C2C099E05759CBC60B /* SupplementCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */; };
-		D4F5A6B7C8D9E0F1A2B3C4D5 /* PillboxCompartment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */; };
-		F6B7C8D9E0F1A2B3C4D5E6F7 /* PillboxGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */; };
-		G7C8D9E0F1A2B3C4D5E6F7A8 /* PillboxLid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */; };
-		B2D3E4F5A6B7C8D9E0F1A2B3 /* SupplementIconography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */; };
 		97B6BC0AC2814B8C2A55734F /* SpectrumBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */; };
 		97CA4F780CA6F64543180F9C /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A01A13048D548BD408F2D7D /* WelcomeScreen.swift */; };
 		987575630F71462FE6BB2E7F /* AllergiesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3580B4A355064C1EC76E71A /* AllergiesScreen.swift */; };
 		9C20490F6C688BDEB86E6912 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E4626808351F71C54EEE16 /* HomeScreen.swift */; };
 		9D1F1C4141DE902537469456 /* WellnessSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08FD87C2CAEB5113C9AF2C7 /* WellnessSlider.swift */; };
+		A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */; };
+		A1B2C3D4E5F6A7B800000003 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B800000004 /* PaywallScreen.swift */; };
 		A29B538E7B4E61A3347CA544 /* DailyCheckIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37EBD0B56551BF20F34C739 /* DailyCheckIn.swift */; };
 		A75636A0788C45D1C96A9EDD /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */; };
+		AA1B2C3D4E5F000000000001 /* RecommendationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */; };
+		AA1B2C3D4E5F000000000003 /* UndoToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000004 /* UndoToast.swift */; };
+		AA1B2C3D4E5F000000000005 /* AddSupplementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */; };
 		AB92A6FF2B5FF748D2D359D5 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */; };
+		B1A2C3D4E5F6A7B800000001 /* CheckInInsightGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */; };
+		B1A2C3D4E5F6A7B800000003 /* CompactInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */; };
+		B2D3E4F5A6B7C8D9E0F1A2B3 /* SupplementIconography.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */; };
 		BB1CD1118A057AD89A7D8520 /* DietScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBE2DE2BA286AC921521E63 /* DietScreen.swift */; };
 		BE319EBCB7D2CD0152B49A2E /* LocalStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DB0058057F193831D8BEA4 /* LocalStorageService.swift */; };
 		C162A5DBBC6F229F7CA79E50 /* PlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC590B2626E069C32BBC1FD /* PlanViewModel.swift */; };
@@ -61,23 +67,20 @@
 		CA17234DA89D916FB34F5A3F /* BaselineScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D643CF2E405126F18FBDDA29 /* BaselineScreen.swift */; };
 		CBD0E1C052EDBF1213854B6B /* WellbeingScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D7C299398F4B7EF060F4B4 /* WellbeingScore.swift */; };
 		D0ED6B5E2BB16897DF2B7136 /* UnitPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */; };
+		D1A505C7000000000000DC01 /* DiscoveryTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC02 /* DiscoveryTip.swift */; };
+		D1A505C7000000000000DC03 /* DiscoveryTipProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC04 /* DiscoveryTipProvider.swift */; };
+		D1A505C7000000000000DC05 /* DiscoveryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC06 /* DiscoveryCard.swift */; };
+		D1A505C7000000000000DC07 /* DiscoveryCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */; };
+		D4F5A6B7C8D9E0F1A2B3C4D5 /* PillboxCompartment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */; };
 		D82470B7AC37D5B9087A1912 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7845270BE43C638D6535BB /* RecommendationEngine.swift */; };
 		E089AFFD59FB0C674F9EB7B8 /* SupplementKnowledgeBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D7B02FF59BCCED7CD95DB1 /* SupplementKnowledgeBase.swift */; };
+		E1A505C7000000000000PR01 /* InsightsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A505C7000000000000PR02 /* InsightsScreen.swift */; };
+		E1A505C7000000000000PR03 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A505C7000000000000PR04 /* InsightsViewModel.swift */; };
 		E2A32596C8BE951396979E12 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1442467CA2D42FE96A2212 /* ContentView.swift */; };
 		E56A33E513291B12957229F0 /* RemovableChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B187670B2873874FE34301 /* RemovableChip.swift */; };
 		E57A34A78DA935FDE4B27D39 /* AlcoholScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64087BE442295B056D3FADB6 /* AlcoholScreen.swift */; };
 		E6CB3C62EBBCA28C38145946 /* RecommendationEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F71724603474EE61FBFD96 /* RecommendationEngineTests.swift */; };
 		EA7968AED600D0DFCB624B51 /* ScrollWheelPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696EF0FA6639241E4B5777B0 /* ScrollWheelPicker.swift */; };
-		F2F384086F634F6485DF818F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A5A77C34774F68AF7D74A4AB /* Supabase */; };
-		F7D3FF27D2839FF75412B495 /* CurrentSuppsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43E5305DBC57CB345FD6769 /* CurrentSuppsScreen.swift */; };
-		FD09DC4B52C1CEFAF1338BF5 /* AIInterstitialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */; };
-		A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */; };
-		B1A2C3D4E5F6A7B800000001 /* CheckInInsightGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */; };
-		B1A2C3D4E5F6A7B800000003 /* CompactInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */; };
-		D1A505C7000000000000DC01 /* DiscoveryTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC02 /* DiscoveryTip.swift */; };
-		D1A505C7000000000000DC03 /* DiscoveryTipProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC04 /* DiscoveryTipProvider.swift */; };
-		D1A505C7000000000000DC05 /* DiscoveryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC06 /* DiscoveryCard.swift */; };
-		D1A505C7000000000000DC07 /* DiscoveryCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */; };
 		F0A1B2C3D4E5F6A7B8C9D2E1 /* Geist-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E1 /* Geist-Light.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E2 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E2 /* Geist-Regular.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E3 /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E3 /* Geist-Medium.ttf */; };
@@ -87,11 +90,11 @@
 		F0A1B2C3D4E5F6A7B8C9D2E7 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E7 /* GeistMono-Medium.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2E8 /* GeistPixel-Grid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E8 /* GeistPixel-Grid.ttf */; };
 		F0A1B2C3D4E5F6A7B8C9D2F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0F0 /* Assets.xcassets */; };
-		E1A505C7000000000000PR01 /* InsightsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A505C7000000000000PR02 /* InsightsScreen.swift */; };
-		E1A505C7000000000000PR03 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A505C7000000000000PR04 /* InsightsViewModel.swift */; };
-		AA1B2C3D4E5F000000000001 /* RecommendationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */; };
-		AA1B2C3D4E5F000000000003 /* UndoToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000004 /* UndoToast.swift */; };
-		AA1B2C3D4E5F000000000005 /* AddSupplementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */; };
+		F2F384086F634F6485DF818F /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = A5A77C34774F68AF7D74A4AB /* Supabase */; };
+		F6B7C8D9E0F1A2B3C4D5E6F7 /* PillboxGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */; };
+		F7D3FF27D2839FF75412B495 /* CurrentSuppsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43E5305DBC57CB345FD6769 /* CurrentSuppsScreen.swift */; };
+		FD09DC4B52C1CEFAF1338BF5 /* AIInterstitialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */; };
+		G7C8D9E0F1A2B3C4D5E6F7A8 /* PillboxLid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,9 +108,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0310AA1B2C3D4E5F00LOCK02 /* LockedOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockedOverlay.swift; sourceTree = "<group>"; };
 		09DB0058057F193831D8BEA4 /* LocalStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageService.swift; sourceTree = "<group>"; };
 		0AC27F1CA86DD29615CB93C6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
-		81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineWelcomeHero.swift; sourceTree = "<group>"; };
 		1DDA87A00EA666F1A5FDA4AE /* HapticModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticModifiers.swift; sourceTree = "<group>"; };
 		2B530063A29F9C992A79DDC0 /* HeightScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightScreen.swift; sourceTree = "<group>"; };
 		2C964C061909FE33E23E4696 /* MedicationKnowledgeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationKnowledgeBase.swift; sourceTree = "<group>"; };
@@ -119,6 +122,7 @@
 		4B912E54BA9425B931F54F07 /* HeadlineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlineText.swift; sourceTree = "<group>"; };
 		53EFB8675B8B9E5E38A13575 /* SupplementPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPlan.swift; sourceTree = "<group>"; };
 		568286142008218185A0599F /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
+		5C6D7E8F90A1B2C3D4E5F6A7 /* NotificationReminderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationReminderScreen.swift; sourceTree = "<group>"; };
 		63C1F605B08FD1BED775D2F7 /* WellbeingScoreRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellbeingScoreRing.swift; sourceTree = "<group>"; };
 		63F71724603474EE61FBFD96 /* RecommendationEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngineTests.swift; sourceTree = "<group>"; };
 		64087BE442295B056D3FADB6 /* AlcoholScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcoholScreen.swift; sourceTree = "<group>"; };
@@ -126,12 +130,9 @@
 		6A01A13048D548BD408F2D7D /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		7C4BF0E3926823BB0FEC4B05 /* TonicTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TonicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EC590B2626E069C32BBC1FD /* PlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanViewModel.swift; sourceTree = "<group>"; };
+		81A2B3C4D5E6F7089876FEDC /* BaselineWelcomeHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineWelcomeHero.swift; sourceTree = "<group>"; };
 		842166692CEFFE10D224F15B /* SexScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SexScreen.swift; sourceTree = "<group>"; };
 		8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCard.swift; sourceTree = "<group>"; };
-		C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxCompartment.swift; sourceTree = "<group>"; };
-		E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxGrid.swift; sourceTree = "<group>"; };
-		F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxLid.swift; sourceTree = "<group>"; };
-		A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementIconography.swift; sourceTree = "<group>"; };
 		9239156F1B82111DC3B8C9A4 /* MedicationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationsScreen.swift; sourceTree = "<group>"; };
 		93F69C6254275F9967C8F329 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		961830A0C45E00AEFF1219D7 /* NameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameScreen.swift; sourceTree = "<group>"; };
@@ -139,47 +140,44 @@
 		9EC7D48AB27EFD2F7D25EC76 /* CaffeineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaffeineScreen.swift; sourceTree = "<group>"; };
 		9F874EA884FD144D94B23B16 /* HealthKitScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitScreen.swift; sourceTree = "<group>"; };
 		A17D350F88446754381EE0BD /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanRevealScreen.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B800000004 /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
+		A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementIconography.swift; sourceTree = "<group>"; };
 		A6B187670B2873874FE34301 /* RemovableChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovableChip.swift; sourceTree = "<group>"; };
 		A6B331052949C19C3C3F2971 /* Tonic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tonic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCard.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F000000000004 /* UndoToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToast.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSupplementSheet.swift; sourceTree = "<group>"; };
 		AA7845270BE43C638D6535BB /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngine.swift; sourceTree = "<group>"; };
 		AB2B1995B341C5B4B5F9829B /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		AD8C0FBCFD3C6D91C2670C93 /* MedicationPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationPickerSheet.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInInsightGenerator.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactInsightCard.swift; sourceTree = "<group>"; };
 		BD1442467CA2D42FE96A2212 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BDA4C088FFDF765339F9F7B3 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C06B448606E1E25974BBEDCB /* GoalsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsScreen.swift; sourceTree = "<group>"; };
 		C238CD0128B9897C12C9E119 /* PlanScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanScreen.swift; sourceTree = "<group>"; };
 		C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitPicker.swift; sourceTree = "<group>"; };
 		C37EBD0B56551BF20F34C739 /* DailyCheckIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCheckIn.swift; sourceTree = "<group>"; };
+		C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxCompartment.swift; sourceTree = "<group>"; };
 		C7D7B02FF59BCCED7CD95DB1 /* SupplementKnowledgeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementKnowledgeBase.swift; sourceTree = "<group>"; };
 		C9CA9FBF52C98991ED60549E /* TonicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TonicApp.swift; sourceTree = "<group>"; };
 		CA5E12F0FE9884FE3DF200ED /* AgeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeScreen.swift; sourceTree = "<group>"; };
 		CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButton.swift; sourceTree = "<group>"; };
 		D08FD87C2CAEB5113C9AF2C7 /* WellnessSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellnessSlider.swift; sourceTree = "<group>"; };
-		D43E5305DBC57CB345FD6769 /* CurrentSuppsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentSuppsScreen.swift; sourceTree = "<group>"; };
-		D643CF2E405126F18FBDDA29 /* BaselineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineScreen.swift; sourceTree = "<group>"; };
-		E3580B4A355064C1EC76E71A /* AllergiesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllergiesScreen.swift; sourceTree = "<group>"; };
-		E854860EDC19B3AFC5715CBF /* WeightScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightScreen.swift; sourceTree = "<group>"; };
-		ED18AA6664C75F9BE26F751F /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
-		EF51FAB43DEAD4AFBEA40C8E /* Insight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Insight.swift; sourceTree = "<group>"; };
-		F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressScreen.swift; sourceTree = "<group>"; };
-		F5992B1C12E7F03251C7BC86 /* CheckInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInViewModel.swift; sourceTree = "<group>"; };
-		FA5FB43DC143DC7A5458830F /* SupplementPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPickerSheet.swift; sourceTree = "<group>"; };
-		FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInterstitialScreen.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanRevealScreen.swift; sourceTree = "<group>"; };
-		B1A2C3D4E5F6A7B800000002 /* CheckInInsightGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInInsightGenerator.swift; sourceTree = "<group>"; };
-		B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactInsightCard.swift; sourceTree = "<group>"; };
 		D1A505C7000000000000DC02 /* DiscoveryTip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryTip.swift; sourceTree = "<group>"; };
 		D1A505C7000000000000DC04 /* DiscoveryTipProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryTipProvider.swift; sourceTree = "<group>"; };
 		D1A505C7000000000000DC06 /* DiscoveryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCard.swift; sourceTree = "<group>"; };
 		D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCarousel.swift; sourceTree = "<group>"; };
-		FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
-		FDBE2DE2BA286AC921521E63 /* DietScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietScreen.swift; sourceTree = "<group>"; };
+		D43E5305DBC57CB345FD6769 /* CurrentSuppsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentSuppsScreen.swift; sourceTree = "<group>"; };
+		D643CF2E405126F18FBDDA29 /* BaselineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineScreen.swift; sourceTree = "<group>"; };
 		E1A505C7000000000000PR02 /* InsightsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsScreen.swift; sourceTree = "<group>"; };
 		E1A505C7000000000000PR04 /* InsightsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
-		FE88964207A2AED6C269B375 /* InsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCard.swift; sourceTree = "<group>"; };
-		AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCard.swift; sourceTree = "<group>"; };
-		AA1B2C3D4E5F000000000004 /* UndoToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToast.swift; sourceTree = "<group>"; };
-		AA1B2C3D4E5F000000000006 /* AddSupplementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSupplementSheet.swift; sourceTree = "<group>"; };
+		E3580B4A355064C1EC76E71A /* AllergiesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllergiesScreen.swift; sourceTree = "<group>"; };
+		E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxGrid.swift; sourceTree = "<group>"; };
+		E854860EDC19B3AFC5715CBF /* WeightScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightScreen.swift; sourceTree = "<group>"; };
+		ED18AA6664C75F9BE26F751F /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
+		EF51FAB43DEAD4AFBEA40C8E /* Insight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Insight.swift; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E1 /* Geist-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Light.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E2 /* Geist-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Regular.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E3 /* Geist-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Medium.ttf"; sourceTree = "<group>"; };
@@ -189,6 +187,14 @@
 		F0A1B2C3D4E5F6A7B8C9D0E7 /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Medium.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0E8 /* GeistPixel-Grid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistPixel-Grid.ttf"; sourceTree = "<group>"; };
 		F0A1B2C3D4E5F6A7B8C9D0F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressScreen.swift; sourceTree = "<group>"; };
+		F5992B1C12E7F03251C7BC86 /* CheckInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInViewModel.swift; sourceTree = "<group>"; };
+		F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxLid.swift; sourceTree = "<group>"; };
+		FA5FB43DC143DC7A5458830F /* SupplementPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPickerSheet.swift; sourceTree = "<group>"; };
+		FBB665B13B7F3F375313323F /* AIInterstitialScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInterstitialScreen.swift; sourceTree = "<group>"; };
+		FCCE508B5CD095C0F4DFD1B8 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		FDBE2DE2BA286AC921521E63 /* DietScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietScreen.swift; sourceTree = "<group>"; };
+		FE88964207A2AED6C269B375 /* InsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,10 +245,12 @@
 				3CC8BD06F1D05977763A1970 /* ExerciseScreen.swift */,
 				C06B448606E1E25974BBEDCB /* GoalsScreen.swift */,
 				9F874EA884FD144D94B23B16 /* HealthKitScreen.swift */,
+				5C6D7E8F90A1B2C3D4E5F6A7 /* NotificationReminderScreen.swift */,
 				2B530063A29F9C992A79DDC0 /* HeightScreen.swift */,
 				AD8C0FBCFD3C6D91C2670C93 /* MedicationPickerSheet.swift */,
 				9239156F1B82111DC3B8C9A4 /* MedicationsScreen.swift */,
 				961830A0C45E00AEFF1219D7 /* NameScreen.swift */,
+				A1B2C3D4E5F6A7B800000004 /* PaywallScreen.swift */,
 				A1B2C3D4E5F6A7B800000002 /* PlanRevealScreen.swift */,
 				842166692CEFFE10D224F15B /* SexScreen.swift */,
 				F47DBB488BBA42C78CA83FF4 /* StressScreen.swift */,
@@ -436,33 +444,6 @@
 			);
 			sourceTree = "<group>";
 		};
-		FB4F7A4EE7C217FF146B7B91 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */,
-				B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */,
-				D1A505C7000000000000DC06 /* DiscoveryCard.swift */,
-				D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */,
-				568286142008218185A0599F /* FlowLayout.swift */,
-				4B912E54BA9425B931F54F07 /* HeadlineText.swift */,
-				FE88964207A2AED6C269B375 /* InsightCard.swift */,
-				AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */,
-				A6B187670B2873874FE34301 /* RemovableChip.swift */,
-				696EF0FA6639241E4B5777B0 /* ScrollWheelPicker.swift */,
-				2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */,
-				8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */,
-				C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */,
-				E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */,
-				F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */,
-				A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */,
-				AA1B2C3D4E5F000000000004 /* UndoToast.swift */,
-				C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */,
-				63C1F605B08FD1BED775D2F7 /* WellbeingScoreRing.swift */,
-				D08FD87C2CAEB5113C9AF2C7 /* WellnessSlider.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
 		F0A1B2C3D4E5F6A7B8C9D1A0 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -487,26 +468,35 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-/* End PBXGroup section */
-
-/* Begin PBXResourcesBuildPhase section */
-		F0A1B2C3D4E5F6A7B8C9D3A0 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F0A1B2C3D4E5F6A7B8C9D2E1 /* Geist-Light.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E2 /* Geist-Regular.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E3 /* Geist-Medium.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E4 /* Geist-SemiBold.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E5 /* Geist-Bold.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E6 /* GeistMono-Regular.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E7 /* GeistMono-Medium.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2E8 /* GeistPixel-Grid.ttf in Resources */,
-				F0A1B2C3D4E5F6A7B8C9D2F0 /* Assets.xcassets in Resources */,
+		FB4F7A4EE7C217FF146B7B91 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */,
+				B1A2C3D4E5F6A7B800000004 /* CompactInsightCard.swift */,
+				D1A505C7000000000000DC06 /* DiscoveryCard.swift */,
+				D1A505C7000000000000DC08 /* DiscoveryCarousel.swift */,
+				568286142008218185A0599F /* FlowLayout.swift */,
+				4B912E54BA9425B931F54F07 /* HeadlineText.swift */,
+				FE88964207A2AED6C269B375 /* InsightCard.swift */,
+				0310AA1B2C3D4E5F00LOCK02 /* LockedOverlay.swift */,
+				AA1B2C3D4E5F000000000002 /* RecommendationCard.swift */,
+				A6B187670B2873874FE34301 /* RemovableChip.swift */,
+				696EF0FA6639241E4B5777B0 /* ScrollWheelPicker.swift */,
+				2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */,
+				8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */,
+				C3E4F5A6B7C8D9E0F1A2B3C4 /* PillboxCompartment.swift */,
+				E5A6B7C8D9E0F1A2B3C4D5E6 /* PillboxGrid.swift */,
+				F6A7B8C9D0E1F2A3B4C5D6E7 /* PillboxLid.swift */,
+				A1C2D3E4F5A6B7C8D9E0F1A2 /* SupplementIconography.swift */,
+				AA1B2C3D4E5F000000000004 /* UndoToast.swift */,
+				C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */,
+				63C1F605B08FD1BED775D2F7 /* WellbeingScoreRing.swift */,
+				D08FD87C2CAEB5113C9AF2C7 /* WellnessSlider.swift */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			path = Components;
+			sourceTree = "<group>";
 		};
-/* End PBXResourcesBuildPhase section */
+/* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		70EFAD821350C3A77F477A5F /* Tonic */ = {
@@ -581,7 +571,6 @@
 				FC8B960E92BE07DE1C0476C8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				877EF0A819D8E501CCE10693 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -591,11 +580,31 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		F0A1B2C3D4E5F6A7B8C9D3A0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0A1B2C3D4E5F6A7B8C9D2E1 /* Geist-Light.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E2 /* Geist-Regular.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E3 /* Geist-Medium.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E4 /* Geist-SemiBold.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E5 /* Geist-Bold.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E6 /* GeistMono-Regular.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E7 /* GeistMono-Medium.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2E8 /* GeistPixel-Grid.ttf in Resources */,
+				F0A1B2C3D4E5F6A7B8C9D2F0 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		1CE188A38C16A6A0D95CA5DF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0310AA1B2C3D4E5F00LOCK01 /* LockedOverlay.swift in Sources */,
 				AA1B2C3D4E5F000000000005 /* AddSupplementSheet.swift in Sources */,
 				FD09DC4B52C1CEFAF1338BF5 /* AIInterstitialScreen.swift in Sources */,
 				55D93EAA1CF254BBDE1C434F /* AgeScreen.swift in Sources */,
@@ -626,6 +635,7 @@
 				05F8DC06F1D3791F4596EA4F /* HapticModifiers.swift in Sources */,
 				093FC92B278E4F4649ACB8C8 /* HeadlineText.swift in Sources */,
 				367C3753E695E0A0E2C51C35 /* HealthKitScreen.swift in Sources */,
+				3A1B2C3D4E5F60718293A4B5 /* NotificationReminderScreen.swift in Sources */,
 				05A57119DEE259A595BC58CA /* HeightScreen.swift in Sources */,
 				81A2B3C4D5E6F7081234ABCD /* BaselineWelcomeHero.swift in Sources */,
 				9C20490F6C688BDEB86E6912 /* HomeScreen.swift in Sources */,
@@ -640,6 +650,7 @@
 				09A53F614300A00966B12C1B /* OnboardingFlow.swift in Sources */,
 				C3A750A3991D7A93BD95946E /* OnboardingViewModel.swift in Sources */,
 				6EE9D6E5436022ED853C6C41 /* PlanScreen.swift in Sources */,
+				A1B2C3D4E5F6A7B800000003 /* PaywallScreen.swift in Sources */,
 				A1B2C3D4E5F6A7B800000001 /* PlanRevealScreen.swift in Sources */,
 				C162A5DBBC6F229F7CA79E50 /* PlanViewModel.swift in Sources */,
 				E1A505C7000000000000PR01 /* InsightsScreen.swift in Sources */,
