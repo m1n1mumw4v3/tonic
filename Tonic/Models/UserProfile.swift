@@ -72,70 +72,75 @@ enum Sex: String, Codable, CaseIterable, Identifiable {
 }
 
 enum HealthGoal: String, Codable, CaseIterable, Identifiable {
-    case sleep
     case energy
+    case sleep
+    case stressAnxiety = "stress_anxiety"
     case focus
     case gutHealth = "gut_health"
     case immunity
     case muscleDevelopment = "fitness_recovery"
-    case stressAnxiety = "stress_anxiety"
     case skinHairNails = "skin_hair_nails"
+    case heartHealth = "heart_health"
     case longevity
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .sleep: return "Better sleep"
         case .energy: return "More energy"
-        case .focus: return "Mental clarity & focus"
+        case .sleep: return "Better sleep"
         case .stressAnxiety: return "Stress & anxiety relief"
+        case .focus: return "Mental clarity & focus"
         case .gutHealth: return "Gut health & digestion"
         case .immunity: return "Immune support"
         case .muscleDevelopment: return "Muscle growth & recovery"
         case .skinHairNails: return "Skin, hair & nails"
+        case .heartHealth: return "Heart health"
         case .longevity: return "Longevity"
         }
     }
 
     var icon: String {
         switch self {
-        case .sleep: return "moon.fill"
         case .energy: return "bolt.fill"
+        case .sleep: return "moon.fill"
+        case .stressAnxiety: return "figure.mind.and.body"
         case .focus: return "brain.head.profile"
-        case .stressAnxiety: return "heart.fill"
         case .gutHealth: return "leaf.fill"
         case .immunity: return "shield.fill"
         case .muscleDevelopment: return "figure.strengthtraining.traditional"
         case .skinHairNails: return "sparkles"
+        case .heartHealth: return "heart.fill"
         case .longevity: return "infinity"
         }
     }
 
     var accentColor: Color {
         switch self {
-        case .sleep:           return DesignTokens.accentSleep
         case .energy:          return DesignTokens.accentEnergy
-        case .focus:           return DesignTokens.accentClarity
+        case .sleep:           return DesignTokens.accentSleep
         case .stressAnxiety:   return DesignTokens.accentMood
+        case .focus:           return DesignTokens.accentClarity
         case .gutHealth:       return DesignTokens.accentGut
         case .immunity:        return DesignTokens.info
         case .muscleDevelopment: return DesignTokens.positive
-        case .skinHairNails:   return DesignTokens.negative
+        case .skinHairNails:   return DesignTokens.accentSkin
+        case .heartHealth:     return DesignTokens.negative
         case .longevity:       return DesignTokens.accentLongevity
         }
     }
 
     var shortLabel: String {
         switch self {
-        case .sleep: return "Sleep"
         case .energy: return "Energy"
-        case .focus: return "Focus"
+        case .sleep: return "Sleep"
         case .stressAnxiety: return "Stress"
+        case .focus: return "Focus"
         case .gutHealth: return "Gut"
         case .immunity: return "Immunity"
         case .muscleDevelopment: return "Muscle"
         case .skinHairNails: return "Skin"
+        case .heartHealth: return "Heart"
         case .longevity: return "Longevity"
         }
     }

@@ -26,6 +26,7 @@ enum DesignTokens {
     static let accentMood    = Color(hex: "#F78C6C")
     static let accentGut     = Color(hex: "#C3E88D")
     static let accentLongevity = Color(hex: "#80CBC4")
+    static let accentSkin      = Color(hex: "#FF80CB")
 
     // MARK: - Functional
     static let positive = Color(hex: "#7FE0A0")

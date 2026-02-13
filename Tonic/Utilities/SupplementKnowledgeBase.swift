@@ -15,22 +15,83 @@ struct Supplement: Identifiable {
     let notes: String
 }
 
+// MARK: - Goal–Supplement Entry
+
+struct GoalSupplementEntry {
+    let name: String
+    let weight: Int  // 1 = complementary, 2 = moderate evidence, 3 = strong evidence / high impact
+}
+
 // MARK: - Knowledge Base
 
 enum SupplementKnowledgeBase {
 
-    // MARK: - Goal → Supplement Mapping
+    // MARK: - Goal → Supplement Mapping (Evidence-Weighted)
 
-    static let goalSupplementMap: [String: [String]] = [
-        "sleep": ["Magnesium Glycinate", "L-Theanine", "Melatonin", "Tart Cherry Extract"],
-        "energy": ["Vitamin B Complex", "CoQ10", "Iron", "Vitamin D3 + K2", "Rhodiola Rosea"],
-        "focus": ["L-Theanine", "Omega-3 (EPA/DHA)", "Lion's Mane", "Vitamin B Complex"],
-        "gut_health": ["Probiotics", "Collagen Peptides", "Berberine", "Zinc"],
-        "immunity": ["Vitamin C", "Vitamin D3 + K2", "Zinc", "NAC"],
-        "stress_anxiety": ["Ashwagandha KSM-66", "L-Theanine", "Magnesium Glycinate", "Rhodiola Rosea"],
-        "fitness_recovery": ["Creatine Monohydrate", "Omega-3 (EPA/DHA)", "Tart Cherry Extract", "Vitamin D3 + K2", "Magnesium Glycinate"],
-        "skin_hair_nails": ["Biotin", "Collagen Peptides", "Vitamin C", "Zinc"],
-        "longevity": ["Omega-3 (EPA/DHA)", "Vitamin D3 + K2", "CoQ10", "NAC"]
+    static let goalSupplementMap: [String: [GoalSupplementEntry]] = [
+        "sleep": [
+            GoalSupplementEntry(name: "Magnesium Glycinate", weight: 3),
+            GoalSupplementEntry(name: "L-Theanine", weight: 2),
+            GoalSupplementEntry(name: "Melatonin", weight: 2),
+            GoalSupplementEntry(name: "Tart Cherry Extract", weight: 1),
+        ],
+        "energy": [
+            GoalSupplementEntry(name: "Vitamin B Complex", weight: 3),
+            GoalSupplementEntry(name: "CoQ10", weight: 2),
+            GoalSupplementEntry(name: "Iron", weight: 2),
+            GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 2),
+            GoalSupplementEntry(name: "Rhodiola Rosea", weight: 2),
+        ],
+        "focus": [
+            GoalSupplementEntry(name: "Omega-3 (EPA/DHA)", weight: 3),
+            GoalSupplementEntry(name: "L-Theanine", weight: 2),
+            GoalSupplementEntry(name: "Lion's Mane", weight: 2),
+            GoalSupplementEntry(name: "Vitamin B Complex", weight: 1),
+        ],
+        "gut_health": [
+            GoalSupplementEntry(name: "Probiotics", weight: 3),
+            GoalSupplementEntry(name: "Berberine", weight: 2),
+            GoalSupplementEntry(name: "Collagen Peptides", weight: 1),
+            GoalSupplementEntry(name: "Zinc", weight: 1),
+        ],
+        "immunity": [
+            GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 3),
+            GoalSupplementEntry(name: "Vitamin C", weight: 2),
+            GoalSupplementEntry(name: "Zinc", weight: 2),
+            GoalSupplementEntry(name: "NAC", weight: 1),
+        ],
+        "stress_anxiety": [
+            GoalSupplementEntry(name: "Ashwagandha KSM-66", weight: 3),
+            GoalSupplementEntry(name: "L-Theanine", weight: 2),
+            GoalSupplementEntry(name: "Magnesium Glycinate", weight: 2),
+            GoalSupplementEntry(name: "Rhodiola Rosea", weight: 2),
+        ],
+        "fitness_recovery": [
+            GoalSupplementEntry(name: "Creatine Monohydrate", weight: 3),
+            GoalSupplementEntry(name: "Magnesium Glycinate", weight: 2),
+            GoalSupplementEntry(name: "Omega-3 (EPA/DHA)", weight: 2),
+            GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 2),
+            GoalSupplementEntry(name: "Tart Cherry Extract", weight: 1),
+        ],
+        "skin_hair_nails": [
+            GoalSupplementEntry(name: "Collagen Peptides", weight: 3),
+            GoalSupplementEntry(name: "Biotin", weight: 2),
+            GoalSupplementEntry(name: "Vitamin C", weight: 1),
+            GoalSupplementEntry(name: "Zinc", weight: 1),
+        ],
+        "longevity": [
+            GoalSupplementEntry(name: "Omega-3 (EPA/DHA)", weight: 3),
+            GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 2),
+            GoalSupplementEntry(name: "CoQ10", weight: 2),
+            GoalSupplementEntry(name: "NAC", weight: 2),
+        ],
+        "heart_health": [
+            GoalSupplementEntry(name: "CoQ10", weight: 3),
+            GoalSupplementEntry(name: "Omega-3 (EPA/DHA)", weight: 3),
+            GoalSupplementEntry(name: "Magnesium Glycinate", weight: 2),
+            GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 2),
+            GoalSupplementEntry(name: "Berberine", weight: 1),
+        ],
     ]
 
     // MARK: - Known Drug Interactions
@@ -67,7 +128,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "200-400mg",
             recommendedDosageMg: 400,
             recommendedTiming: .evening,
-            benefits: ["sleep", "stress_anxiety", "fitness_recovery"],
+            benefits: ["sleep", "stress_anxiety", "fitness_recovery", "heart_health"],
             contraindications: [],
             drugInteractions: ["blood_pressure", "levothyroxine"],
             notes: "Best absorbed form of magnesium. Take in the evening for sleep support."
@@ -79,7 +140,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "2000-5000 IU",
             recommendedDosageMg: 2000,
             recommendedTiming: .morning,
-            benefits: ["immunity", "energy", "longevity"],
+            benefits: ["immunity", "energy", "longevity", "heart_health"],
             contraindications: [],
             drugInteractions: [],
             notes: "K2 ensures calcium goes to bones, not arteries. Take with fat-containing food."
@@ -91,7 +152,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "1000-2000mg",
             recommendedDosageMg: 1000,
             recommendedTiming: .morning,
-            benefits: ["focus", "longevity", "fitness_recovery"],
+            benefits: ["focus", "longevity", "fitness_recovery", "heart_health"],
             contraindications: [],
             drugInteractions: ["warfarin", "blood_thinner", "ssri"],
             notes: "Look for high EPA+DHA content. Take with food to reduce fishy aftertaste."
@@ -175,7 +236,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "100-200mg",
             recommendedDosageMg: 200,
             recommendedTiming: .morning,
-            benefits: ["energy", "longevity"],
+            benefits: ["energy", "longevity", "heart_health"],
             contraindications: [],
             drugInteractions: ["blood_pressure", "statin"],
             notes: "Ubiquinol form is better absorbed. Recommended alongside statins."
@@ -283,7 +344,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "500mg",
             recommendedDosageMg: 500,
             recommendedTiming: .withFood,
-            benefits: ["gut_health", "longevity"],
+            benefits: ["gut_health", "longevity", "heart_health"],
             contraindications: [],
             drugInteractions: ["metformin", "diabetes"],
             notes: "Take with meals. May lower blood sugar — monitor if diabetic."
@@ -348,8 +409,12 @@ enum SupplementKnowledgeBase {
     }
 
     static func supplements(for goalKey: String) -> [Supplement] {
-        guard let names = goalSupplementMap[goalKey] else { return [] }
-        return names.compactMap { supplement(named: $0) }
+        guard let entries = goalSupplementMap[goalKey] else { return [] }
+        return entries.compactMap { supplement(named: $0.name) }
+    }
+
+    static func weight(for supplementName: String, goal goalKey: String) -> Int {
+        goalSupplementMap[goalKey]?.first { $0.name == supplementName }?.weight ?? 0
     }
 
     static func hasInteraction(supplement: Supplement, medications: [String]) -> Bool {
