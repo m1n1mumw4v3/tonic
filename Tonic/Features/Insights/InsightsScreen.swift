@@ -243,7 +243,7 @@ struct InsightsScreen: View {
                         if !isMonthly {
                             Text(String(format: "%.1f", day.score))
                                 .font(DesignTokens.labelMono)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(DesignTokens.textPrimary)
                         }
 
                         barView(

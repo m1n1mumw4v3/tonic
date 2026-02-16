@@ -6,10 +6,6 @@ struct PillboxGrid: View {
     let onToggle: (UUID) -> Void
     let allJustCompleted: Bool
 
-    // Metallic rim colors (kept for the case rim stroke)
-    private static let rimLight  = Color(red: 0.55, green: 0.57, blue: 0.61)
-    private static let rimBright = Color(red: 0.72, green: 0.74, blue: 0.78)
-
     private static let amTimings: Set<SupplementTiming> = [.emptyStomach, .morning, .withFood]
     private static let pmTimings: Set<SupplementTiming> = [.afternoon, .evening, .bedtime]
 
@@ -54,10 +50,6 @@ struct PillboxGrid: View {
                         }
                     }
                     .padding(DesignTokens.spacing8)
-                    .background(
-                        RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                            .fill(Color.white.opacity(0.03))
-                    )
                 }
 
                 // Hinge divider between AM and PM
@@ -76,101 +68,18 @@ struct PillboxGrid: View {
                         }
                     }
                     .padding(DesignTokens.spacing8)
-                    .background(
-                        RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                            .fill(Color.white.opacity(0.03))
-                    )
                 }
             }
             .padding(DesignTokens.spacing16)
-            // 1. Base interior — dark navy gradient
             .background(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
-                    .fill(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color(red: 0.05, green: 0.05, blue: 0.12), location: 0),
-                                .init(color: DesignTokens.bgDeepest, location: 0.15),
-                                .init(color: DesignTokens.bgDeepest, location: 0.7),
-                                .init(color: DesignTokens.bgSurface, location: 1),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .fill(DesignTokens.bgSurface)
             )
-            // 2. Top inner shadow — shadow from case rim
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
-                    .fill(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.black.opacity(0.35), location: 0),
-                                .init(color: Color.black.opacity(0.1), location: 0.06),
-                                .init(color: .clear, location: 0.15),
-                                .init(color: .clear, location: 1),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .allowsHitTesting(false)
+                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
-            // 3. Left/right edge curvature shadow
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
-                    .fill(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .black.opacity(0.1), location: 0),
-                                .init(color: .clear, location: 0.12),
-                                .init(color: .clear, location: 0.88),
-                                .init(color: .black.opacity(0.1), location: 1),
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .allowsHitTesting(false)
-            )
-            // 4. Chamfered rim stroke — bright top lip, dark bottom
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
-                    .stroke(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Self.rimBright.opacity(0.8), location: 0),
-                                .init(color: Self.rimLight.opacity(0.5), location: 0.25),
-                                .init(color: Self.rimLight.opacity(0.3), location: 0.6),
-                                .init(color: Color.black.opacity(0.3), location: 1),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1.5
-                    )
-            )
-            // 5. Inner highlight line — specular on rim
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusLarge - 1)
-                    .stroke(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.white.opacity(0.15), location: 0),
-                                .init(color: Color.white.opacity(0.05), location: 0.1),
-                                .init(color: .clear, location: 0.25),
-                                .init(color: .clear, location: 1),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1
-                    )
-                    .padding(1.5)
-            )
-            // Case shadows
-            .shadow(color: .black.opacity(0.5), radius: 8, x: 0, y: 4)
-            .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+            .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 4)
         }
     }
 
@@ -191,29 +100,10 @@ struct PillboxGrid: View {
     // MARK: - Hinge Divider
 
     private var hingeDivider: some View {
-        VStack(spacing: 0) {
-            Rectangle()
-                .fill(Color.black.opacity(0.4))
-                .frame(height: 1)
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        stops: [
-                            .init(color: .clear, location: 0),
-                            .init(color: Color.white.opacity(0.18), location: 0.2),
-                            .init(color: Color.white.opacity(0.18), location: 0.8),
-                            .init(color: .clear, location: 1),
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .frame(height: 1)
-            Rectangle()
-                .fill(Color.black.opacity(0.2))
-                .frame(height: 1)
-        }
-        .padding(.horizontal, DesignTokens.spacing8)
+        Rectangle()
+            .fill(DesignTokens.borderDefault)
+            .frame(height: 1)
+            .padding(.horizontal, DesignTokens.spacing8)
     }
 
     // MARK: - Compartment

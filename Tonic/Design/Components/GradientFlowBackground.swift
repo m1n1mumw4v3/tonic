@@ -8,8 +8,8 @@ struct GradientFlowBackground: View {
         DesignTokens.accentSleep,
         DesignTokens.accentEnergy,
         DesignTokens.accentClarity,
-        DesignTokens.accentMood,
         DesignTokens.accentGut,
+        DesignTokens.accentLongevity,
         DesignTokens.accentSleep // second purple anchor
     ]
 
@@ -42,8 +42,8 @@ struct GradientFlowBackground: View {
             .mask(
                 LinearGradient(
                     stops: [
-                        .init(color: .clear, location: 0.30),
-                        .init(color: .white, location: 0.65)
+                        .init(color: .clear, location: 0.25),
+                        .init(color: .white, location: 0.55)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -76,10 +76,10 @@ struct GradientFlowBackground: View {
         (0..<6).map { index in
             GradientBlob(
                 x: CGFloat.random(in: 0.1...0.9),
-                y: CGFloat.random(in: 0.50...0.95),
-                size: CGFloat.random(in: 220...420),
-                blur: CGFloat.random(in: 50...70),
-                opacity: Double.random(in: 0.50...0.60),
+                y: CGFloat.random(in: 0.60...0.95),
+                size: CGFloat.random(in: 300...500),
+                blur: CGFloat.random(in: 40...65),
+                opacity: Double.random(in: 0.50...0.70),
                 color: spectrumColors[index % spectrumColors.count],
                 duration: Double.random(in: 5...8),
                 delay: Double(index) * 0.4,

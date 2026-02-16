@@ -7,6 +7,7 @@ struct BaselineProfileSheet: View {
 
     @State private var showSupplementPicker = false
     @State private var showMedicationPicker = false
+    @State private var showMaxGoalError = false
 
     // Height/Weight local state
     private enum HeightUnit: String, CaseIterable {
@@ -285,6 +286,21 @@ struct BaselineProfileSheet: View {
                         .font(DesignTokens.captionFont)
                         .foregroundStyle(DesignTokens.negative)
                 }
+
+                if showMaxGoalError {
+                    Text("You can select up to \(HealthGoal.maxSelection) goals for a focused plan.")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.negative)
+                        .multilineTextAlignment(.center)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
+            }
+        }
+        .onChange(of: viewModel.healthGoals.count) {
+            if !viewModel.isAtGoalLimit {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showMaxGoalError = false
+                }
             }
         }
     }
@@ -470,6 +486,19 @@ struct BaselineProfileSheet: View {
 
                 Divider().background(DesignTokens.borderDefault)
 
+                // Energy Drinks
+                fieldRow(label: "Energy drinks/day") {
+                    Stepper(
+                        "\(viewModel.energyDrinksDaily)",
+                        value: Bindable(viewModel).energyDrinksDaily,
+                        in: 0...10
+                    )
+                    .font(DesignTokens.dataMono)
+                    .foregroundStyle(DesignTokens.textPrimary)
+                }
+
+                Divider().background(DesignTokens.borderDefault)
+
                 // Alcohol
                 fieldRow(label: "Alcohol") {
                     Picker("Alcohol", selection: Bindable(viewModel).alcoholWeekly) {
@@ -574,13 +603,19 @@ struct BaselineProfileSheet: View {
         let accent = goal.accentColor
 
         Button {
-            HapticManager.selection()
             if isSelected {
                 if viewModel.healthGoals.count > 1 {
                     viewModel.healthGoals.remove(goal)
+                    HapticManager.selection()
+                }
+            } else if viewModel.isAtGoalLimit {
+                HapticManager.notification(.warning)
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showMaxGoalError = true
                 }
             } else {
                 viewModel.healthGoals.insert(goal)
+                HapticManager.selection()
             }
         } label: {
             VStack(spacing: DesignTokens.spacing8) {
@@ -616,6 +651,7 @@ struct BaselineProfileSheet: View {
                         lineWidth: isSelected ? 1.5 : 1
                     )
             )
+            .opacity(!isSelected && viewModel.isAtGoalLimit ? 0.4 : 1.0)
         }
     }
 

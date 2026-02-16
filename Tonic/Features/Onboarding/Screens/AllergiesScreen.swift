@@ -122,14 +122,11 @@ struct AllergiesScreen: View {
             }
             .padding(DesignTokens.spacing12)
             .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
-            .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+            .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(
-                        isSelected ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                        lineWidth: isSelected ? 1.5 : 1
-                    )
+                    .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
         }
     }
@@ -168,14 +165,11 @@ struct AllergiesScreen: View {
             }
             .padding(DesignTokens.spacing12)
             .frame(maxWidth: .infinity)
-            .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+            .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(
-                        isSelected ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                        lineWidth: isSelected ? 1.5 : 1
-                    )
+                    .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
         }
     }
@@ -235,14 +229,11 @@ struct AllergiesScreen: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(isActive ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+        .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(
-                    isActive ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                    lineWidth: isActive ? 1.5 : 1
-                )
+                .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
         )
     }
 }

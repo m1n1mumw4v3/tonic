@@ -5,14 +5,14 @@ struct RecommendationEngine {
     // MARK: - Generate Plan
 
     func generatePlan(for profile: UserProfile) -> SupplementPlan {
-        // Step 1: Goal mapping → candidate supplements scored by goal overlap
+        // Step 1: Goal mapping → candidate supplements scored by evidence weight
         var candidateScores: [String: Int] = [:]
         let goalKeys = profile.healthGoals.map { $0.rawValue }
 
         for goal in goalKeys {
-            if let supplementNames = SupplementKnowledgeBase.goalSupplementMap[goal] {
-                for name in supplementNames {
-                    candidateScores[name, default: 0] += 1
+            if let entries = SupplementKnowledgeBase.goalSupplementMap[goal] {
+                for entry in entries {
+                    candidateScores[entry.name, default: 0] += entry.weight
                 }
             }
         }
@@ -68,9 +68,11 @@ struct RecommendationEngine {
 
             // Compute matched goals: which of the user's goals map to this supplement
             let matched = userGoalKeys.filter { goalKey in
-                SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains(supplement.name) == true
+                SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
             }
-            let overlapScore = matched.count
+            let weightedScore = matched.reduce(0) { sum, goalKey in
+                sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
+            }
 
             return PlanSupplement(
                 supplementId: supplement.id,
@@ -81,12 +83,12 @@ struct RecommendationEngine {
                 category: supplement.category,
                 sortOrder: index,
                 matchedGoals: Array(matched).sorted(),
-                goalOverlapScore: overlapScore,
+                tierScore: weightedScore,
                 researchNote: supplement.notes
             )
         }
 
-        // Assign tiers based on goal overlap score
+        // Assign tiers based on weighted evidence score
         assignTiers(to: &planSupplements)
 
         // Sort by tier first, then timing within tier
@@ -116,9 +118,11 @@ struct RecommendationEngine {
         let timing = resolveTiming(for: supplement, profile: profile)
 
         let matched = userGoalKeys.filter { goalKey in
-            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains(supplement.name) == true
+            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
         }
-        let overlapScore = matched.count
+        let weightedScore = matched.reduce(0) { sum, goalKey in
+            sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
+        }
 
         var planSupplement = PlanSupplement(
             supplementId: supplement.id,
@@ -129,7 +133,7 @@ struct RecommendationEngine {
             category: supplement.category,
             sortOrder: existingSupplements.count,
             matchedGoals: Array(matched).sorted(),
-            goalOverlapScore: overlapScore,
+            tierScore: weightedScore,
             researchNote: supplement.notes
         )
 
@@ -146,32 +150,14 @@ struct RecommendationEngine {
     // MARK: - Tier Assignment
 
     func assignTiers(to supplements: inout [PlanSupplement]) {
-        // Standard thresholds: 3+ = core, 2 = targeted, 1 = supporting
-        let hasNaturalCore = supplements.contains { $0.goalOverlapScore >= 3 }
-
-        if hasNaturalCore {
-            for i in supplements.indices {
-                let score = supplements[i].goalOverlapScore
-                if score >= 3 {
-                    supplements[i].tier = .core
-                } else if score == 2 {
-                    supplements[i].tier = .targeted
-                } else {
-                    supplements[i].tier = .supporting
-                }
-            }
-        } else {
-            // Edge case: no supplements score 3+, promote highest-scoring to core
-            let maxScore = supplements.map(\.goalOverlapScore).max() ?? 1
-            for i in supplements.indices {
-                let score = supplements[i].goalOverlapScore
-                if score == maxScore {
-                    supplements[i].tier = .core
-                } else if score == maxScore - 1, maxScore > 1 {
-                    supplements[i].tier = .targeted
-                } else {
-                    supplements[i].tier = .supporting
-                }
+        for i in supplements.indices {
+            let score = supplements[i].tierScore
+            if score >= 5 {
+                supplements[i].tier = .core
+            } else if score >= 3 {
+                supplements[i].tier = .targeted
+            } else {
+                supplements[i].tier = .supporting
             }
         }
     }

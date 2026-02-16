@@ -4,8 +4,12 @@ import SwiftUI
 class OnboardingViewModel {
     // Screen data
     var firstName: String = ""
-    var age: Int = 30
-    var sex: Sex = .preferNotToSay
+    var dateOfBirth: Date = Calendar.current.date(byAdding: .year, value: -30, to: Date())!
+
+    var age: Int {
+        Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year ?? 30
+    }
+    var sex: Sex? = nil
     var heightFeet: Int = 5
     var heightInches: Int = 8
     var heightCm: Int = 173
@@ -27,12 +31,14 @@ class OnboardingViewModel {
     var allergies: Set<String> = []
     var customAllergyText: String = ""
 
-    var dietType: DietType = .omnivore
-    var exerciseFrequency: ExerciseFrequency = .none
+    var dietType: DietType? = nil
+    var customDietText: String = ""
+    var exerciseFrequency: ExerciseFrequency? = nil
     var coffeeCupsDaily: Int = 0
     var teaCupsDaily: Int = 0
-    var alcoholWeekly: AlcoholIntake = .none
-    var stressLevel: StressLevel = .moderate
+    var energyDrinksDaily: Int = 0
+    var alcoholWeekly: AlcoholIntake? = nil
+    var stressLevel: StressLevel? = nil
 
     var baselineSleep: Double = 5
     var baselineEnergy: Double = 5
@@ -41,6 +47,9 @@ class OnboardingViewModel {
     var baselineGut: Double = 5
 
     var healthKitEnabled: Bool = false
+    var healthKitProvidedSex: Bool = false
+    var healthKitProvidedHeight: Bool = false
+    var healthKitProvidedWeight: Bool = false
 
     // Notification reminders
     var morningReminderEnabled: Bool = true
@@ -63,12 +72,17 @@ class OnboardingViewModel {
         !healthGoals.isEmpty
     }
 
+    var isAtGoalLimit: Bool {
+        healthGoals.count >= HealthGoal.maxSelection
+    }
+
     // Build profile
     func buildUserProfile() -> UserProfile {
         var profile = UserProfile()
         profile.firstName = firstName.trimmingCharacters(in: .whitespaces)
         profile.age = age
-        profile.sex = sex
+        profile.dateOfBirth = dateOfBirth
+        profile.sex = sex ?? .preferNotToSay
         profile.heightInches = includeHeight ? (heightFeet * 12 + heightInches) : nil
         profile.weightLbs = includeWeight ? weightLbs : nil
         profile.healthGoals = Array(healthGoals)
@@ -104,12 +118,14 @@ class OnboardingViewModel {
         }
         profile.allergies = allAllergies
 
-        profile.dietType = dietType
-        profile.exerciseFrequency = exerciseFrequency
+        profile.dietType = dietType ?? .omnivore
+        profile.customDietText = customDietText.trimmingCharacters(in: .whitespaces)
+        profile.exerciseFrequency = exerciseFrequency ?? .none
         profile.coffeeCupsDaily = coffeeCupsDaily
         profile.teaCupsDaily = teaCupsDaily
-        profile.alcoholWeekly = alcoholWeekly
-        profile.stressLevel = stressLevel
+        profile.energyDrinksDaily = energyDrinksDaily
+        profile.alcoholWeekly = alcoholWeekly ?? .none
+        profile.stressLevel = stressLevel ?? .moderate
         profile.baselineSleep = Int(baselineSleep)
         profile.baselineEnergy = Int(baselineEnergy)
         profile.baselineClarity = Int(baselineClarity)

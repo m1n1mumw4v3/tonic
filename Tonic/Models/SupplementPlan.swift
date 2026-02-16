@@ -27,9 +27,16 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
     // Plan reveal fields
     var tier: SupplementTier = .supporting
     var matchedGoals: [String] = []
-    var goalOverlapScore: Int = 0
+    var tierScore: Int = 0
     var isIncluded: Bool = true
     var researchNote: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, planId, supplementId, name, dosage, dosageMg, timing, frequency
+        case reasoning, category, sortOrder, isTaken, tier, matchedGoals
+        case tierScore = "goalOverlapScore"
+        case isIncluded, researchNote
+    }
 
     static func == (lhs: PlanSupplement, rhs: PlanSupplement) -> Bool {
         lhs.id == rhs.id
@@ -57,9 +64,9 @@ enum SupplementTier: String, Codable, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .core: return "Works across multiple goals"
-        case .targeted: return "Focused on a specific goal"
-        case .supporting: return "Rounds out your plan"
+        case .core: return "Highest impact for your profile"
+        case .targeted: return "Strong support for your goals"
+        case .supporting: return "Complementary additions"
         }
     }
 

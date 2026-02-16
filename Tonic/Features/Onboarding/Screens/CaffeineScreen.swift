@@ -5,7 +5,7 @@ struct CaffeineScreen: View {
     let onContinue: () -> Void
 
     private var isNone: Bool {
-        viewModel.coffeeCupsDaily == 0 && viewModel.teaCupsDaily == 0
+        viewModel.coffeeCupsDaily == 0 && viewModel.teaCupsDaily == 0 && viewModel.energyDrinksDaily == 0
     }
 
     var body: some View {
@@ -20,20 +20,15 @@ struct CaffeineScreen: View {
 
                 Spacer()
 
-                VStack(spacing: 0) {
+                VStack(spacing: DesignTokens.spacing12) {
                     // None option
                     noneCard
 
-                    // Divider
-                    Rectangle()
-                        .fill(DesignTokens.borderDefault)
-                        .frame(height: 1)
-                        .padding(.vertical, DesignTokens.spacing12)
-
                     // Coffee stepper
-                    stepperRow(
+                    stepperCard(
                         label: "Coffee",
                         count: viewModel.coffeeCupsDaily,
+                        isActive: viewModel.coffeeCupsDaily > 0,
                         onDecrement: {
                             HapticManager.selection()
                             viewModel.coffeeCupsDaily = max(0, viewModel.coffeeCupsDaily - 1)
@@ -44,12 +39,11 @@ struct CaffeineScreen: View {
                         }
                     )
 
-                    Spacer().frame(height: DesignTokens.spacing12)
-
                     // Tea stepper
-                    stepperRow(
+                    stepperCard(
                         label: "Tea",
                         count: viewModel.teaCupsDaily,
+                        isActive: viewModel.teaCupsDaily > 0,
                         onDecrement: {
                             HapticManager.selection()
                             viewModel.teaCupsDaily = max(0, viewModel.teaCupsDaily - 1)
@@ -57,6 +51,21 @@ struct CaffeineScreen: View {
                         onIncrement: {
                             HapticManager.selection()
                             viewModel.teaCupsDaily += 1
+                        }
+                    )
+
+                    // Energy drink stepper
+                    stepperCard(
+                        label: "Energy Drink",
+                        count: viewModel.energyDrinksDaily,
+                        isActive: viewModel.energyDrinksDaily > 0,
+                        onDecrement: {
+                            HapticManager.selection()
+                            viewModel.energyDrinksDaily = max(0, viewModel.energyDrinksDaily - 1)
+                        },
+                        onIncrement: {
+                            HapticManager.selection()
+                            viewModel.energyDrinksDaily += 1
                         }
                     )
                 }
@@ -78,6 +87,7 @@ struct CaffeineScreen: View {
             HapticManager.selection()
             viewModel.coffeeCupsDaily = 0
             viewModel.teaCupsDaily = 0
+            viewModel.energyDrinksDaily = 0
         } label: {
             Text("None")
                 .font(DesignTokens.bodyFont)
@@ -85,31 +95,29 @@ struct CaffeineScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 56)
                 .padding(.horizontal, DesignTokens.spacing16)
-                .background(isNone ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+                .background(isNone ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(
-                            isNone ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                            lineWidth: 1
-                        )
+                        .stroke(isNone ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isNone ? 1.5 : 1)
                 )
         }
     }
 
-    // MARK: - Stepper Row
+    // MARK: - Stepper Card
 
     @ViewBuilder
-    private func stepperRow(
+    private func stepperCard(
         label: String,
         count: Int,
+        isActive: Bool,
         onDecrement: @escaping () -> Void,
         onIncrement: @escaping () -> Void
     ) -> some View {
         HStack(spacing: 0) {
             Text(label)
                 .font(DesignTokens.bodyFont)
-                .foregroundStyle(DesignTokens.textPrimary)
+                .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textSecondary)
 
             Spacer()
 
@@ -157,6 +165,12 @@ struct CaffeineScreen: View {
         }
         .frame(height: 56)
         .padding(.horizontal, DesignTokens.spacing16)
+        .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
+        )
     }
 }
 

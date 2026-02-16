@@ -40,14 +40,14 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.insights)
 
-            SettingsPlaceholderScreen()
+            SettingsScreen()
                 .tabItem {
                     Label(AppTab.settings.label, systemImage: AppTab.settings.icon)
                 }
                 .tag(AppTab.settings)
         }
-        .tint(DesignTokens.info)
-        .preferredColorScheme(.dark)
+        .tint(DesignTokens.positive)
+        .preferredColorScheme(.light)
         .fullScreenCover(isPresented: $state.showPaywall) {
             PaywallScreen(
                 viewModel: Self.paywallViewModel(from: appState),

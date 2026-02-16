@@ -19,6 +19,10 @@ protocol DataStore {
 
     func saveInsights(_ insights: [Insight]) throws
     func getInsights() throws -> [Insight]
+
+    func saveDeepProfileModule(_ module: DeepProfileModule) throws
+    func getDeepProfileModules() throws -> [DeepProfileModule]
+    func deleteDeepProfileModule(_ moduleId: DeepProfileModuleType) throws
 }
 
 // Default parameter

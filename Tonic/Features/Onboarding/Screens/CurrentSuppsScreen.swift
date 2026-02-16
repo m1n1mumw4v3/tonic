@@ -106,7 +106,7 @@ struct CurrentSuppsScreen: View {
                     if showError {
                         Text("Please add your supplements above, or select 'No' if you're not currently taking any.")
                             .font(DesignTokens.captionFont)
-                            .foregroundStyle(Color(hex: "#FF6B6B"))
+                            .foregroundStyle(DesignTokens.negative)
                             .multilineTextAlignment(.center)
                             .transition(.opacity.combined(with: .move(edge: .bottom)))
                     }
@@ -162,14 +162,11 @@ struct CurrentSuppsScreen: View {
                 .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textSecondary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(isActive ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+                .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(
-                            isActive ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                            lineWidth: isActive ? 1.5 : 1
-                        )
+                        .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
                 )
         }
     }

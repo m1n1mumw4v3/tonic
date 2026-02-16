@@ -1,37 +1,43 @@
 import SwiftUI
 
 // MARK: - Design Tokens
-// All colors, typography, spacing, and corner radii from the Tonic design system.
+// All colors, typography, spacing, and corner radii from the Ample design system.
 
 enum DesignTokens {
 
     // MARK: - Backgrounds
-    static let bgDeepest    = Color(hex: "#0E1025")
-    static let bgSurface    = Color(hex: "#141733")
-    static let bgElevated   = Color(hex: "#1B1F42")
+    static let bgDeepest    = Color(hex: "#FAF8F3")
+    static let bgSurface    = Color(hex: "#F2EFE8")
+    static let bgElevated   = Color(hex: "#EBE7DF")
 
     // MARK: - Text
-    static let textPrimary   = Color(hex: "#E2E8F0")
-    static let textSecondary = Color(hex: "#8E9BB5")
-    static let textTertiary  = Color(hex: "#4A5274")
+    static let textPrimary   = Color(hex: "#1C1E17")
+    static let textSecondary = Color(hex: "#6B6E63")
+    static let textTertiary  = Color(hex: "#A3A69B")
 
     // MARK: - Borders
-    static let borderDefault = Color(hex: "#1F2347")
-    static let borderSubtle  = Color(hex: "#181C3A")
+    static let borderDefault = Color(hex: "#D9D5CC")
+    static let borderSubtle  = Color(hex: "#E5E1D9")
 
     // MARK: - Dimension Accents
-    static let accentSleep   = Color(hex: "#C792EA")
-    static let accentEnergy  = Color(hex: "#FFCB6B")
-    static let accentClarity = Color(hex: "#82AAFF")
-    static let accentMood    = Color(hex: "#F78C6C")
-    static let accentGut     = Color(hex: "#C3E88D")
-    static let accentLongevity = Color(hex: "#80CBC4")
-    static let accentSkin      = Color(hex: "#FF80CB")
+    static let accentSleep   = Color(hex: "#7B2D8E")
+    static let accentEnergy  = Color(hex: "#E8C94A")
+    static let accentClarity = Color(hex: "#4A8FC2")
+    static let accentMood    = Color(hex: "#D4A017")
+    static let accentGut     = Color(hex: "#B8C234")
+    static let accentLongevity = Color(hex: "#2E9E9E")
+    static let accentSkin      = Color(hex: "#C94277")
+
+    // MARK: - Goal Accents
+    static let accentMuscle    = Color(hex: "#3B5E3B")
+    static let accentHeart     = Color(hex: "#D94040")
+    static let accentImmunity  = Color(hex: "#1A6B6A")
+    static let accentTerracotta = Color(hex: "#B07156")
 
     // MARK: - Functional
-    static let positive = Color(hex: "#7FE0A0")
-    static let negative = Color(hex: "#FF5572")
-    static let info     = Color(hex: "#89DDFF")
+    static let positive = Color(hex: "#2E9E9E")
+    static let negative = Color(hex: "#D94040")
+    static let info     = Color(hex: "#4A8FC2")
 
     // MARK: - Typography
     static let displayFont   = Font.custom("Geist-Light", size: 32)

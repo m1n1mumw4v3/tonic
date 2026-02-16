@@ -41,7 +41,7 @@ struct ValuePropProblemScreen: View {
 
                 // Headline
                 VStack(alignment: .leading, spacing: DesignTokens.spacing32) {
-                    (Text("92% of people are deficient in at least one essential vitamin or mineral. ")
+                    (Text("Did you know: 92% of people are deficient in at least one essential vitamin or mineral. ")
                         .font(.custom("Geist-Light", size: 22))
                         .foregroundStyle(DesignTokens.textPrimary)
                     + Text("(Source: The Journal of Nutrition)")

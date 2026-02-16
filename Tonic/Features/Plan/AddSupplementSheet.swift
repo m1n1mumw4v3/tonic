@@ -21,13 +21,13 @@ class AddSupplementViewModel {
 
         let userGoalKeys = Set(profile.healthGoals.map(\.rawValue))
 
-        // Score all KB supplements by goal overlap
+        // Score all KB supplements by evidence weight
         var scored: [(supplement: Supplement, score: Int)] = []
         for supplement in SupplementKnowledgeBase.allSupplements {
-            let goalOverlap = userGoalKeys.filter { goalKey in
-                SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains(supplement.name) == true
-            }.count
-            scored.append((supplement, goalOverlap))
+            let weightedScore = userGoalKeys.reduce(0) { sum, goalKey in
+                sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
+            }
+            scored.append((supplement, weightedScore))
         }
 
         // Split into recommended (score > 0) and other (score == 0)
@@ -47,7 +47,7 @@ class AddSupplementViewModel {
     func matchedGoals(for supplement: Supplement, profile: UserProfile) -> [HealthGoal] {
         let userGoalKeys = Set(profile.healthGoals.map(\.rawValue))
         let matched = userGoalKeys.filter { goalKey in
-            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains(supplement.name) == true
+            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
         }
         return profile.healthGoals.filter { matched.contains($0.rawValue) }
     }

@@ -10,6 +10,7 @@ class AppState {
     var todayCheckIn: DailyCheckIn?
     var recentCheckIns: [DailyCheckIn] = []
     var insights: [Insight] = []
+    var deepProfileService = DeepProfileService()
 
     // Navigation
     var selectedTab: AppTab = .home
@@ -151,6 +152,9 @@ class AppState {
                 dataPointsUsed: 7
             ),
         ]
+
+        // Load deep profile state
+        deepProfileService.loadCompletedModules()
 
         // Mark onboarding complete so MainTabView shows
         isOnboardingComplete = true

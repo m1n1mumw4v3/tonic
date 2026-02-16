@@ -32,6 +32,7 @@ class BaselineProfileViewModel {
     var exerciseFrequency: ExerciseFrequency
     var coffeeCupsDaily: Int
     var teaCupsDaily: Int
+    var energyDrinksDaily: Int
     var alcoholWeekly: AlcoholIntake
     var stressLevel: StressLevel
 
@@ -41,6 +42,10 @@ class BaselineProfileViewModel {
     var baselineClarity: Double
     var baselineMood: Double
     var baselineGut: Double
+
+    var isAtGoalLimit: Bool {
+        healthGoals.count >= HealthGoal.maxSelection
+    }
 
     // Original snapshot for change detection
     private let original: UserProfile
@@ -91,6 +96,7 @@ class BaselineProfileViewModel {
         exerciseFrequency = profile.exerciseFrequency
         coffeeCupsDaily = profile.coffeeCupsDaily
         teaCupsDaily = profile.teaCupsDaily
+        energyDrinksDaily = profile.energyDrinksDaily
         alcoholWeekly = profile.alcoholWeekly
         stressLevel = profile.stressLevel
 
@@ -156,6 +162,7 @@ class BaselineProfileViewModel {
         profile.exerciseFrequency = exerciseFrequency
         profile.coffeeCupsDaily = coffeeCupsDaily
         profile.teaCupsDaily = teaCupsDaily
+        profile.energyDrinksDaily = energyDrinksDaily
         profile.alcoholWeekly = alcoholWeekly
         profile.stressLevel = stressLevel
 
@@ -187,6 +194,7 @@ class BaselineProfileViewModel {
             || updated.exerciseFrequency != original.exerciseFrequency
             || updated.coffeeCupsDaily != original.coffeeCupsDaily
             || updated.teaCupsDaily != original.teaCupsDaily
+            || updated.energyDrinksDaily != original.energyDrinksDaily
             || updated.alcoholWeekly != original.alcoholWeekly
             || updated.stressLevel != original.stressLevel
             || updated.baselineSleep != original.baselineSleep

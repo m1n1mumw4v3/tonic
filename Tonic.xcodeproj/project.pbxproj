@@ -18,6 +18,7 @@
 		093FC92B278E4F4649ACB8C8 /* HeadlineText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B912E54BA9425B931F54F07 /* HeadlineText.swift */; };
 		094726826B5EDB6E699BB38F /* ValuePropComplexityScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F43CC39A42CA8530D81782C /* ValuePropComplexityScreen.swift */; };
 		095FC07811BF60252CD68F60 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 979FFF2EED899300A1D85404 /* Extensions.swift */; };
+		096F2E207F5119D2AAD7CD18 /* CompactProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D0FA0765FB6E421538B028 /* CompactProgressRing.swift */; };
 		09A53F614300A00966B12C1B /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED18AA6664C75F9BE26F751F /* OnboardingFlow.swift */; };
 		0B37DD2417B97433E0023071 /* Insight.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF51FAB43DEAD4AFBEA40C8E /* Insight.swift */; };
 		0DBD804AE028B2E7F6AF7954 /* InsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE88964207A2AED6C269B375 /* InsightCard.swift */; };
@@ -213,6 +214,7 @@
 		A5541A45C4B5D8788A19AAAD /* GutHealthModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GutHealthModule.swift; sourceTree = "<group>"; };
 		A6B187670B2873874FE34301 /* RemovableChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovableChip.swift; sourceTree = "<group>"; };
 		A6B331052949C19C3C3F2971 /* Tonic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tonic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8D0FA0765FB6E421538B028 /* CompactProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactProgressRing.swift; sourceTree = "<group>"; };
 		AA18F18148B26992F66D6089 /* BaselineProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineProfileSheet.swift; sourceTree = "<group>"; };
 		AA7845270BE43C638D6535BB /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngine.swift; sourceTree = "<group>"; };
 		AB2B1995B341C5B4B5F9829B /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
@@ -587,6 +589,7 @@
 			isa = PBXGroup;
 			children = (
 				6804E73E9BC5DD3499EC117F /* CompactInsightCard.swift */,
+				A8D0FA0765FB6E421538B028 /* CompactProgressRing.swift */,
 				CD7CBB5A0533E8DCD5579297 /* CTAButton.swift */,
 				D7FA2B6E520D932B3524287E /* DiscoveryCard.swift */,
 				8BB705030B5D751572C8AFEE /* DiscoveryCarousel.swift */,
@@ -739,6 +742,7 @@
 				C952A7F63496CFC750E452AD /* CheckInViewModel.swift in Sources */,
 				0E1EC81ABC025918152F7BB8 /* CognitiveFunctionModule.swift in Sources */,
 				F23A8AAB7D9B90630DB9729F /* CompactInsightCard.swift in Sources */,
+				096F2E207F5119D2AAD7CD18 /* CompactProgressRing.swift in Sources */,
 				E2A32596C8BE951396979E12 /* ContentView.swift in Sources */,
 				F7D3FF27D2839FF75412B495 /* CurrentSuppsScreen.swift in Sources */,
 				A29B538E7B4E61A3347CA544 /* DailyCheckIn.swift in Sources */,
@@ -863,6 +867,8 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tonic.app;
+				PRODUCT_MODULE_NAME = Tonic;
+				PRODUCT_NAME = Ample;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -938,7 +944,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tonic.TonicTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tonic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tonic";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ample";
 			};
 			name = Release;
 		};
@@ -955,6 +961,8 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tonic.app;
+				PRODUCT_MODULE_NAME = Tonic;
+				PRODUCT_NAME = Ample;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1037,7 +1045,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tonic.TonicTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tonic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tonic";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ample";
 			};
 			name = Debug;
 		};

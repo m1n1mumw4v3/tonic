@@ -11,6 +11,7 @@ class LocalStorageService: DataStore {
         static let checkIns = "tonic_check_ins"
         static let streak = "tonic_streak"
         static let insights = "tonic_insights"
+        static let deepProfile = "tonic_deep_profile"
     }
 
     // MARK: - Profile
@@ -96,5 +97,33 @@ class LocalStorageService: DataStore {
     func getInsights() throws -> [Insight] {
         guard let data = defaults.data(forKey: Keys.insights) else { return [] }
         return try decoder.decode([Insight].self, from: data)
+    }
+
+    // MARK: - Deep Profile
+
+    func saveDeepProfileModule(_ module: DeepProfileModule) throws {
+        var modules = (try? getDeepProfileModules()) ?? []
+
+        // Replace if same module type exists
+        if let index = modules.firstIndex(where: { $0.moduleId == module.moduleId }) {
+            modules[index] = module
+        } else {
+            modules.append(module)
+        }
+
+        let data = try encoder.encode(modules)
+        defaults.set(data, forKey: Keys.deepProfile)
+    }
+
+    func getDeepProfileModules() throws -> [DeepProfileModule] {
+        guard let data = defaults.data(forKey: Keys.deepProfile) else { return [] }
+        return try decoder.decode([DeepProfileModule].self, from: data)
+    }
+
+    func deleteDeepProfileModule(_ moduleId: DeepProfileModuleType) throws {
+        var modules = (try? getDeepProfileModules()) ?? []
+        modules.removeAll { $0.moduleId == moduleId }
+        let data = try encoder.encode(modules)
+        defaults.set(data, forKey: Keys.deepProfile)
     }
 }

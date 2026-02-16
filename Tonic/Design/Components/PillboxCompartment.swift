@@ -53,7 +53,7 @@ struct PillboxCompartment: View {
                         .overlay(
                             Image(systemName: "checkmark")
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(DesignTokens.bgDeepest)
                         )
                         .offset(x: 14, y: -16)
                         .transition(.scale.combined(with: .opacity))
@@ -75,7 +75,7 @@ struct PillboxCompartment: View {
             accent: accent,
             glowOpacity: glowOpacity
         ))
-        .shadow(color: .black.opacity(0.25), radius: 3, y: 2)
+        .shadow(color: .black.opacity(0.04), radius: 3, y: 2)
     }
 
     // MARK: - Icon Circle
@@ -99,7 +99,6 @@ struct PillboxCompartment: View {
                 .font(pixelFont(for: text))
                 .foregroundStyle(accent)
         case .sfSymbol(let name):
-            // Graceful fallback: if the SF Symbol doesn't exist, use pill.fill
             if UIImage(systemName: name) != nil {
                 Image(systemName: name)
                     .font(.system(size: 20))
@@ -128,20 +127,17 @@ struct PillboxCompartment: View {
     private func triggerTakenAnimation() {
         HapticManager.impact(.medium)
 
-        // Scale squish
         isPressed = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
             isPressed = false
         }
 
-        // Checkmark
         withAnimation(.spring(duration: 0.35, bounce: 0.6)) {
             showCheckmark = true
         }
 
-        // Glow pulse
         withAnimation(.easeOut(duration: 0.5)) {
-            glowOpacity = 0.2
+            glowOpacity = 0.15
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             withAnimation(.easeOut(duration: 0.3)) {
@@ -153,17 +149,14 @@ struct PillboxCompartment: View {
     private func triggerUntakenAnimation() {
         HapticManager.impact(.light)
 
-        // Remove checkmark
         withAnimation(.spring(duration: 0.25, bounce: 0.3)) {
             showCheckmark = false
         }
     }
 
-    // MARK: - Celebration Glow (called externally via preference key or binding)
-
     func triggerCelebrationGlow() {
         withAnimation(.easeOut(duration: 0.4)) {
-            glowOpacity = 0.25
+            glowOpacity = 0.2
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             withAnimation(.easeOut(duration: 0.3)) {
@@ -175,8 +168,6 @@ struct PillboxCompartment: View {
 
 // MARK: - Well Material Modifier
 
-/// Encapsulates the multi-layer material for each compartment well.
-/// Extracted as a ViewModifier to help the Swift type checker with the complex body expression.
 private struct WellMaterialModifier: ViewModifier {
     let isTaken: Bool
     let accent: Color
@@ -184,15 +175,8 @@ private struct WellMaterialModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            // 1. Base dark elevated surface
             .background(wellBackground)
-            // 2. Top inner shadow
-            .overlay(topShadowOverlay)
-            // 3. Left/right edge shadow — concave curvature
-            .overlay(edgeShadowOverlay)
-            // 4. Border stroke
             .overlay(chamferOverlay)
-            // 5. Radial glow pulse
             .overlay(glowOverlay)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
     }
@@ -200,7 +184,7 @@ private struct WellMaterialModifier: ViewModifier {
     private var wellBackground: some View {
         ZStack {
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .fill(DesignTokens.bgElevated)
+                .fill(DesignTokens.bgDeepest)
             if isTaken {
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                     .fill(accent.opacity(0.10))
@@ -208,54 +192,10 @@ private struct WellMaterialModifier: ViewModifier {
         }
     }
 
-    private var topShadowOverlay: some View {
-        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-            .fill(
-                LinearGradient(
-                    stops: [
-                        .init(color: Color.black.opacity(0.2), location: 0),
-                        .init(color: Color.black.opacity(0.05), location: 0.08),
-                        .init(color: .clear, location: 0.15),
-                        .init(color: .clear, location: 1),
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-    }
-
-    private var edgeShadowOverlay: some View {
-        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-            .fill(
-                LinearGradient(
-                    stops: [
-                        .init(color: .black.opacity(0.10), location: 0),
-                        .init(color: .clear, location: 0.2),
-                        .init(color: .clear, location: 0.8),
-                        .init(color: .black.opacity(0.10), location: 1),
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-    }
-
     private var chamferOverlay: some View {
         RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
             .stroke(
-                isTaken
-                ? AnyShapeStyle(accent.opacity(0.30))
-                : AnyShapeStyle(
-                    LinearGradient(
-                        stops: [
-                            .init(color: Color.white.opacity(0.10), location: 0),
-                            .init(color: Color.white.opacity(0.06), location: 0.3),
-                            .init(color: Color.white.opacity(0.06), location: 1),
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                ),
+                isTaken ? accent.opacity(0.30) : DesignTokens.borderDefault,
                 lineWidth: 1
             )
     }

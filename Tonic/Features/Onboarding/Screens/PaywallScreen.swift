@@ -8,7 +8,6 @@ struct PaywallScreen: View {
 
     // MARK: - Animation State
 
-    @State private var showBackground = false
     @State private var showRestore = false
     @State private var showHeadline = false
     @State private var showSubtitle = false
@@ -17,13 +16,12 @@ struct PaywallScreen: View {
     @State private var visibleTimelineNodes: Int = 0
     @State private var showPricing = false
     @State private var showCTA = false
-    @State private var particles: [PaywallParticle] = []
 
     // MARK: - Interaction State
 
     @State private var selectedPlan: PricingPlan = .annual
     @State private var showAllPlans: Bool = false
-    @State private var isFirstCardExpanded: Bool = false
+    @State private var expandedCardID: UUID? = nil
 
     private let reduceMotion = UIAccessibility.isReduceMotionEnabled
 
@@ -34,11 +32,6 @@ struct PaywallScreen: View {
         return name.isEmpty ? "friend" : name
     }
 
-    private var goalSubtitle: String {
-        let count = viewModel.healthGoals.count
-        guard count > 0 else { return "Based on your health profile." }
-        return "Based on your health profile and \(count) \(count == 1 ? "goal" : "goals")."
-    }
 
     private var supplements: [PlanSupplement] {
         viewModel.generatedPlan?.supplements.filter(\.isIncluded) ?? []
@@ -61,6 +54,33 @@ struct PaywallScreen: View {
         return max(supplements.count - shown, 0)
     }
 
+    private var hiddenGoalLabels: [String] {
+        let shownIDs = Set(teaserSupplements.map(\.id) + [peekSupplement?.id].compactMap { $0 })
+        let hiddenSupplements = supplements.filter { !shownIDs.contains($0.id) }
+        let allHiddenGoalRaws = Set(hiddenSupplements.flatMap(\.matchedGoals))
+        let userGoals = Array(viewModel.healthGoals)
+        return userGoals
+            .filter { allHiddenGoalRaws.contains($0.rawValue) }
+            .map(\.shortLabel)
+    }
+
+    private var hiddenGoalsCopy: String {
+        let count = remainingCount
+        let labels = hiddenGoalLabels
+        let goalText: String
+        if labels.count > 2 {
+            let allButLast = labels.dropLast().joined(separator: ", ")
+            goalText = "\(allButLast), and \(labels.last!)"
+        } else if labels.count == 2 {
+            goalText = "\(labels[0]) and \(labels[1])"
+        } else if let single = labels.first {
+            goalText = single
+        } else {
+            return "\(count) more supplements"
+        }
+        return "\(count) supplements targeting your \(goalText) goals"
+    }
+
     private var ctaSubtext: String {
         switch selectedPlan {
         case .annual:
@@ -77,10 +97,6 @@ struct PaywallScreen: View {
     var body: some View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
-
-            // Background particles
-            particleField
-                .opacity(showBackground ? 1 : 0)
 
             VStack(spacing: 0) {
                 // Top bar — restore only
@@ -100,20 +116,17 @@ struct PaywallScreen: View {
                         // B. Supplement Teaser
                         supplementTeaserSection
 
-                        // C. Value Proposition Checklist
-                        benefitsSection
-
-                        // C2. Social Proof
-                        socialProofSection
-
-                        // D. Trial Timeline
+                        // C. Trial Timeline
                         trialTimelineSection
+
+                        // D. Value Proposition Checklist
+                        benefitsSection
 
                         // E. Pricing Section
                         pricingSection
 
                         // F. Bottom spacer for CTA clearance
-                        Spacer().frame(height: 120)
+                        Spacer().frame(height: 40)
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
                 }
@@ -123,7 +136,6 @@ struct PaywallScreen: View {
             }
         }
         .onAppear {
-            generateParticles()
             startEntranceAnimation()
         }
     }
@@ -164,11 +176,6 @@ struct PaywallScreen: View {
             .opacity(showHeadline ? 1 : 0)
             .offset(y: showHeadline || reduceMotion ? 0 : 12)
 
-            Text(goalSubtitle)
-                .font(DesignTokens.captionFont)
-                .foregroundStyle(DesignTokens.textSecondary)
-                .multilineTextAlignment(.center)
-                .opacity(showSubtitle ? 1 : 0)
         }
     }
 
@@ -176,32 +183,26 @@ struct PaywallScreen: View {
 
     private var supplementTeaserSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-            Text("YOUR PLAN INCLUDES")
+            Text("YOUR PLAN")
                 .font(DesignTokens.sectionHeader)
                 .foregroundStyle(DesignTokens.textPrimary)
                 .tracking(1.2)
                 .opacity(visibleTeaserCards > 0 ? 1 : 0)
 
             ForEach(Array(teaserSupplements.enumerated()), id: \.element.id) { index, supplement in
-                if index == 0 {
-                    SupplementTeaserCard(
-                        supplement: supplement,
-                        isExpandable: true,
-                        isExpanded: isFirstCardExpanded,
-                        userGoals: Array(viewModel.healthGoals),
-                        onTap: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                isFirstCardExpanded.toggle()
-                            }
+                SupplementTeaserCard(
+                    supplement: supplement,
+                    isExpandable: true,
+                    isExpanded: expandedCardID == supplement.id,
+                    userGoals: Array(viewModel.healthGoals),
+                    onTap: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            expandedCardID = expandedCardID == supplement.id ? nil : supplement.id
                         }
-                    )
-                    .opacity(index < visibleTeaserCards ? 1 : 0)
-                    .offset(y: index < visibleTeaserCards || reduceMotion ? 0 : 8)
-                } else {
-                    SupplementTeaserCard(supplement: supplement, userGoals: Array(viewModel.healthGoals))
-                        .opacity(index < visibleTeaserCards ? 1 : 0)
-                        .offset(y: index < visibleTeaserCards || reduceMotion ? 0 : 8)
-                }
+                    }
+                )
+                .opacity(index < visibleTeaserCards ? 1 : 0)
+                .offset(y: index < visibleTeaserCards || reduceMotion ? 0 : 8)
             }
 
             if let peek = peekSupplement {
@@ -220,21 +221,26 @@ struct PaywallScreen: View {
             }
 
             if remainingCount > 0 {
-                HStack(spacing: DesignTokens.spacing4) {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 10))
-                    Text("+ \(remainingCount) more supplements")
-                        .font(DesignTokens.labelMono)
+                HStack {
+                    Spacer()
+                    HStack(alignment: .center, spacing: 6) {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 11))
+                        Text(hiddenGoalsCopy)
+                            .font(DesignTokens.labelMono)
+                            .lineSpacing(0)
+                    }
+                    .foregroundStyle(DesignTokens.accentImmunity)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(DesignTokens.accentImmunity.opacity(0.06))
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(DesignTokens.accentImmunity.opacity(0.2), lineWidth: 1)
+                    )
+                    Spacer()
                 }
-                .foregroundStyle(DesignTokens.positive)
-                .padding(.horizontal, DesignTokens.spacing12)
-                .padding(.vertical, 6)
-                .background(DesignTokens.positive.opacity(0.12))
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(DesignTokens.positive.opacity(0.4), lineWidth: 1)
-                )
                 .opacity(visibleTeaserCards >= teaserSupplements.count ? 1 : 0)
             }
         }
@@ -262,7 +268,7 @@ struct PaywallScreen: View {
         HStack(alignment: .top, spacing: DesignTokens.spacing12) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(DesignTokens.info)
+                .foregroundStyle(DesignTokens.textPrimary)
                 .frame(width: 28, height: 28)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -276,23 +282,7 @@ struct PaywallScreen: View {
         }
     }
 
-    // MARK: - Social Proof
 
-    private var socialProofSection: some View {
-        HStack(spacing: DesignTokens.spacing4) {
-            ForEach(0..<5, id: \.self) { _ in
-                Image(systemName: "star.fill")
-                    .font(.system(size: 12))
-                    .foregroundStyle(DesignTokens.accentEnergy)
-            }
-            Text("4.9 on the App Store")
-                .font(DesignTokens.captionFont)
-                .foregroundStyle(DesignTokens.textSecondary)
-                .padding(.leading, DesignTokens.spacing4)
-        }
-        .frame(maxWidth: .infinity)
-        .opacity(visibleBenefitRows >= Self.benefits.count ? 1 : 0)
-    }
 
     // MARK: - Trial Timeline
 
@@ -366,9 +356,22 @@ struct PaywallScreen: View {
                 .font(DesignTokens.titleFont)
                 .foregroundStyle(DesignTokens.textPrimary)
 
-            Text("billed annually as $79.99")
-                .font(DesignTokens.captionFont)
-                .foregroundStyle(DesignTokens.textSecondary)
+            HStack(spacing: 4) {
+                Text("Billed annually as")
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textSecondary)
+                Text("$155.88")
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textSecondary)
+                    .overlay(
+                        Rectangle()
+                            .fill(DesignTokens.textSecondary)
+                            .frame(height: 1.5)
+                    )
+                Text("$79.99")
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textSecondary)
+            }
 
             Text("7-day free trial included")
                 .font(DesignTokens.captionFont)
@@ -398,7 +401,7 @@ struct PaywallScreen: View {
 
             VStack(spacing: DesignTokens.spacing8) {
                 CTAButton(
-                    title: "Unlock My Plan",
+                    title: "Start My Free Trial",
                     style: .primary,
                     action: onSubscribe,
                     spectrumBorder: true
@@ -440,11 +443,6 @@ struct PaywallScreen: View {
 
     private func startEntranceAnimation() {
         let fadeDuration: Double = reduceMotion ? 0.15 : 0.4
-
-        // 0.0s: Background particles
-        withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.3)) {
-            showBackground = true
-        }
 
         // 0.2s: Restore button
         DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.05 : 0.2)) {
@@ -512,55 +510,6 @@ struct PaywallScreen: View {
         }
     }
 
-    // MARK: - Particles
-
-    private struct PaywallParticle: Identifiable {
-        let id = UUID()
-        var x: CGFloat
-        var y: CGFloat
-        var size: CGFloat
-        var opacity: Double
-        var duration: Double
-        var color: Color
-    }
-
-    private static let spectrumColors: [Color] = [
-        DesignTokens.accentSleep,
-        DesignTokens.accentEnergy,
-        DesignTokens.accentClarity,
-        DesignTokens.accentMood,
-        DesignTokens.accentGut
-    ]
-
-    private func generateParticles() {
-        particles = (0..<12).map { _ in
-            PaywallParticle(
-                x: CGFloat.random(in: 0...1),
-                y: CGFloat.random(in: 0...1),
-                size: CGFloat.random(in: 2...5),
-                opacity: Double.random(in: 0.08...0.2),
-                duration: Double.random(in: 4...8),
-                color: Self.spectrumColors.randomElement()!
-            )
-        }
-    }
-
-    private var particleField: some View {
-        GeometryReader { geometry in
-            ForEach(particles) { particle in
-                Circle()
-                    .fill(particle.color)
-                    .frame(width: particle.size, height: particle.size)
-                    .position(
-                        x: particle.x * geometry.size.width,
-                        y: particle.y * geometry.size.height
-                    )
-                    .opacity(particle.opacity)
-                    .modifier(PaywallPulseModifier(duration: particle.duration))
-            }
-        }
-        .ignoresSafeArea()
-    }
 }
 
 // MARK: - Pricing Plan
@@ -721,9 +670,9 @@ private struct TrialTimelineView: View {
     let reduceMotion: Bool
 
     private let nodes: [(day: String, title: String, subtitle: String)] = [
-        ("TODAY", "FREE", "Get instant access to everything"),
-        ("DAY 5", "", "We'll send you a reminder"),
-        ("DAY 7", "", "Billing begins — cancel anytime before")
+        ("TODAY", "FREE", "Get instant access to all premium features"),
+        ("DAY 5", "", "We'll send you a friendly reminder"),
+        ("DAY 7", "", "Billing begins — cancel anytime prior with no charge")
     ]
 
     var body: some View {
@@ -735,12 +684,14 @@ private struct TrialTimelineView: View {
                         timelineNode(index: index)
                         if index < nodes.count - 1 {
                             Rectangle()
-                                .fill(DesignTokens.borderDefault)
-                                .frame(width: 1)
-                                .frame(height: 32)
+                                .fill(DesignTokens.textTertiary)
+                                .frame(width: 1.5)
+                                .frame(maxHeight: .infinity)
+                                .padding(.vertical, 3)
                         }
                     }
                     .frame(width: 24)
+                    .padding(.top, 2)
 
                     // Content
                     VStack(alignment: .leading, spacing: 2) {
@@ -778,20 +729,14 @@ private struct TrialTimelineView: View {
     @ViewBuilder
     private func timelineNode(index: Int) -> some View {
         if index == 0 {
-            // Today: filled spectrum gradient
+            // Today: filled chartreuse
             Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [DesignTokens.accentSleep, DesignTokens.accentEnergy, DesignTokens.accentClarity],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(DesignTokens.accentGut)
                 .frame(width: 14, height: 14)
         } else if index == 1 {
-            // Day 5: outlined accent
+            // Day 5: outlined chartreuse
             Circle()
-                .stroke(DesignTokens.accentEnergy, lineWidth: 1.5)
+                .stroke(DesignTokens.accentGut, lineWidth: 1.5)
                 .frame(width: 14, height: 14)
         } else {
             // Day 7: outlined tertiary
@@ -833,8 +778,8 @@ private struct SupplementTeaserCard: View {
 
     private var cardBody: some View {
         VStack(spacing: 0) {
-            // Collapsed: name + dosage + timing
-            HStack(spacing: DesignTokens.spacing12) {
+            // Collapsed: name + goals top row, dosage below
+            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(supplement.name)
                         .font(.custom("Geist-SemiBold", size: 15))
@@ -855,6 +800,21 @@ private struct SupplementTeaserCard: View {
                 }
 
                 Spacer()
+
+                if !matchedHealthGoals.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(matchedHealthGoals) { goal in
+                            Text(goal.shortLabel)
+                                .font(DesignTokens.smallMono)
+                                .foregroundStyle(goal.accentColor)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(goal.accentColor.opacity(0.12))
+                                .clipShape(Capsule())
+                        }
+                    }
+                    .padding(.top, 2)
+                }
             }
 
             // Expanded content (only for expandable cards)
@@ -864,29 +824,6 @@ private struct SupplementTeaserCard: View {
                         .fill(DesignTokens.borderSubtle)
                         .frame(height: 1)
                         .padding(.top, DesignTokens.spacing4)
-
-                    // Goal tags
-                    if !matchedHealthGoals.isEmpty {
-                        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
-                            Image(systemName: "scope")
-                                .font(.system(size: 12))
-                                .foregroundStyle(DesignTokens.textTertiary)
-                                .frame(width: 18, alignment: .center)
-                                .padding(.top, 3)
-
-                            FlowLayout(spacing: 6) {
-                                ForEach(matchedHealthGoals) { goal in
-                                    Text(goal.shortLabel)
-                                        .font(DesignTokens.smallMono)
-                                        .foregroundStyle(goal.accentColor)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 3)
-                                        .background(goal.accentColor.opacity(0.12))
-                                        .clipShape(Capsule())
-                                }
-                            }
-                        }
-                    }
 
                     // Research note
                     if let note = supplement.researchNote, !note.isEmpty {
@@ -970,26 +907,7 @@ private struct SupplementTeaserCard: View {
                 .frame(width: 4)
             }
         }
-    }
-}
-
-// MARK: - Pulse Animation
-
-private struct PaywallPulseModifier: ViewModifier {
-    let duration: Double
-    @State private var isAnimating = false
-
-    func body(content: Content) -> some View {
-        content
-            .opacity(isAnimating ? 1.0 : 0.2)
-            .scaleEffect(isAnimating ? 1.3 : 0.8)
-            .animation(
-                .easeInOut(duration: duration).repeatForever(autoreverses: true),
-                value: isAnimating
-            )
-            .onAppear {
-                isAnimating = true
-            }
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
     }
 }
 

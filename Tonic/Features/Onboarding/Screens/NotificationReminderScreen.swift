@@ -126,12 +126,12 @@ struct NotificationReminderScreen: View {
                         .fill(DesignTokens.bgSurface)
                         .frame(width: 24, height: 24)
                         .overlay(
-                            Text("T")
+                            Text("A")
                                 .font(DesignTokens.pixelIconSmall)
                                 .foregroundStyle(DesignTokens.accentClarity)
                         )
 
-                    Text("Tonic")
+                    Text("Ample")
                         .font(DesignTokens.bodyFont.bold())
                         .foregroundStyle(DesignTokens.textPrimary)
 
@@ -152,21 +152,21 @@ struct NotificationReminderScreen: View {
             .padding(.horizontal, 12)
 
             Spacer()
-                .frame(height: 20)
+                .frame(height: 10)
         }
         .frame(maxWidth: .infinity)
         .background(
             LinearGradient(
                 colors: [
                     DesignTokens.bgSurface.opacity(0.6),
-                    DesignTokens.bgDeepest.opacity(0.8)
+                    Color.clear
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 28))
         )
-        .shadow(color: .black.opacity(0.3), radius: 16, y: 4)
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 2)
         // Extend the side lines down to meet the morning card
         .padding(.bottom, DesignTokens.spacing24)
         .overlay(
@@ -276,7 +276,7 @@ struct NotificationReminderScreen: View {
                 DatePicker("", selection: time, displayedComponents: .hourAndMinute)
                     .datePickerStyle(.wheel)
                     .labelsHidden()
-                    .colorScheme(.dark)
+                    .colorScheme(.light)
                     .padding(.horizontal, DesignTokens.spacing16)
                     .padding(.vertical, DesignTokens.spacing8)
                     .onChange(of: time.wrappedValue) {

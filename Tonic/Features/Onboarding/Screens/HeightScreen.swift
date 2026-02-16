@@ -59,23 +59,10 @@ struct HeightScreen: View {
 
                 Spacer()
 
-                VStack(spacing: DesignTokens.spacing8) {
-                    CTAButton(title: "Next", style: .primary) {
-                        syncToViewModel()
-                        viewModel.includeHeight = true
-                        onContinue()
-                    }
-
-                    Button {
-                        viewModel.includeHeight = false
-                        onContinue()
-                    } label: {
-                        Text("Skip")
-                            .font(DesignTokens.bodyFont)
-                            .foregroundStyle(DesignTokens.textSecondary)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: DesignTokens.spacing32)
-                    }
+                CTAButton(title: "Next", style: .primary) {
+                    syncToViewModel()
+                    viewModel.includeHeight = true
+                    onContinue()
                 }
                 .padding(.horizontal, DesignTokens.spacing24)
                 .padding(.bottom, DesignTokens.spacing8)

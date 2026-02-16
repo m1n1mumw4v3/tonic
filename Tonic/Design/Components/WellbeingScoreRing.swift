@@ -47,7 +47,7 @@ struct WellbeingScoreRing: View {
                     .frame(width: size, height: size)
                     .overlay(
                         Circle()
-                            .stroke(Color.black.opacity(0.3), lineWidth: lineWidth)
+                            .stroke(Color.black.opacity(0.08), lineWidth: lineWidth)
                             .frame(width: size, height: size)
                             .blur(radius: 3)
                             .mask(

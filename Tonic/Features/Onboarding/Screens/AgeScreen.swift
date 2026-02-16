@@ -4,27 +4,35 @@ struct AgeScreen: View {
     var viewModel: OnboardingViewModel
     let onContinue: () -> Void
 
+    private let dateRange: ClosedRange<Date> = {
+        let calendar = Calendar.current
+        let now = Date()
+        let minDate = calendar.date(byAdding: .year, value: -100, to: now)!
+        let maxDate = calendar.date(byAdding: .year, value: -18, to: now)!
+        return minDate...maxDate
+    }()
+
     var body: some View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                HeadlineText(text: "What's your age?")
+                HeadlineText(text: "What's your date of birth?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
 
                 Spacer()
 
-                ScrollWheelPicker(
-                    selection: Bindable(viewModel).age,
-                    items: Array(18...100),
-                    label: { "\($0)" }
+                DatePicker(
+                    "",
+                    selection: Bindable(viewModel).dateOfBirth,
+                    in: dateRange,
+                    displayedComponents: .date
                 )
-                .overlay {
-                    unitLabel("yrs")
-                        .offset(x: 56)
-                }
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+                .colorScheme(.light)
                 .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
@@ -34,12 +42,6 @@ struct AgeScreen: View {
                     .padding(.bottom, DesignTokens.spacing48)
             }
         }
-    }
-
-    private func unitLabel(_ text: String) -> some View {
-        Text(text)
-            .font(.custom("GeistMono-Medium", size: 18))
-            .foregroundStyle(DesignTokens.textPrimary)
     }
 }
 

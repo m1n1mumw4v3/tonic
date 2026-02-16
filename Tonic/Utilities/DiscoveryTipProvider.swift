@@ -3,7 +3,7 @@ import SwiftUI
 enum DiscoveryTipProvider {
 
     static func tips(for plan: SupplementPlan?) -> [DiscoveryTip] {
-        var supplementTips = supplementTips(for: plan)
+        let supplementTips = supplementTips(for: plan)
         let habitTips = habitTips
 
         // Interleave: supplement, habit, supplement, habit, ...

@@ -10,6 +10,7 @@ struct UserProfile: Codable, Identifiable {
     // Basic info
     var firstName: String = ""
     var age: Int = 30
+    var dateOfBirth: Date?
     var sex: Sex = .preferNotToSay
     var heightInches: Int?
     var weightLbs: Int?
@@ -28,9 +29,11 @@ struct UserProfile: Codable, Identifiable {
 
     // Lifestyle
     var dietType: DietType = .omnivore
+    var customDietText: String = ""
     var exerciseFrequency: ExerciseFrequency = .none
     var coffeeCupsDaily: Int = 0
     var teaCupsDaily: Int = 0
+    var energyDrinksDaily: Int = 0
     var alcoholWeekly: AlcoholIntake = .none
     var stressLevel: StressLevel = .moderate
 
@@ -72,6 +75,8 @@ enum Sex: String, Codable, CaseIterable, Identifiable {
 }
 
 enum HealthGoal: String, Codable, CaseIterable, Identifiable {
+    static let maxSelection = 4
+
     case energy
     case sleep
     case stressAnxiety = "stress_anxiety"
@@ -122,10 +127,10 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         case .stressAnxiety:   return DesignTokens.accentMood
         case .focus:           return DesignTokens.accentClarity
         case .gutHealth:       return DesignTokens.accentGut
-        case .immunity:        return DesignTokens.info
-        case .muscleDevelopment: return DesignTokens.positive
+        case .immunity:        return DesignTokens.accentImmunity
+        case .muscleDevelopment: return DesignTokens.accentMuscle
         case .skinHairNails:   return DesignTokens.accentSkin
-        case .heartHealth:     return DesignTokens.negative
+        case .heartHealth:     return DesignTokens.accentHeart
         case .longevity:       return DesignTokens.accentLongevity
         }
     }

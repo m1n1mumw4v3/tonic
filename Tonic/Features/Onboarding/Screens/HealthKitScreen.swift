@@ -6,12 +6,12 @@ struct HealthKitScreen: View {
 
     @State private var headlineHeight: CGFloat = 48
 
-    private let dataPoints: [(icon: String, label: String)] = [
-        ("bed.double.fill", "Sleep duration & quality"),
-        ("heart.fill", "Heart rate"),
-        ("waveform.path.ecg", "Heart rate variability (HRV)"),
-        ("figure.walk", "Daily steps"),
-        ("figure.run", "Workouts & activity")
+    private let dataPoints: [(icon: String, label: String, color: Color)] = [
+        ("bed.double.fill", "Sleep duration & quality", DesignTokens.accentSleep),
+        ("heart.fill", "Heart rate", DesignTokens.accentHeart),
+        ("waveform.path.ecg", "Heart rate variability (HRV)", DesignTokens.accentLongevity),
+        ("figure.walk", "Daily steps", DesignTokens.accentGut),
+        ("figure.run", "Workouts & activity", DesignTokens.accentMuscle)
     ]
 
     var body: some View {
@@ -42,7 +42,7 @@ struct HealthKitScreen: View {
                             }
                             .onPreferenceChange(HeadlineHeightKey.self) { headlineHeight = $0 }
 
-                            Text("Tonic can read your Apple health data to personalize recommendations even further.")
+                            Text("Ample can read your Apple health data to personalize recommendations even further.")
                                 .font(DesignTokens.bodyFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
                                 .lineSpacing(4)
@@ -55,7 +55,7 @@ struct HealthKitScreen: View {
                                 HStack(spacing: DesignTokens.spacing16) {
                                     Image(systemName: point.icon)
                                         .font(.system(size: 18))
-                                        .foregroundStyle(DesignTokens.accentClarity)
+                                        .foregroundStyle(point.color)
                                         .frame(width: 28, alignment: .center)
 
                                     Text(point.label)

@@ -19,8 +19,8 @@ struct AIInterstitialScreen: View {
         "Building your personalized plan..."
     ]
 
-    private let stageDuration: UInt64 = 2_400_000_000 // 2.4 seconds in nanoseconds
-    private let totalDuration: Double = 9.6
+    private let stageDuration: UInt64 = 2_900_000_000 // 2.9 seconds in nanoseconds
+    private let totalDuration: Double = 11.6
 
     var body: some View {
         GeometryReader { geometry in
@@ -76,8 +76,8 @@ struct AIInterstitialScreen: View {
     private func startSequence() {
         Task {
             // 4 stages, 25% each, tick 1% at a time = 100 ticks total
-            // Each stage is 2.4s → each tick is 2.4s / 25 = 96ms
-            let tickDuration: UInt64 = 96_000_000
+            // Each stage is 2.9s → each tick is 2.9s / 25 = 116ms
+            let tickDuration: UInt64 = 116_000_000
 
             for stage in 0..<stages.count {
                 guard !Task.isCancelled else { return }
@@ -226,29 +226,31 @@ private struct ShimmerModifier: ViewModifier {
     func body(content: Content) -> some View {
         if isActive {
             content
+                .opacity(0.5)
                 .overlay {
                     GeometryReader { geometry in
                         let width = geometry.size.width
+                        let bandWidth = width * 0.5
 
                         LinearGradient(
                             stops: [
                                 .init(color: .clear, location: 0),
-                                .init(color: .white.opacity(0.4), location: 0.4),
-                                .init(color: .white.opacity(0.4), location: 0.6),
+                                .init(color: .white.opacity(0.7), location: 0.35),
+                                .init(color: .white.opacity(0.7), location: 0.65),
                                 .init(color: .clear, location: 1.0)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
-                        .frame(width: width * 0.6)
-                        .offset(x: -width * 0.6 + phase * (width + width * 0.6))
-                        .onAppear {
-                            withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-                                phase = 1
-                            }
-                        }
+                        .frame(width: bandWidth)
+                        .offset(x: -bandWidth + phase * (width + bandWidth))
                     }
                     .mask(content)
+                }
+                .onAppear {
+                    withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
+                        phase = 1
+                    }
                 }
         } else {
             content

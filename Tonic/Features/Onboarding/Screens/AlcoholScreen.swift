@@ -24,10 +24,6 @@ struct AlcoholScreen: View {
                 .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
-
-                CTAButton(title: "Next", style: .primary, action: onContinue)
-                    .padding(.horizontal, DesignTokens.spacing24)
-                    .padding(.bottom, DesignTokens.spacing48)
             }
         }
     }
@@ -39,6 +35,9 @@ struct AlcoholScreen: View {
         Button {
             HapticManager.selection()
             viewModel.alcoholWeekly = option
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                onContinue()
+            }
         } label: {
             Text(option.label)
                 .font(DesignTokens.bodyFont)
@@ -46,14 +45,11 @@ struct AlcoholScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 56)
                 .padding(.horizontal, DesignTokens.spacing16)
-                .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+                .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(
-                            isSelected ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                            lineWidth: 1
-                        )
+                        .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
                 )
         }
     }

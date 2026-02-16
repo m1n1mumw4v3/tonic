@@ -34,7 +34,6 @@ targets:
           - "Supabase/functions/**"
           - "Resources/**"
           - "Info.plist"
-    resources:
       - path: Tonic/Resources
         buildPhase: resources
     info:
@@ -44,12 +43,23 @@ targets:
           UIApplicationSupportsMultipleScenes: false
           UISceneConfigurations: {}
         UIApplicationSupportsIndirectInputEvents: true
+        UIAppFonts:
+          - Geist-Light.ttf
+          - Geist-Regular.ttf
+          - Geist-Medium.ttf
+          - Geist-SemiBold.ttf
+          - Geist-Bold.ttf
+          - GeistMono-Regular.ttf
+          - GeistMono-Medium.ttf
+          - GeistPixel-Grid.ttf
         UILaunchScreen: {}
         UISupportedInterfaceOrientations~iphone:
           - UIInterfaceOrientationPortrait
-        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIStatusBarStyle: UIStatusBarStyleDefault
     settings:
       base:
+        PRODUCT_NAME: Ample
+        PRODUCT_MODULE_NAME: Tonic
         PRODUCT_BUNDLE_IDENTIFIER: com.tonic.app
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
@@ -72,5 +82,5 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: true
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Tonic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tonic"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Ample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ample"
         BUNDLE_LOADER: "$(TEST_HOST)"

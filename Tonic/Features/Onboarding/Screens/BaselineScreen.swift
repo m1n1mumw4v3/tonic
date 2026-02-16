@@ -16,11 +16,11 @@ struct BaselineScreen: View {
             VStack(alignment: .leading, spacing: DesignTokens.spacing20) {
                 // Header
                 VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                    HeadlineText(text: "Rate your typical\nwellness levels 1-10")
+                    HeadlineText(text: "Rate your typical\nwellness levels")
                         .opacity(showHeadline ? 1 : 0)
                         .offset(y: showHeadline ? 0 : 12)
 
-                    Text("Be honest — this helps establish a baseline.")
+                    Text("Be honest — this helps establish a true baseline.")
                         .font(DesignTokens.captionFont)
                         .foregroundStyle(DesignTokens.textSecondary)
                         .opacity(showSubtitle ? 1 : 0)

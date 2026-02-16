@@ -4,6 +4,8 @@ struct GoalsScreen: View {
     var viewModel: OnboardingViewModel
     let onContinue: () -> Void
 
+    @State private var showMaxError = false
+
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.spacing12),
         GridItem(.flexible(), spacing: DesignTokens.spacing12)
@@ -21,7 +23,7 @@ struct GoalsScreen: View {
                             HeadlineText(text: "What are your top health goals?")
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("Select all that apply.")
+                            Text("Select up to \(HealthGoal.maxSelection).")
                                 .font(DesignTokens.captionFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -39,12 +41,29 @@ struct GoalsScreen: View {
                     .padding(.bottom, DesignTokens.spacing24)
                 }
 
-                // CTA
-                CTAButton(title: "Continue", style: .primary, action: onContinue)
-                    .opacity(viewModel.hasSelectedGoals ? 1.0 : 0.4)
-                    .disabled(!viewModel.hasSelectedGoals)
-                    .padding(.horizontal, DesignTokens.spacing24)
-                    .padding(.bottom, DesignTokens.spacing48)
+                // Error + CTA
+                VStack(spacing: DesignTokens.spacing12) {
+                    if showMaxError {
+                        Text("You can select up to \(HealthGoal.maxSelection) goals for a focused plan.")
+                            .font(DesignTokens.captionFont)
+                            .foregroundStyle(DesignTokens.negative)
+                            .multilineTextAlignment(.center)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
+
+                    CTAButton(title: "Continue", style: .primary, action: onContinue)
+                        .opacity(viewModel.hasSelectedGoals ? 1.0 : 0.4)
+                        .disabled(!viewModel.hasSelectedGoals)
+                }
+                .padding(.horizontal, DesignTokens.spacing24)
+                .padding(.bottom, DesignTokens.spacing48)
+            }
+        }
+        .onChange(of: viewModel.healthGoals.count) {
+            if !viewModel.isAtGoalLimit {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showMaxError = false
+                }
             }
         }
     }
@@ -57,25 +76,23 @@ struct GoalsScreen: View {
         let accent = goal.accentColor
 
         Button {
-            HapticManager.selection()
             if isSelected {
                 viewModel.healthGoals.remove(goal)
+                HapticManager.selection()
+            } else if viewModel.isAtGoalLimit {
+                HapticManager.notification(.warning)
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showMaxError = true
+                }
             } else {
                 viewModel.healthGoals.insert(goal)
+                HapticManager.selection()
             }
         } label: {
-            VStack(spacing: DesignTokens.spacing8) {
-                HStack {
-                    Image(systemName: goal.icon)
-                        .font(.system(size: 20))
-                        .foregroundStyle(isSelected ? accent : DesignTokens.textSecondary)
-
-                    Spacer()
-
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 18))
-                        .foregroundStyle(isSelected ? accent : DesignTokens.textTertiary)
-                }
+            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+                Image(systemName: goal.icon)
+                    .font(.system(size: 20))
+                    .foregroundStyle(isSelected ? accent : DesignTokens.textSecondary)
 
                 Text(goal.label)
                     .font(DesignTokens.bodyFont)
@@ -88,15 +105,19 @@ struct GoalsScreen: View {
             .padding(DesignTokens.spacing12)
             .frame(height: 88)
             .frame(maxWidth: .infinity, alignment: .topLeading)
-            .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
+            .overlay(alignment: .topTrailing) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
+                    .padding(DesignTokens.spacing12)
+            }
+            .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(
-                        isSelected ? accent : DesignTokens.borderDefault,
-                        lineWidth: isSelected ? 1.5 : 1
-                    )
+                    .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
+            .opacity(!isSelected && viewModel.isAtGoalLimit ? 0.4 : 1.0)
         }
     }
 }
