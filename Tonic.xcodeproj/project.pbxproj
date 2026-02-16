@@ -61,6 +61,7 @@
 		708B5279751FCE40B269204D /* GrainShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = B27E6E2225660E56B269B03A /* GrainShader.metal */; };
 		715F1EE3185A8E55644086D8 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F69C6254275F9967C8F329 /* DataStore.swift */; };
 		719ED9A6C5307F82551DB46A /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17D350F88446754381EE0BD /* DesignTokens.swift */; };
+		76664A9CC2E4E8E06B9E43E4 /* SupplementToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CA8817ACAFD06FFEB47716 /* SupplementToggle.swift */; };
 		79A61FABAC79EE4F4F7F106E /* DeepProfileQuestionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53774D8A776F701E3B50F529 /* DeepProfileQuestionScreen.swift */; };
 		79F0CB38DFE620705B2E8189 /* LabWorkBiomarkersModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BED9C74BD820FB3EC93F6B /* LabWorkBiomarkersModule.swift */; };
 		809160AF34D0280833CDFAAA /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC27F1CA86DD29615CB93C6 /* HomeViewModel.swift */; };
@@ -107,6 +108,7 @@
 		CEC14C713B3C90E14C4BD955 /* DeepProfileHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1DCA46E11F036748643283 /* DeepProfileHomeCard.swift */; };
 		D0ED6B5E2BB16897DF2B7136 /* UnitPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */; };
 		D4BA75A6FABC08AC6A3A9691 /* SupplementCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34472F8E5A67CE59774D4803 /* SupplementCloudView.swift */; };
+		D56EB981ABAC6F95ABECB8CC /* SupplementCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4319705B957504584E27D91A /* SupplementCardView.swift */; };
 		D5C66D0F2F5529199C21534D /* DeepProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E9A50BCF984DB0BF72F2EB /* DeepProfile.swift */; };
 		D82470B7AC37D5B9087A1912 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7845270BE43C638D6535BB /* RecommendationEngine.swift */; };
 		E089AFFD59FB0C674F9EB7B8 /* SupplementKnowledgeBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D7B02FF59BCCED7CD95DB1 /* SupplementKnowledgeBase.swift */; };
@@ -174,6 +176,7 @@
 		3F74FEFE089F25C6DCBA41F3 /* BaselineProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineProfileViewModel.swift; sourceTree = "<group>"; };
 		40707902AF769C98F3AAC980 /* CheckInFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInFlow.swift; sourceTree = "<group>"; };
 		42D7C299398F4B7EF060F4B4 /* WellbeingScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellbeingScore.swift; sourceTree = "<group>"; };
+		4319705B957504584E27D91A /* SupplementCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCardView.swift; sourceTree = "<group>"; };
 		4A58210159E0CAE8F0A12411 /* PillboxLid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxLid.swift; sourceTree = "<group>"; };
 		4B912E54BA9425B931F54F07 /* HeadlineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlineText.swift; sourceTree = "<group>"; };
 		5272063E6407C85B25E6A068 /* GradientFlowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientFlowBackground.swift; sourceTree = "<group>"; };
@@ -200,6 +203,7 @@
 		82B3EA3FB8B7C7500FB02A85 /* InsightsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsScreen.swift; sourceTree = "<group>"; };
 		842166692CEFFE10D224F15B /* SexScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SexScreen.swift; sourceTree = "<group>"; };
 		8779B18DE8BD912C48CAF9D2 /* Geist-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Regular.ttf"; sourceTree = "<group>"; };
+		88CA8817ACAFD06FFEB47716 /* SupplementToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementToggle.swift; sourceTree = "<group>"; };
 		8BB705030B5D751572C8AFEE /* DiscoveryCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCarousel.swift; sourceTree = "<group>"; };
 		8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCard.swift; sourceTree = "<group>"; };
 		9239156F1B82111DC3B8C9A4 /* MedicationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationsScreen.swift; sourceTree = "<group>"; };
@@ -607,7 +611,9 @@
 				696EF0FA6639241E4B5777B0 /* ScrollWheelPicker.swift */,
 				2E58AF477D2B16A5FCD6D1BC /* SpectrumBar.swift */,
 				8E15BA9A2EFFFB60FF42C65B /* SupplementCard.swift */,
+				4319705B957504584E27D91A /* SupplementCardView.swift */,
 				7C8E3C1E3C41F91FE7DEAEF9 /* SupplementIconography.swift */,
+				88CA8817ACAFD06FFEB47716 /* SupplementToggle.swift */,
 				34FD6D47CF128D89F304DB89 /* UndoToast.swift */,
 				C2B18A8BC728A3B3E9B0CF74 /* UnitPicker.swift */,
 				63C1F605B08FD1BED775D2F7 /* WellbeingScoreRing.swift */,
@@ -814,11 +820,13 @@
 				83260F94474AA2504207CEBF /* StressNervousSystemModule.swift in Sources */,
 				85AFBE234E9366DB35C83B87 /* StressScreen.swift in Sources */,
 				87B6E3C2C099E05759CBC60B /* SupplementCard.swift in Sources */,
+				D56EB981ABAC6F95ABECB8CC /* SupplementCardView.swift in Sources */,
 				D4BA75A6FABC08AC6A3A9691 /* SupplementCloudView.swift in Sources */,
 				62DB6D2C5721E62DBF6F6717 /* SupplementIconography.swift in Sources */,
 				E089AFFD59FB0C674F9EB7B8 /* SupplementKnowledgeBase.swift in Sources */,
 				0417D7AE9EF1520857BA587D /* SupplementPickerSheet.swift in Sources */,
 				6E49C829C53153BEAB0A055D /* SupplementPlan.swift in Sources */,
+				76664A9CC2E4E8E06B9E43E4 /* SupplementToggle.swift in Sources */,
 				26E9261423A983526C72C52A /* TonicApp.swift in Sources */,
 				FC159DC29F9B530796491CC8 /* UndoToast.swift in Sources */,
 				D0ED6B5E2BB16897DF2B7136 /* UnitPicker.swift in Sources */,

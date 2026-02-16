@@ -2,6 +2,28 @@ import Foundation
 
 struct RecommendationEngine {
 
+    // MARK: - Known Synergies
+
+    private static let knownSynergies: [String: [(partner: String, reason: String)]] = [
+        "L-Theanine": [("caffeine", "promotes calm, focused energy without jitters")],
+        "Vitamin C": [
+            ("Iron", "enhances iron absorption by up to 6x"),
+            ("Collagen Peptides", "essential cofactor for collagen synthesis"),
+            ("NAC", "supports glutathione production"),
+        ],
+        "Iron": [("Vitamin C", "enhances iron absorption by up to 6x")],
+        "Vitamin D3 + K2": [("Magnesium Glycinate", "magnesium aids vitamin D metabolism and activation")],
+        "Magnesium Glycinate": [("Vitamin D3 + K2", "aids vitamin D metabolism and activation")],
+        "Collagen Peptides": [("Vitamin C", "essential cofactor for collagen synthesis")],
+        "CoQ10": [("Omega-3 (EPA/DHA)", "complementary cardiovascular support")],
+        "Omega-3 (EPA/DHA)": [
+            ("CoQ10", "complementary cardiovascular support"),
+            ("Creatine Monohydrate", "combined recovery and anti-inflammatory support"),
+        ],
+        "NAC": [("Vitamin C", "supports glutathione production")],
+        "Creatine Monohydrate": [("Omega-3 (EPA/DHA)", "combined recovery and anti-inflammatory support")],
+    ]
+
     // MARK: - Generate Plan
 
     func generatePlan(for profile: UserProfile) -> SupplementPlan {
@@ -52,7 +74,7 @@ struct RecommendationEngine {
             addIfMissing("Vitamin D3 + K2", to: &selected, excluded: excludedSupplements)
         }
 
-        // Step 5: Build plan supplements with dosage adjustments, timing, and tier data
+        // Step 5: Build plan supplements with dosage adjustments, timing, tier data, and enriched info
         let userGoalKeys = Set(profile.healthGoals.map { $0.rawValue })
 
         var planSupplements = selected.enumerated().map { index, supplement -> PlanSupplement in
@@ -84,12 +106,29 @@ struct RecommendationEngine {
                 sortOrder: index,
                 matchedGoals: Array(matched).sorted(),
                 tierScore: weightedScore,
-                researchNote: supplement.notes
+                researchNote: supplement.notes,
+                whyInYourPlan: generateWhyInYourPlan(supplement: supplement, matchedGoals: Array(matched), profile: profile),
+                dosageRationale: generateDosageRationale(supplement: supplement, profile: profile),
+                expectedTimeline: supplement.expectedTimeline,
+                whatToLookFor: resolveWhatToLookFor(template: supplement.whatToLookFor, profile: profile),
+                formAndBioavailability: supplement.formAndBioavailability,
+                evidenceDisplay: supplement.evidenceLevel.displayText,
+                evidenceLevel: supplement.evidenceLevel
             )
         }
 
         // Assign tiers based on weighted evidence score
         assignTiers(to: &planSupplements)
+
+        // Second pass: generate interaction notes (needs full supplement list)
+        let planNames = Set(planSupplements.map(\.name))
+        for i in planSupplements.indices {
+            planSupplements[i].interactionNote = generateInteractionNote(
+                supplementName: planSupplements[i].name,
+                planNames: planNames,
+                profile: profile
+            )
+        }
 
         // Sort by tier first, then timing within tier
         planSupplements.sort { a, b in
@@ -124,6 +163,8 @@ struct RecommendationEngine {
             sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
         }
 
+        let planNames = Set(existingSupplements.map(\.name) + [supplement.name])
+
         var planSupplement = PlanSupplement(
             supplementId: supplement.id,
             name: supplement.name,
@@ -134,7 +175,14 @@ struct RecommendationEngine {
             sortOrder: existingSupplements.count,
             matchedGoals: Array(matched).sorted(),
             tierScore: weightedScore,
-            researchNote: supplement.notes
+            researchNote: supplement.notes,
+            whyInYourPlan: generateWhyInYourPlan(supplement: supplement, matchedGoals: Array(matched), profile: profile),
+            dosageRationale: generateDosageRationale(supplement: supplement, profile: profile),
+            expectedTimeline: supplement.expectedTimeline,
+            whatToLookFor: resolveWhatToLookFor(template: supplement.whatToLookFor, profile: profile),
+            formAndBioavailability: supplement.formAndBioavailability,
+            interactionNote: generateInteractionNote(supplementName: supplement.name, planNames: planNames, profile: profile),
+            evidenceDisplay: supplement.evidenceLevel.displayText
         )
 
         // Assign tier based on score
@@ -145,6 +193,168 @@ struct RecommendationEngine {
         }
 
         return planSupplement
+    }
+
+    // MARK: - Enriched Text Generation
+
+    private func generateWhyInYourPlan(supplement: Supplement, matchedGoals: [String], profile: UserProfile) -> String {
+        // Diet-driven additions when no goal overlap
+        if matchedGoals.isEmpty {
+            if (profile.dietType == .vegan || profile.dietType == .vegetarian) &&
+                (supplement.name == "Vitamin B Complex" || supplement.name == "Vitamin D3 + K2") {
+                return "\(supplement.name) helps cover nutritional gaps common in a \(profile.dietType.label.lowercased()) diet, supporting overall energy and immune health."
+            }
+            return "\(supplement.name) was included based on your overall health profile."
+        }
+
+        let goalDescriptors: [String: String] = [
+            "sleep": "sleep quality",
+            "energy": "daily energy",
+            "focus": "mental clarity and focus",
+            "stress_anxiety": "stress management",
+            "gut_health": "digestive health",
+            "immunity": "immune function",
+            "fitness_recovery": "exercise recovery",
+            "skin_hair_nails": "skin, hair, and nail health",
+            "longevity": "long-term health",
+            "heart_health": "cardiovascular health"
+        ]
+
+        let narrativeOpeners: [String: String] = [
+            "Magnesium Glycinate": "Magnesium glycinate is one of the most effective natural supports for",
+            "Vitamin D3 + K2": "Vitamin D3 paired with K2 plays a foundational role in",
+            "Omega-3 (EPA/DHA)": "Omega-3 fatty acids are among the most well-researched supplements for",
+            "Ashwagandha KSM-66": "Ashwagandha (KSM-66 extract) is a clinically studied adaptogen that supports",
+            "L-Theanine": "L-theanine promotes calm alertness without drowsiness, making it a natural fit for",
+            "Vitamin B Complex": "B vitamins are essential cofactors in energy metabolism, directly supporting",
+            "Probiotics": "A quality probiotic supports the gut-immune axis, benefiting",
+            "Zinc": "Zinc is a key mineral for immune defense and tissue repair, supporting",
+            "Vitamin C": "Vitamin C is a well-established antioxidant that supports",
+            "CoQ10": "CoQ10 fuels cellular energy production, making it especially relevant for",
+            "Creatine Monohydrate": "Creatine is one of the most extensively studied performance supplements, supporting",
+            "Collagen Peptides": "Hydrolyzed collagen provides the building blocks your body needs for",
+            "Lion's Mane": "Lion's mane is a functional mushroom with promising research supporting",
+            "Rhodiola Rosea": "Rhodiola is an adaptogen traditionally used for fatigue resistance, supporting",
+            "Melatonin": "Melatonin helps regulate your circadian rhythm, directly supporting",
+            "Biotin": "Biotin is a B vitamin closely associated with",
+            "Iron": "Iron is essential for oxygen transport and energy production, supporting",
+            "NAC": "NAC is a precursor to glutathione — your body's master antioxidant — supporting",
+            "Berberine": "Berberine is a plant compound with metabolic benefits, supporting",
+            "Tart Cherry Extract": "Tart cherry provides natural melatonin and anti-inflammatory compounds, supporting"
+        ]
+
+        // Sort goals by weight so the strongest benefit leads the sentence
+        let sorted = matchedGoals.sorted { a, b in
+            SupplementKnowledgeBase.weight(for: supplement.name, goal: a) >
+            SupplementKnowledgeBase.weight(for: supplement.name, goal: b)
+        }
+
+        let phrases = sorted.compactMap { goalDescriptors[$0] }
+        guard !phrases.isEmpty else {
+            return "\(supplement.name) was included based on your overall health profile."
+        }
+
+        let goalPhrase: String
+        if phrases.count == 1 {
+            goalPhrase = phrases[0]
+        } else if phrases.count == 2 {
+            goalPhrase = "both \(phrases[0]) and \(phrases[1])"
+        } else {
+            let allButLast = phrases.dropLast().joined(separator: ", ")
+            goalPhrase = "\(allButLast), and \(phrases.last!)"
+        }
+
+        let connector: String
+        switch phrases.count {
+        case 1: connector = "one of your top goals"
+        case 2: connector = "two of your top goals"
+        case 3: connector = "three of your top goals"
+        default: connector = "several of your top goals"
+        }
+
+        let opener = narrativeOpeners[supplement.name] ?? "\(supplement.name) supports"
+        return "\(opener) \(goalPhrase) — \(connector)."
+    }
+
+    private func generateDosageRationale(supplement: Supplement, profile: UserProfile) -> String {
+        var rationale = supplement.dosageRationale
+
+        // Append adjustment context
+        if let weight = profile.weightLbs, weight > 200, supplement.name == "Vitamin D3 + K2" {
+            rationale += " Adjusted to 4000 IU based on your body weight."
+        }
+        if profile.sex == .female && supplement.name == "Iron" {
+            rationale += " Set to 27mg as recommended for women of reproductive age."
+        } else if profile.sex == .male && supplement.name == "Iron" {
+            rationale += " Adjusted to 8mg, the recommended daily amount for men."
+        }
+        if profile.age > 65 && ["Rhodiola Rosea", "CoQ10"].contains(supplement.name) {
+            rationale += " Dose reduced by 25% as a precaution for adults over 65."
+        }
+
+        return rationale
+    }
+
+    private func resolveWhatToLookFor(template: String, profile: UserProfile) -> String {
+        var text = template
+
+        // Caffeine note
+        let hasCaffeine = profile.coffeeCupsDaily > 0 || profile.teaCupsDaily > 0 || profile.energyDrinksDaily > 0
+        if hasCaffeine {
+            text = text.replacingOccurrences(of: "{caffeine_note}", with: ", especially if you pair it with your morning caffeine")
+        } else {
+            text = text.replacingOccurrences(of: "{caffeine_note}", with: "")
+        }
+
+        // Stress note
+        let highStress = profile.stressLevel == .high || profile.stressLevel == .veryHigh
+        if highStress {
+            text = text.replacingOccurrences(of: "{stress_note}", with: ". Given your reported stress level, this may be especially beneficial")
+        } else {
+            text = text.replacingOccurrences(of: "{stress_note}", with: "")
+        }
+
+        // Exercise note
+        let isActive = profile.exerciseFrequency == .threeToFour || profile.exerciseFrequency == .fivePlus
+        if isActive {
+            text = text.replacingOccurrences(of: "{exercise_note}", with: ", particularly given your active exercise routine")
+        } else {
+            text = text.replacingOccurrences(of: "{exercise_note}", with: "")
+        }
+
+        return text
+    }
+
+    private func generateInteractionNote(supplementName: String, planNames: Set<String>, profile: UserProfile) -> String {
+        var parts: [String] = []
+
+        // Check synergies
+        if let synergies = Self.knownSynergies[supplementName] {
+            for synergy in synergies {
+                // Check if partner is caffeine (from profile, not plan)
+                if synergy.partner == "caffeine" {
+                    let hasCaffeine = profile.coffeeCupsDaily > 0 || profile.teaCupsDaily > 0 || profile.energyDrinksDaily > 0
+                    if hasCaffeine {
+                        parts.append("Pairs well with your daily caffeine — \(synergy.reason).")
+                    }
+                } else if planNames.contains(synergy.partner) {
+                    parts.append("Pairs well with \(synergy.partner) in your plan — \(synergy.reason).")
+                }
+            }
+        }
+
+        // Medication safety
+        if !profile.medications.isEmpty {
+            let kb = SupplementKnowledgeBase.supplement(named: supplementName)
+            let hasConflict = kb.map { SupplementKnowledgeBase.hasInteraction(supplement: $0, medications: profile.medications) } ?? false
+            if !hasConflict {
+                parts.append("No conflicts with your current medications.")
+            }
+        } else {
+            parts.append("No medication interactions to flag.")
+        }
+
+        return parts.joined(separator: " ")
     }
 
     // MARK: - Tier Assignment

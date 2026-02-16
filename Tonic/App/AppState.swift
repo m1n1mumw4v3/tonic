@@ -3,7 +3,7 @@ import SwiftUI
 @Observable
 class AppState {
     var isOnboardingComplete: Bool = false
-    var isSubscribed: Bool = false
+    var isSubscribed: Bool = true
     var currentUser: UserProfile?
     var activePlan: SupplementPlan?
     var streak: UserStreak = UserStreak()

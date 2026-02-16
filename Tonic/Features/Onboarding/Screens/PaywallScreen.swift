@@ -78,7 +78,7 @@ struct PaywallScreen: View {
         } else {
             return "\(count) more supplements"
         }
-        return "\(count) supplements targeting your \(goalText) goals"
+        return "\(count) more supplements targeting your \(goalText) goals"
     }
 
     private var ctaSubtext: String {
@@ -190,11 +190,11 @@ struct PaywallScreen: View {
                 .opacity(visibleTeaserCards > 0 ? 1 : 0)
 
             ForEach(Array(teaserSupplements.enumerated()), id: \.element.id) { index, supplement in
-                SupplementTeaserCard(
+                SupplementCardView(
                     supplement: supplement,
-                    isExpandable: true,
+                    trailingAccessory: .goalChips(Array(viewModel.healthGoals)),
+                    expansionMode: .inline,
                     isExpanded: expandedCardID == supplement.id,
-                    userGoals: Array(viewModel.healthGoals),
                     onTap: {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             expandedCardID = expandedCardID == supplement.id ? nil : supplement.id
@@ -206,7 +206,11 @@ struct PaywallScreen: View {
             }
 
             if let peek = peekSupplement {
-                SupplementTeaserCard(supplement: peek, userGoals: Array(viewModel.healthGoals))
+                SupplementCardView(
+                    supplement: peek,
+                    trailingAccessory: .goalChips(Array(viewModel.healthGoals)),
+                    expansionMode: .none
+                )
                     .mask(
                         LinearGradient(
                             colors: [.white, .white.opacity(0)],
@@ -747,169 +751,6 @@ private struct TrialTimelineView: View {
     }
 }
 
-// MARK: - Supplement Teaser Card
-
-private struct SupplementTeaserCard: View {
-    let supplement: PlanSupplement
-    var isExpandable: Bool = false
-    var isExpanded: Bool = false
-    var userGoals: [HealthGoal] = []
-    var onTap: (() -> Void)? = nil
-
-    private var matchedHealthGoals: [HealthGoal] {
-        userGoals.filter { supplement.matchedGoals.contains($0.rawValue) }
-    }
-
-    private var accentColors: [Color] {
-        matchedHealthGoals.map(\.accentColor)
-    }
-
-    @ViewBuilder
-    var body: some View {
-        if isExpandable, let onTap = onTap {
-            Button(action: onTap) {
-                cardBody
-            }
-            .buttonStyle(.plain)
-        } else {
-            cardBody
-        }
-    }
-
-    private var cardBody: some View {
-        VStack(spacing: 0) {
-            // Collapsed: name + goals top row, dosage below
-            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(supplement.name)
-                        .font(.custom("Geist-SemiBold", size: 15))
-                        .foregroundStyle(DesignTokens.textPrimary)
-
-                    HStack(spacing: DesignTokens.spacing8) {
-                        Text(supplement.dosage)
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(DesignTokens.info)
-
-                        Text("·")
-                            .foregroundStyle(DesignTokens.textTertiary)
-
-                        Text(supplement.timing.label)
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(DesignTokens.textSecondary)
-                    }
-                }
-
-                Spacer()
-
-                if !matchedHealthGoals.isEmpty {
-                    HStack(spacing: 4) {
-                        ForEach(matchedHealthGoals) { goal in
-                            Text(goal.shortLabel)
-                                .font(DesignTokens.smallMono)
-                                .foregroundStyle(goal.accentColor)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(goal.accentColor.opacity(0.12))
-                                .clipShape(Capsule())
-                        }
-                    }
-                    .padding(.top, 2)
-                }
-            }
-
-            // Expanded content (only for expandable cards)
-            if isExpandable && isExpanded {
-                VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-                    Rectangle()
-                        .fill(DesignTokens.borderSubtle)
-                        .frame(height: 1)
-                        .padding(.top, DesignTokens.spacing4)
-
-                    // Research note
-                    if let note = supplement.researchNote, !note.isEmpty {
-                        HStack(alignment: .top, spacing: 0) {
-                            RoundedRectangle(cornerRadius: 1)
-                                .fill(DesignTokens.info.opacity(0.30))
-                                .frame(width: 2)
-
-                            Text(note)
-                                .font(DesignTokens.captionFont)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.leading, DesignTokens.spacing8)
-                        }
-                    }
-
-                    // Category badge
-                    HStack(spacing: DesignTokens.spacing8) {
-                        Image(systemName: "tag")
-                            .font(.system(size: 12))
-                            .foregroundStyle(DesignTokens.textTertiary)
-                            .frame(width: 18, alignment: .center)
-
-                        Text(SupplementKnowledgeBase.categoryLabel(for: supplement.category))
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(DesignTokens.textSecondary)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(DesignTokens.bgElevated)
-                            .clipShape(Capsule())
-                            .overlay(
-                                Capsule()
-                                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                            )
-                    }
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-
-            // Chevron hint for expandable cards
-            if isExpandable {
-                HStack(spacing: 4) {
-                    Text(isExpanded ? "Show less" : "Learn more")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(DesignTokens.textTertiary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 6)
-            }
-        }
-        .padding(DesignTokens.spacing12)
-        .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(DesignTokens.borderDefault, lineWidth: 1)
-        )
-        .overlay(alignment: .leading) {
-            if accentColors.count > 1 {
-                UnevenRoundedRectangle(
-                    topLeadingRadius: DesignTokens.radiusMedium,
-                    bottomLeadingRadius: DesignTokens.radiusMedium
-                )
-                .fill(
-                    LinearGradient(
-                        colors: accentColors,
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .frame(width: 4)
-            } else if let color = accentColors.first {
-                UnevenRoundedRectangle(
-                    topLeadingRadius: DesignTokens.radiusMedium,
-                    bottomLeadingRadius: DesignTokens.radiusMedium
-                )
-                .fill(color)
-                .frame(width: 4)
-            }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-    }
-}
 
 // MARK: - Preview
 

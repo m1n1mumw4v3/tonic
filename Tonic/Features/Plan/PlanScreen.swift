@@ -3,11 +3,16 @@ import SwiftUI
 struct PlanScreen: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = PlanViewModel()
-    @State private var selectedSupplement: PlanSupplement?
     @State private var isOverviewExpanded = true
     @State private var showAddSheet = false
     @State private var showUndoToast = false
     @State private var undoMessage = ""
+    @State private var expandedCardId: UUID?
+    @State private var isRemovedExpanded = false
+
+    private var userGoals: [HealthGoal] {
+        appState.currentUser?.healthGoals.sorted { $0.rawValue < $1.rawValue } ?? []
+    }
 
     var body: some View {
         ZStack {
@@ -33,6 +38,11 @@ struct PlanScreen: View {
                             // Evening section
                             if !viewModel.eveningSupplements.isEmpty {
                                 supplementSection(title: "EVENING", icon: "moon.fill", tint: DesignTokens.accentSleep, supplements: viewModel.eveningSupplements)
+                            }
+
+                            // Removed section
+                            if !viewModel.removedSupplements.isEmpty {
+                                removedSection
                             }
 
                             // Explore / add supplements CTA
@@ -105,15 +115,6 @@ struct PlanScreen: View {
         .onAppear {
             viewModel.load(appState: appState)
         }
-        .sheet(item: $selectedSupplement) { supplement in
-            SupplementDetailSheet(supplement: supplement) { removed in
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    viewModel.removeSupplement(removed)
-                    undoMessage = "\(removed.name) removed"
-                    showUndoToast = true
-                }
-            }
-        }
         .sheet(isPresented: $showAddSheet) {
             if let profile = appState.currentUser {
                 AddSupplementSheet(
@@ -168,12 +169,27 @@ struct PlanScreen: View {
             }
 
             ForEach(supplements) { supplement in
-                Button {
-                    selectedSupplement = supplement
-                } label: {
-                    planSupplementRow(supplement: supplement)
-                }
-                .buttonStyle(.plain)
+                SupplementCardView(
+                    supplement: supplement,
+                    trailingAccessory: .goalChips(userGoals),
+                    expansionMode: .inline,
+                    detailLevel: .full,
+                    menuActions: [
+                        SupplementCardMenuAction("Remove from Plan", icon: "trash", role: .destructive) {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                viewModel.removeSupplement(supplement)
+                                undoMessage = "\(supplement.name) removed"
+                                showUndoToast = true
+                            }
+                        }
+                    ],
+                    isExpanded: expandedCardId == supplement.id,
+                    onTap: {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
+                        }
+                    }
+                )
                 .transition(.asymmetric(
                     insertion: .scale.combined(with: .opacity),
                     removal: .move(edge: .trailing).combined(with: .opacity)
@@ -182,42 +198,69 @@ struct PlanScreen: View {
         }
     }
 
-    private func planSupplementRow(supplement: PlanSupplement) -> some View {
-        HStack(spacing: DesignTokens.spacing12) {
-            VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
-                Text(supplement.name)
-                    .font(DesignTokens.bodyFont)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(DesignTokens.textPrimary)
+    // MARK: - Removed Section
 
-                Text(supplement.dosage)
-                    .font(DesignTokens.dataMono)
-                    .foregroundStyle(DesignTokens.info)
+    private var removedSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isRemovedExpanded.toggle()
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 12))
+                        .foregroundStyle(DesignTokens.textTertiary)
+
+                    Text("REMOVED")
+                        .font(DesignTokens.sectionHeader)
+                        .tracking(1.5)
+                        .foregroundStyle(DesignTokens.textTertiary)
+
+                    Text("\(viewModel.removedSupplements.count)")
+                        .font(DesignTokens.labelMono)
+                        .foregroundStyle(DesignTokens.textTertiary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(DesignTokens.textTertiary)
+                        .rotationEffect(.degrees(isRemovedExpanded ? 0 : -90))
+                }
             }
+            .buttonStyle(.plain)
 
-            Spacer()
-
-            // Category badge
-            Text(supplement.category.uppercased())
-                .font(DesignTokens.labelMono)
-                .tracking(1.0)
-                .foregroundStyle(DesignTokens.textTertiary)
-                .padding(.horizontal, DesignTokens.spacing8)
-                .padding(.vertical, DesignTokens.spacing4)
-                .background(DesignTokens.bgElevated)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12))
-                .foregroundStyle(DesignTokens.textTertiary)
+            if isRemovedExpanded {
+                ForEach(viewModel.removedSupplements) { supplement in
+                    SupplementCardView(
+                        supplement: supplement,
+                        trailingAccessory: .goalChips(userGoals),
+                        expansionMode: .inline,
+                        detailLevel: .full,
+                        menuActions: [
+                            SupplementCardMenuAction("Restore to Plan", icon: "arrow.uturn.backward", role: nil) {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    viewModel.restoreSupplement(supplement)
+                                }
+                                HapticManager.notification(.success)
+                            }
+                        ],
+                        isIncluded: false,
+                        isExpanded: expandedCardId == supplement.id,
+                        onTap: {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
+                            }
+                        }
+                    )
+                    .transition(.asymmetric(
+                        insertion: .scale.combined(with: .opacity),
+                        removal: .move(edge: .trailing).combined(with: .opacity)
+                    ))
+                }
+            }
         }
-        .padding(DesignTokens.spacing12)
-        .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(DesignTokens.borderDefault, lineWidth: 1)
-        )
     }
 
     // MARK: - Plan Reasoning
@@ -281,159 +324,15 @@ struct PlanScreen: View {
     }
 }
 
-// MARK: - Supplement Detail Sheet
-
-struct SupplementDetailSheet: View {
-    let supplement: PlanSupplement
-    var onRemove: ((PlanSupplement) -> Void)? = nil
-    @Environment(\.dismiss) private var dismiss
-    @State private var showRemoveConfirmation = false
-
-    var body: some View {
-        ZStack {
-            DesignTokens.bgDeepest.ignoresSafeArea()
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: DesignTokens.spacing20) {
-                    // Header
-                    HStack {
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
-                            Text(supplement.name)
-                                .font(DesignTokens.titleFont)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                            Text(supplement.dosage)
-                                .font(DesignTokens.dataMono)
-                                .foregroundStyle(DesignTokens.info)
-                        }
-                        Spacer()
-                        Button { dismiss() } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 28))
-                                .foregroundStyle(DesignTokens.textTertiary)
-                        }
-                    }
-
-                    SpectrumBar(height: 2)
-
-                    // Timing
-                    detailRow(label: "TIMING", value: supplement.timing.label)
-
-                    // Category
-                    detailRow(label: "CATEGORY", value: supplement.category.capitalized)
-
-                    // AI Reasoning
-                    if let reasoning = supplement.reasoning {
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                            Text("WHY THIS IS IN YOUR PLAN")
-                                .font(DesignTokens.sectionHeader)
-                                .tracking(1.5)
-                                .foregroundStyle(DesignTokens.textSecondary)
-
-                            Text(reasoning)
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .lineSpacing(4)
-                        }
-                    } else {
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                            Text("WHY THIS IS IN YOUR PLAN")
-                                .font(DesignTokens.sectionHeader)
-                                .tracking(1.5)
-                                .foregroundStyle(DesignTokens.textSecondary)
-
-                            Text("AI-generated explanation will appear here once connected to the backend.")
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textTertiary)
-                                .italic()
-                        }
-                    }
-
-                    // Knowledge base notes
-                    if let kb = SupplementKnowledgeBase.supplement(named: supplement.name) {
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                            Text("RESEARCH NOTES")
-                                .font(DesignTokens.sectionHeader)
-                                .tracking(1.5)
-                                .foregroundStyle(DesignTokens.textSecondary)
-
-                            Text(kb.notes)
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .lineSpacing(4)
-                        }
-                    }
-
-                    // Remove button
-                    if onRemove != nil {
-                        Button {
-                            HapticManager.impact(.medium)
-                            showRemoveConfirmation = true
-                        } label: {
-                            HStack(spacing: DesignTokens.spacing8) {
-                                Image(systemName: "minus.circle")
-                                    .font(.system(size: 16, weight: .medium))
-                                Text("Remove from Plan")
-                                    .font(DesignTokens.ctaFont)
-                            }
-                            .foregroundStyle(DesignTokens.negative)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 48)
-                            .background(DesignTokens.negative.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                    .stroke(DesignTokens.negative.opacity(0.2), lineWidth: 1)
-                            )
-                        }
-                        .padding(.top, DesignTokens.spacing8)
-                    }
-                }
-                .padding(DesignTokens.spacing20)
-            }
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
-        .alert(
-            "Remove \(supplement.name)?",
-            isPresented: $showRemoveConfirmation
-        ) {
-            Button("Remove", role: .destructive) {
-                onRemove?(supplement)
-                dismiss()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            let goals = supplement.matchedGoals
-                .compactMap { key in HealthGoal(rawValue: key)?.shortLabel }
-                .joined(separator: " and ")
-            let goalsText = goals.isEmpty ? "" : "This supplement was recommended for your \(goals) goals. "
-            Text("\(goalsText)It was categorized as \(supplement.tier.label) in your plan.")
-        }
-    }
-
-    private func detailRow(label: String, value: String) -> some View {
-        HStack {
-            Text(label)
-                .font(DesignTokens.labelMono)
-                .tracking(1.2)
-                .foregroundStyle(DesignTokens.textTertiary)
-            Spacer()
-            Text(value)
-                .font(DesignTokens.bodyFont)
-                .foregroundStyle(DesignTokens.textPrimary)
-        }
-    }
-}
-
 #Preview {
     let appState = AppState()
-    appState.currentUser = UserProfile(firstName: "Matt")
+    var user = UserProfile(firstName: "Matt")
+    user.healthGoals = [.sleep, .energy, .focus]
+    appState.currentUser = user
     appState.isOnboardingComplete = true
 
     let engine = RecommendationEngine()
-    var profile = UserProfile()
-    profile.healthGoals = [.sleep, .energy, .focus]
-    appState.activePlan = engine.generatePlan(for: profile)
+    appState.activePlan = engine.generatePlan(for: user)
 
     return PlanScreen()
         .environment(appState)

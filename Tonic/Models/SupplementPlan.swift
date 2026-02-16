@@ -29,13 +29,27 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
     var matchedGoals: [String] = []
     var tierScore: Int = 0
     var isIncluded: Bool = true
+    var isRemoved: Bool = false
     var researchNote: String?
+
+    // Enriched information fields
+    var whyInYourPlan: String?
+    var dosageRationale: String?
+    var expectedTimeline: String?
+    var whatToLookFor: String?
+    var formAndBioavailability: String?
+    var interactionNote: String?
+    var evidenceDisplay: String?
+    var evidenceLevel: EvidenceLevel?
 
     enum CodingKeys: String, CodingKey {
         case id, planId, supplementId, name, dosage, dosageMg, timing, frequency
         case reasoning, category, sortOrder, isTaken, tier, matchedGoals
         case tierScore = "goalOverlapScore"
-        case isIncluded, researchNote
+        case isIncluded, isRemoved, researchNote
+        case whyInYourPlan, dosageRationale, expectedTimeline
+        case whatToLookFor, formAndBioavailability, interactionNote
+        case evidenceDisplay, evidenceLevel
     }
 
     static func == (lhs: PlanSupplement, rhs: PlanSupplement) -> Bool {

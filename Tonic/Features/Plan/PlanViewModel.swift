@@ -13,14 +13,18 @@ class PlanViewModel {
 
     var morningSupplements: [PlanSupplement] {
         activePlan?.supplements.filter {
-            $0.timing == .morning || $0.timing == .emptyStomach || $0.timing == .withFood
+            !$0.isRemoved && ($0.timing == .morning || $0.timing == .emptyStomach || $0.timing == .withFood)
         } ?? []
     }
 
     var eveningSupplements: [PlanSupplement] {
         activePlan?.supplements.filter {
-            $0.timing == .evening || $0.timing == .bedtime || $0.timing == .afternoon
+            !$0.isRemoved && ($0.timing == .evening || $0.timing == .bedtime || $0.timing == .afternoon)
         } ?? []
+    }
+
+    var removedSupplements: [PlanSupplement] {
+        activePlan?.supplements.filter(\.isRemoved) ?? []
     }
 
     var planDateString: String {
@@ -39,13 +43,9 @@ class PlanViewModel {
     }
 
     func removeSupplement(_ supplement: PlanSupplement) {
-        guard var plan = activePlan else { return }
-        plan.supplements.removeAll { $0.id == supplement.id }
-        // Re-assign sort orders
-        for i in plan.supplements.indices {
-            plan.supplements[i].sortOrder = i
-        }
-        plan.version += 1
+        guard var plan = activePlan,
+              let index = plan.supplements.firstIndex(where: { $0.id == supplement.id }) else { return }
+        plan.supplements[index].isRemoved = true
         lastRemovedSupplement = supplement
         activePlan = plan
     }
@@ -68,8 +68,18 @@ class PlanViewModel {
     }
 
     func undoRemoval() {
-        guard let removed = lastRemovedSupplement else { return }
+        guard let removed = lastRemovedSupplement,
+              var plan = activePlan,
+              let index = plan.supplements.firstIndex(where: { $0.id == removed.id }) else { return }
+        plan.supplements[index].isRemoved = false
         lastRemovedSupplement = nil
-        addSupplements([removed])
+        activePlan = plan
+    }
+
+    func restoreSupplement(_ supplement: PlanSupplement) {
+        guard var plan = activePlan,
+              let index = plan.supplements.firstIndex(where: { $0.id == supplement.id }) else { return }
+        plan.supplements[index].isRemoved = false
+        activePlan = plan
     }
 }

@@ -214,20 +214,19 @@ struct PlanRevealScreen: View {
                         ForEach(tierSupplements) { supplement in
                             let globalIndex = supplements.firstIndex(where: { $0.id == supplement.id }) ?? 0
                             let matches = cardMatchesFilter(supplement)
-                            RevealSupplementCard(
+                            SupplementCardView(
                                 supplement: supplement,
-                                tier: tier,
-                                userGoals: userGoals,
+                                trailingAccessory: .toggle(isOn: supplement.isIncluded, action: {
+                                    HapticManager.selection()
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        toggleSupplement(supplement.id)
+                                    }
+                                }),
+                                isIncluded: supplement.isIncluded,
                                 isExpanded: expandedCardId == supplement.id,
                                 onTap: {
                                     withAnimation(.easeInOut(duration: 0.25)) {
                                         expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
-                                    }
-                                },
-                                onToggle: {
-                                    HapticManager.selection()
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        toggleSupplement(supplement.id)
                                     }
                                 }
                             )
@@ -500,235 +499,6 @@ struct PlanRevealScreen: View {
     }
 }
 
-// MARK: - Supplement Card
-
-private struct RevealSupplementCard: View {
-    let supplement: PlanSupplement
-    let tier: SupplementTier
-    let userGoals: [HealthGoal]
-    let isExpanded: Bool
-    let onTap: () -> Void
-    let onToggle: () -> Void
-
-    private var matchedHealthGoals: [HealthGoal] {
-        userGoals.filter { supplement.matchedGoals.contains($0.rawValue) }
-    }
-
-    private var accentColors: [Color] {
-        matchedHealthGoals.map(\.accentColor)
-    }
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 0) {
-                // Collapsed: name + dosage + toggle on one row
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(supplement.name)
-                            .font(.custom("Geist-SemiBold", size: 17))
-                            .foregroundStyle(DesignTokens.textPrimary)
-                            .strikethrough(!supplement.isIncluded, color: DesignTokens.textTertiary)
-
-                        Text(supplement.dosage)
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(DesignTokens.info)
-                    }
-
-                    Spacer()
-
-                    SupplementToggle(isOn: supplement.isIncluded, action: onToggle)
-                }
-
-                // Expanded content
-                if isExpanded {
-                    VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-                        // Divider
-                        Rectangle()
-                            .fill(DesignTokens.borderSubtle)
-                            .frame(height: 1)
-                            .padding(.top, DesignTokens.spacing4)
-
-                        // Timing row
-                        HStack(spacing: DesignTokens.spacing8) {
-                            Image(systemName: "clock")
-                                .font(.system(size: 12))
-                                .foregroundStyle(DesignTokens.textTertiary)
-                                .frame(width: 18, alignment: .center)
-
-                            Text(supplement.timing.label)
-                                .font(DesignTokens.labelMono)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(DesignTokens.bgElevated)
-                                .clipShape(Capsule())
-                        }
-
-                        // Goal tags row
-                        if !matchedHealthGoals.isEmpty {
-                            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
-                                Image(systemName: "scope")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(DesignTokens.textTertiary)
-                                    .frame(width: 18, alignment: .center)
-                                    .padding(.top, 3)
-
-                                FlowLayout(spacing: 6) {
-                                    ForEach(matchedHealthGoals) { goal in
-                                        Text(goal.shortLabel)
-                                            .font(DesignTokens.smallMono)
-                                            .foregroundStyle(goal.accentColor)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 3)
-                                            .background(goal.accentColor.opacity(0.12))
-                                            .clipShape(Capsule())
-                                    }
-                                }
-                            }
-                        }
-
-                        // Research note as blockquote
-                        if let note = supplement.researchNote, !note.isEmpty {
-                            HStack(alignment: .top, spacing: 0) {
-                                RoundedRectangle(cornerRadius: 1)
-                                    .fill(tierAccentColor.opacity(0.30))
-                                    .frame(width: 2)
-
-                                Text(note)
-                                    .font(DesignTokens.captionFont)
-                                    .foregroundStyle(DesignTokens.textSecondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .padding(.leading, DesignTokens.spacing8)
-                            }
-                        }
-
-                        // Category badge
-                        HStack(spacing: DesignTokens.spacing8) {
-                            Image(systemName: "tag")
-                                .font(.system(size: 12))
-                                .foregroundStyle(DesignTokens.textTertiary)
-                                .frame(width: 18, alignment: .center)
-
-                            Text(SupplementKnowledgeBase.categoryLabel(for: supplement.category))
-                                .font(DesignTokens.labelMono)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(DesignTokens.bgElevated)
-                                .clipShape(Capsule())
-                                .overlay(
-                                    Capsule()
-                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                                )
-                        }
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
-
-                // Chevron hint — sits below expanded content when open
-                HStack(spacing: 4) {
-                    Text(isExpanded ? "Show less" : "Learn more")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(DesignTokens.textTertiary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 6)
-            }
-            .padding(DesignTokens.spacing16)
-            .background(cardBackground)
-            .opacity(supplement.isIncluded ? 1.0 : 0.5)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
-            )
-            .overlay(alignment: .leading) {
-                // Left accent bar — wider for core (5px), standard for targeted (3px)
-                if tier == .core, accentColors.count > 1 {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: DesignTokens.radiusMedium,
-                        bottomLeadingRadius: DesignTokens.radiusMedium
-                    )
-                    .fill(
-                        LinearGradient(
-                            colors: accentColors,
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 5)
-                } else if tier == .core, let color = accentColors.first {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: DesignTokens.radiusMedium,
-                        bottomLeadingRadius: DesignTokens.radiusMedium
-                    )
-                    .fill(color)
-                    .frame(width: 5)
-                } else if tier == .targeted, let color = accentColors.first {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: DesignTokens.radiusMedium,
-                        bottomLeadingRadius: DesignTokens.radiusMedium
-                    )
-                    .fill(color)
-                    .frame(width: 3)
-                }
-            }
-            // Core: subtle radial glow from left edge
-            .overlay(alignment: .leading) {
-                if tier == .core, let color = accentColors.first {
-                    RadialGradient(
-                        colors: [color.opacity(0.04), Color.clear],
-                        center: .leading,
-                        startRadius: 0,
-                        endRadius: 120
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                    .allowsHitTesting(false)
-                }
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var tierAccentColor: Color {
-        accentColors.first ?? DesignTokens.textSecondary
-    }
-
-    @ViewBuilder
-    private var cardBackground: some View {
-        if tier == .supporting {
-            DesignTokens.bgSurface.opacity(0.7)
-        } else {
-            DesignTokens.bgSurface
-        }
-    }
-}
-
-// MARK: - Custom Toggle
-
-private struct SupplementToggle: View {
-    let isOn: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Capsule()
-                .fill(isOn ? DesignTokens.positive : DesignTokens.bgElevated)
-                .frame(width: 44, height: 26)
-                .overlay(alignment: isOn ? .trailing : .leading) {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 22, height: 22)
-                        .padding(2)
-                }
-                .animation(.easeInOut(duration: 0.2), value: isOn)
-        }
-        .buttonStyle(.plain)
-    }
-}
 
 // MARK: - Pulse Animation
 

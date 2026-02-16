@@ -246,7 +246,7 @@ struct NotificationReminderScreen: View {
                 // Right: toggle
                 Toggle("", isOn: enabled)
                     .labelsHidden()
-                    .tint(DesignTokens.positive)
+                    .tint(DesignTokens.accentGut)
                     .onChange(of: enabled.wrappedValue) { _, newValue in
                         HapticManager.selection()
                         if !newValue {

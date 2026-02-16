@@ -33,6 +33,7 @@ enum DesignTokens {
     static let accentHeart     = Color(hex: "#D94040")
     static let accentImmunity  = Color(hex: "#1A6B6A")
     static let accentTerracotta = Color(hex: "#B07156")
+    static let warmStone        = Color(hex: "#8C7E6A")
 
     // MARK: - Functional
     static let positive = Color(hex: "#2E9E9E")
