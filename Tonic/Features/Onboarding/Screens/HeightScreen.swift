@@ -61,7 +61,6 @@ struct HeightScreen: View {
 
                 CTAButton(title: "Next", style: .primary) {
                     syncToViewModel()
-                    viewModel.includeHeight = true
                     onContinue()
                 }
                 .padding(.horizontal, DesignTokens.spacing24)

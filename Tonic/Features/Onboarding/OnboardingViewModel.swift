@@ -10,13 +10,13 @@ class OnboardingViewModel {
         Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year ?? 30
     }
     var sex: Sex? = nil
+    var isPregnant: Bool = false
+    var isBreastfeeding: Bool = false
     var heightFeet: Int = 5
     var heightInches: Int = 8
     var heightCm: Int = 173
     var weightLbs: Int = 160
     var weightKg: Int = 73
-    var includeHeight: Bool = false
-    var includeWeight: Bool = false
 
     var healthGoals: Set<HealthGoal> = []
 
@@ -48,8 +48,6 @@ class OnboardingViewModel {
 
     var healthKitEnabled: Bool = false
     var healthKitProvidedSex: Bool = false
-    var healthKitProvidedHeight: Bool = false
-    var healthKitProvidedWeight: Bool = false
 
     // Notification reminders
     var morningReminderEnabled: Bool = true
@@ -83,8 +81,10 @@ class OnboardingViewModel {
         profile.age = age
         profile.dateOfBirth = dateOfBirth
         profile.sex = sex ?? .preferNotToSay
-        profile.heightInches = includeHeight ? (heightFeet * 12 + heightInches) : nil
-        profile.weightLbs = includeWeight ? weightLbs : nil
+        profile.isPregnant = isPregnant
+        profile.isBreastfeeding = isBreastfeeding
+        profile.heightInches = heightFeet * 12 + heightInches
+        profile.weightLbs = weightLbs
         profile.healthGoals = Array(healthGoals)
         profile.takingSupplements = takingSupplements
         if takingSupplements {

@@ -14,7 +14,8 @@ class AddSupplementViewModel {
         let medicationKeywords = engine.extractMedicationKeywords(from: profile)
         excludedSupplementNames = engine.findExcludedSupplements(
             medications: medicationKeywords,
-            allergies: profile.allergies
+            allergies: profile.allergies,
+            profile: profile
         )
 
         planSupplementNames = Set(existingSupplements.map(\.name))

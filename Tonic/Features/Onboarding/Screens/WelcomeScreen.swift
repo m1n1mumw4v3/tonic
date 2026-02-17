@@ -31,7 +31,7 @@ struct WelcomeScreen: View {
                     .font(DesignTokens.captionFont)
                     .tracking(2)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(DesignTokens.textPrimary)
+                    .foregroundStyle(.white)
                     .padding(.top, -DesignTokens.spacing16)
                     .opacity(showTagline ? 1 : 0)
                     .offset(y: showTagline ? 0 : 6)
@@ -39,11 +39,24 @@ struct WelcomeScreen: View {
                 Spacer()
 
                 // CTA
-                CTAButton(title: "Get Started", style: .primary, action: onContinue)
-                    .padding(.horizontal, DesignTokens.spacing24)
-                    .padding(.bottom, DesignTokens.spacing48)
-                    .opacity(showCTA ? 1 : 0)
-                    .offset(y: showCTA ? 0 : 8)
+                Button(action: {
+                    HapticManager.impact(.light)
+                    onContinue()
+                }) {
+                    Text("Get Started")
+                        .font(DesignTokens.ctaFont)
+                        .tracking(0.32)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(DesignTokens.bgDeepest)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                }
+                .buttonStyle(ScalePressStyle())
+                .padding(.horizontal, DesignTokens.spacing24)
+                .padding(.bottom, DesignTokens.spacing48)
+                .opacity(showCTA ? 1 : 0)
+                .offset(y: showCTA ? 0 : 8)
             }
         }
         .onAppear {
@@ -67,6 +80,14 @@ struct WelcomeScreen: View {
                 HapticManager.impact(.medium)
             }
         }
+    }
+}
+
+private struct ScalePressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 

@@ -100,6 +100,8 @@ enum SupplementIconRegistry {
         if key.contains("rhodiola rosea") { return "Rhodiola" }
         if key.contains("tart cherry") { return "Tart Cherry" }
         if key.contains("vitamin b") && key.contains("complex") { return "Vitamin B" }
+        if key.contains("vitamin d") || key.contains("d3") { return "Vitamin D3" }
+        if key.contains("coenzyme") || key.contains("coq10") { return "CoQ10" }
         return supplementName
     }
 }

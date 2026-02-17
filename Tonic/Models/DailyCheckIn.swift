@@ -42,10 +42,23 @@ struct UserStreak: Codable {
     var currentStreak: Int = 0
     var longestStreak: Int = 0
     var lastCheckInDate: Date?
+    var missedYesterday: Bool = false
+    var forgivenessUsedThisWeek: Date?
 
     mutating func recordCheckIn(on date: Date = Date()) {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: date)
+
+        // Reset forgiveness tracking on new calendar week
+        if let forgivenessDate = forgivenessUsedThisWeek {
+            let forgivenessWeek = calendar.component(.weekOfYear, from: forgivenessDate)
+            let forgivenessYear = calendar.component(.yearForWeekOfYear, from: forgivenessDate)
+            let currentWeek = calendar.component(.weekOfYear, from: today)
+            let currentYear = calendar.component(.yearForWeekOfYear, from: today)
+            if forgivenessWeek != currentWeek || forgivenessYear != currentYear {
+                forgivenessUsedThisWeek = nil
+            }
+        }
 
         if let lastDate = lastCheckInDate {
             let lastDay = calendar.startOfDay(for: lastDate)
@@ -54,13 +67,22 @@ struct UserStreak: Codable {
             if daysDiff == 1 {
                 // Consecutive day
                 currentStreak += 1
+                missedYesterday = false
+            } else if daysDiff == 2 && forgivenessUsedThisWeek == nil {
+                // Missed exactly 1 day — forgiveness: preserve streak
+                currentStreak += 1
+                missedYesterday = true
+                forgivenessUsedThisWeek = today
             } else if daysDiff > 1 {
                 // Streak broken
                 currentStreak = 1
+                missedYesterday = false
+                forgivenessUsedThisWeek = nil
             }
             // daysDiff == 0 means same day, don't change streak
         } else {
             currentStreak = 1
+            missedYesterday = false
         }
 
         longestStreak = max(longestStreak, currentStreak)

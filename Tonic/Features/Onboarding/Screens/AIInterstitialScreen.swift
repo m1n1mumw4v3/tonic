@@ -19,8 +19,8 @@ struct AIInterstitialScreen: View {
         "Building your personalized plan..."
     ]
 
-    private let stageDuration: UInt64 = 2_900_000_000 // 2.9 seconds in nanoseconds
-    private let totalDuration: Double = 11.6
+    private let stageDuration: UInt64 = 3_375_000_000 // 3.375 seconds in nanoseconds
+    private let totalDuration: Double = 13.5
 
     var body: some View {
         GeometryReader { geometry in
@@ -77,7 +77,7 @@ struct AIInterstitialScreen: View {
         Task {
             // 4 stages, 25% each, tick 1% at a time = 100 ticks total
             // Each stage is 2.9s → each tick is 2.9s / 25 = 116ms
-            let tickDuration: UInt64 = 116_000_000
+            let tickDuration: UInt64 = 135_000_000
 
             for stage in 0..<stages.count {
                 guard !Task.isCancelled else { return }
@@ -131,12 +131,13 @@ struct AIInterstitialScreen: View {
         var initialScale: CGFloat
     }
 
+    // Vibrant variants — the standard accent palette looks muddy when blurred at low opacity on dark bg
     private static let spectrumColors: [Color] = [
-        DesignTokens.accentSleep,
-        DesignTokens.accentEnergy,
-        DesignTokens.accentClarity,
-        DesignTokens.accentMood,
-        DesignTokens.accentGut
+        Color(hex: "#A33EC0"),  // vivid purple  (from accentSleep)
+        Color(hex: "#F5D84A"),  // bright gold   (from accentEnergy)
+        Color(hex: "#3DA5F2"),  // sky blue       (from accentClarity)
+        Color(hex: "#F0A830"),  // warm amber     (from accentMood)
+        Color(hex: "#7EE05A"),  // lime green     (from accentGut)
     ]
 
     private static func generateBlobs() -> [GradientBlob] {
@@ -163,7 +164,7 @@ struct AIInterstitialScreen: View {
                     .fill(blob.color)
                     .frame(width: blob.size, height: blob.size)
                     .blur(radius: 60)
-                    .opacity(0.3)
+                    .opacity(0.45)
                     .position(
                         x: blob.x * geometry.size.width,
                         y: blob.y * geometry.size.height
@@ -226,7 +227,7 @@ private struct ShimmerModifier: ViewModifier {
     func body(content: Content) -> some View {
         if isActive {
             content
-                .opacity(0.5)
+                .opacity(0.85)
                 .overlay {
                     GeometryReader { geometry in
                         let width = geometry.size.width
@@ -248,8 +249,8 @@ private struct ShimmerModifier: ViewModifier {
                     .mask(content)
                 }
                 .onAppear {
-                    withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-                        phase = 1
+                    withAnimation(.linear(duration: 3.45).repeatForever(autoreverses: false)) {
+                        phase = 1.5
                     }
                 }
         } else {

@@ -35,6 +35,14 @@ enum DesignTokens {
     static let accentTerracotta = Color(hex: "#B07156")
     static let warmStone        = Color(hex: "#8C7E6A")
 
+    // MARK: - Gradients
+    static let spectrumGradient = LinearGradient(
+        colors: [accentSleep, accentEnergy, accentClarity, accentMood, accentGut],
+        startPoint: .leading, endPoint: .trailing
+    )
+
+    static let spectrumColors: [Color] = [accentSleep, accentEnergy, accentClarity, accentMood, accentGut]
+
     // MARK: - Functional
     static let positive = Color(hex: "#2E9E9E")
     static let negative = Color(hex: "#D94040")

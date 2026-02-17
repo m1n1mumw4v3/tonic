@@ -153,6 +153,24 @@ struct BaselineProfileSheet: View {
                     .tint(DesignTokens.textPrimary)
                 }
 
+                if viewModel.sex == .female {
+                    Divider().background(DesignTokens.borderDefault)
+
+                    fieldRow(label: "Pregnant") {
+                        Toggle("", isOn: Bindable(viewModel).isPregnant)
+                            .labelsHidden()
+                            .tint(DesignTokens.accentSkin)
+                    }
+
+                    Divider().background(DesignTokens.borderDefault)
+
+                    fieldRow(label: "Breastfeeding") {
+                        Toggle("", isOn: Bindable(viewModel).isBreastfeeding)
+                            .labelsHidden()
+                            .tint(DesignTokens.accentSkin)
+                    }
+                }
+
                 Divider().background(DesignTokens.borderDefault)
 
                 // Height
@@ -162,54 +180,41 @@ struct BaselineProfileSheet: View {
                             .font(DesignTokens.bodyFont)
                             .foregroundStyle(DesignTokens.textSecondary)
                         Spacer()
-                        if viewModel.includeHeight {
-                            Text(heightDisplayText)
-                                .font(DesignTokens.dataMono)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                        } else {
-                            Text("Not set")
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textTertiary)
-                        }
+                        Text(heightDisplayText)
+                            .font(DesignTokens.dataMono)
+                            .foregroundStyle(DesignTokens.textPrimary)
                     }
 
-                    if viewModel.includeHeight {
-                        ZStack(alignment: .trailing) {
-                            Group {
-                                if heightUnit == .ft {
-                                    ScrollWheelPicker(
-                                        selection: $selectedTotalInches,
-                                        items: heightImperialOptions,
-                                        label: { totalInches in
-                                            let feet = totalInches / 12
-                                            let inches = totalInches % 12
-                                            return "\(feet)'\(inches)\""
-                                        },
-                                        itemHeight: 44,
-                                        visibleItemCount: 3
-                                    )
-                                } else {
-                                    ScrollWheelPicker(
-                                        selection: $selectedCm,
-                                        items: heightMetricOptions,
-                                        label: { "\($0)" },
-                                        itemHeight: 44,
-                                        visibleItemCount: 3
-                                    )
-                                }
+                    ZStack(alignment: .trailing) {
+                        Group {
+                            if heightUnit == .ft {
+                                ScrollWheelPicker(
+                                    selection: $selectedTotalInches,
+                                    items: heightImperialOptions,
+                                    label: { totalInches in
+                                        let feet = totalInches / 12
+                                        let inches = totalInches % 12
+                                        return "\(feet)'\(inches)\""
+                                    },
+                                    itemHeight: 44,
+                                    visibleItemCount: 3
+                                )
+                            } else {
+                                ScrollWheelPicker(
+                                    selection: $selectedCm,
+                                    items: heightMetricOptions,
+                                    label: { "\($0)" },
+                                    itemHeight: 44,
+                                    visibleItemCount: 3
+                                )
                             }
-
-                            UnitPicker(selection: $heightUnit, label: { $0.rawValue })
-                                .onChange(of: heightUnit) { oldUnit, newUnit in
-                                    convertHeight(from: oldUnit, to: newUnit)
-                                }
                         }
-                    }
 
-                    Toggle("Include height", isOn: Bindable(viewModel).includeHeight)
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                        .tint(DesignTokens.accentClarity)
+                        UnitPicker(selection: $heightUnit, label: { $0.rawValue })
+                            .onChange(of: heightUnit) { oldUnit, newUnit in
+                                convertHeight(from: oldUnit, to: newUnit)
+                            }
+                    }
                 }
 
                 Divider().background(DesignTokens.borderDefault)
@@ -221,50 +226,37 @@ struct BaselineProfileSheet: View {
                             .font(DesignTokens.bodyFont)
                             .foregroundStyle(DesignTokens.textSecondary)
                         Spacer()
-                        if viewModel.includeWeight {
-                            Text(weightDisplayText)
-                                .font(DesignTokens.dataMono)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                        } else {
-                            Text("Not set")
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textTertiary)
-                        }
+                        Text(weightDisplayText)
+                            .font(DesignTokens.dataMono)
+                            .foregroundStyle(DesignTokens.textPrimary)
                     }
 
-                    if viewModel.includeWeight {
-                        ZStack(alignment: .trailing) {
-                            Group {
-                                if weightUnit == .lbs {
-                                    ScrollWheelPicker(
-                                        selection: $selectedLbs,
-                                        items: weightImperialOptions,
-                                        label: { "\($0)" },
-                                        itemHeight: 44,
-                                        visibleItemCount: 3
-                                    )
-                                } else {
-                                    ScrollWheelPicker(
-                                        selection: $selectedKg,
-                                        items: weightMetricOptions,
-                                        label: { "\($0)" },
-                                        itemHeight: 44,
-                                        visibleItemCount: 3
-                                    )
-                                }
+                    ZStack(alignment: .trailing) {
+                        Group {
+                            if weightUnit == .lbs {
+                                ScrollWheelPicker(
+                                    selection: $selectedLbs,
+                                    items: weightImperialOptions,
+                                    label: { "\($0)" },
+                                    itemHeight: 44,
+                                    visibleItemCount: 3
+                                )
+                            } else {
+                                ScrollWheelPicker(
+                                    selection: $selectedKg,
+                                    items: weightMetricOptions,
+                                    label: { "\($0)" },
+                                    itemHeight: 44,
+                                    visibleItemCount: 3
+                                )
                             }
-
-                            UnitPicker(selection: $weightUnit, label: { $0.rawValue })
-                                .onChange(of: weightUnit) { oldUnit, newUnit in
-                                    convertWeight(from: oldUnit, to: newUnit)
-                                }
                         }
-                    }
 
-                    Toggle("Include weight", isOn: Bindable(viewModel).includeWeight)
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                        .tint(DesignTokens.accentClarity)
+                        UnitPicker(selection: $weightUnit, label: { $0.rawValue })
+                            .onChange(of: weightUnit) { oldUnit, newUnit in
+                                convertWeight(from: oldUnit, to: newUnit)
+                            }
+                    }
                 }
             }
         }

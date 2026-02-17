@@ -197,6 +197,15 @@ struct PlanRevealScreen: View {
         return supplement.matchedGoals.contains(filter.rawValue)
     }
 
+    private func sortedGoals(for supplement: PlanSupplement) -> [HealthGoal] {
+        supplement.matchedGoals
+            .compactMap { HealthGoal(rawValue: $0) }
+            .sorted {
+                SupplementKnowledgeBase.weight(for: supplement.name, goal: $0.rawValue) >
+                SupplementKnowledgeBase.weight(for: supplement.name, goal: $1.rawValue)
+            }
+    }
+
     // MARK: - Supplement Sections
 
     private var supplementSections: some View {
@@ -222,10 +231,12 @@ struct PlanRevealScreen: View {
                                         toggleSupplement(supplement.id)
                                     }
                                 }),
+                                inlineGoals: sortedGoals(for: supplement),
                                 isIncluded: supplement.isIncluded,
                                 isExpanded: expandedCardId == supplement.id,
                                 onTap: {
-                                    withAnimation(.easeInOut(duration: 0.25)) {
+                                    HapticManager.selection()
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                                         expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
                                     }
                                 }

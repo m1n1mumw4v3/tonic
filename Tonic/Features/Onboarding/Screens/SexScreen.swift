@@ -35,6 +35,10 @@ struct SexScreen: View {
         Button {
             HapticManager.selection()
             viewModel.sex = option
+            if option != .female {
+                viewModel.isPregnant = false
+                viewModel.isBreastfeeding = false
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 onContinue()
             }

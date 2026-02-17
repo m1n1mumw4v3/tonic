@@ -16,8 +16,8 @@ struct CheckInFlow: View {
                     ForEach(0..<stepCount, id: \.self) { step in
                         let progress = appState.isSubscribed ? viewModel.currentStep : (viewModel.currentStep == 0 ? 0 : 1)
                         Circle()
-                            .fill(step <= progress ? DesignTokens.info : DesignTokens.bgElevated)
-                            .frame(width: 8, height: 8)
+                            .fill(step <= progress ? DesignTokens.info : DesignTokens.textTertiary)
+                            .frame(width: 6, height: 6)
                     }
                 }
                 .padding(.top, DesignTokens.spacing16)
@@ -42,7 +42,7 @@ struct CheckInFlow: View {
             }
         }
         .onAppear {
-            viewModel.initializeSupplements(from: appState.activePlan)
+            viewModel.initializeSupplements(from: appState.activePlan, existingCheckIn: appState.todayCheckIn)
             viewModel.loadTrailingAverages(from: appState)
         }
         .animation(.easeInOut(duration: 0.35), value: viewModel.currentStep)
@@ -129,70 +129,145 @@ struct CheckInFlow: View {
     private var supplementStep: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(spacing: DesignTokens.spacing20) {
-                    Text("Log your supplements")
-                        .font(DesignTokens.headlineFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
+                VStack(spacing: DesignTokens.spacing24) {
+                    // Dynamic title with streak badge
+                    supplementHeader
                         .padding(.top, DesignTokens.spacing24)
 
                     if let plan = appState.activePlan {
-                        PillboxGrid(
+                        SupplementLogList(
                             supplements: plan.supplements,
                             supplementStates: viewModel.supplementStates,
                             onToggle: { id in viewModel.toggleSupplement(id) },
-                            allJustCompleted: viewModel.allJustCompleted
+                            onTakeAllSection: { ids in viewModel.takeAllByIDs(ids) },
+                            amProgress: viewModel.amProgress,
+                            pmProgress: viewModel.pmProgress,
+                            amComplete: viewModel.amComplete,
+                            pmComplete: viewModel.pmComplete
                         )
                     }
 
-                    // Footer: progress count + Took Everything
-                    if let plan = appState.activePlan, !plan.supplements.isEmpty {
-                        HStack {
-                            Text("\(viewModel.takenCount) of \(plan.supplements.count) taken")
-                                .font(DesignTokens.dataMono)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .contentTransition(.numericText())
-                                .animation(.snappy, value: viewModel.takenCount)
+                    // Micro-reward card
+                    if viewModel.allTaken, let content = viewModel.microRewardContent {
+                        MicroRewardCard(content: content)
+                    }
+                }
+                .padding(.horizontal, DesignTokens.spacing16)
+                .padding(.bottom, DesignTokens.spacing24)
+            }
 
-                            Spacer()
+            // Fixed bottom CTA area
+            supplementCTA
+        }
+        .onChange(of: viewModel.allTaken) { _, allTaken in
+            if allTaken && !viewModel.hasPlayedCompletionAnimation {
+                viewModel.hasPlayedCompletionAnimation = true
+                HapticManager.notification(.success)
+                viewModel.generateMicroReward(appState: appState)
+            }
+        }
+    }
 
-                            Button {
-                                viewModel.takeAll(plan: plan)
-                            } label: {
-                                HStack(spacing: DesignTokens.spacing4) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: 14))
-                                    Text("Took Everything")
-                                        .font(DesignTokens.captionFont)
-                                }
-                                .foregroundStyle(DesignTokens.info)
-                            }
+    // MARK: - Supplement Header
+
+    private var supplementHeader: some View {
+        HStack(spacing: DesignTokens.spacing12) {
+            Text(viewModel.supplementTitle)
+                .font(DesignTokens.headlineFont)
+                .foregroundStyle(DesignTokens.textPrimary)
+                .contentTransition(.interpolate)
+                .animation(.easeInOut(duration: 0.3).delay(0.3), value: viewModel.allTaken)
+
+            if appState.streak.currentStreak > 0 {
+                streakBadge
+            }
+
+            Spacer()
+        }
+    }
+
+    // MARK: - Streak Badge
+
+    @ViewBuilder
+    private var streakBadge: some View {
+        let isForgiven = appState.streak.missedYesterday
+
+        HStack(spacing: 4) {
+            Image(systemName: isForgiven ? "exclamationmark.triangle" : "flame.fill")
+                .font(.system(size: 11, weight: .medium))
+            Text("\(appState.streak.currentStreak)")
+                .font(DesignTokens.labelMono)
+        }
+        .foregroundStyle(isForgiven ? DesignTokens.textTertiary : DesignTokens.accentEnergy)
+        .padding(.horizontal, DesignTokens.spacing8)
+        .padding(.vertical, DesignTokens.spacing4)
+        .background(
+            Capsule()
+                .fill((isForgiven ? DesignTokens.textTertiary : DesignTokens.accentEnergy).opacity(0.15))
+        )
+    }
+
+    // MARK: - Supplement CTA
+
+    private var supplementCTA: some View {
+        VStack(spacing: 0) {
+            // Gradient fade
+            LinearGradient(
+                colors: [DesignTokens.bgDeepest.opacity(0), DesignTokens.bgDeepest],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 32)
+
+            VStack(spacing: DesignTokens.spacing8) {
+                if viewModel.allTaken {
+                    // All taken state — completion button
+                    Button {
+                        viewModel.completeCheckIn(appState: appState)
+                        withAnimation {
+                            viewModel.currentStep = 2
                         }
-                        .padding(.top, DesignTokens.spacing4)
+                    } label: {
+                        HStack(spacing: DesignTokens.spacing8) {
+                            Text("All Taken")
+                                .font(DesignTokens.ctaFont)
+                                .tracking(0.32)
+                            AnimatedCheckmark(isChecked: true, color: DesignTokens.textPrimary, size: 16)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(DesignTokens.bgElevated)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(CTAPressStyleInternal())
+                    .transition(.opacity)
+                } else {
+                    // Take All button
+                    CTAButton(title: "Take All", style: .primary) {
+                        viewModel.takeAll(plan: appState.activePlan)
+                    }
+                    .transition(.opacity)
+
+                    // Secondary label: "n of total logged"
+                    if viewModel.takenCount >= 1, let plan = appState.activePlan {
+                        Text("\(viewModel.takenCount) of \(plan.supplements.count) logged")
+                            .font(DesignTokens.captionFont)
+                            .foregroundStyle(DesignTokens.textTertiary)
+                            .contentTransition(.numericText())
+                            .animation(.snappy, value: viewModel.takenCount)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
                     }
                 }
-                .padding(.horizontal, DesignTokens.spacing16)
-                .padding(.bottom, 100) // Space for fixed CTA
             }
-
-            // Fixed CTA with gradient fade
-            VStack(spacing: 0) {
-                LinearGradient(
-                    colors: [DesignTokens.bgDeepest.opacity(0), DesignTokens.bgDeepest],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: 32)
-
-                CTAButton(title: "Done", style: .primary) {
-                    viewModel.completeCheckIn(appState: appState)
-                    withAnimation {
-                        viewModel.currentStep = 2
-                    }
-                }
-                .padding(.horizontal, DesignTokens.spacing16)
-                .padding(.bottom, DesignTokens.spacing32)
-                .background(DesignTokens.bgDeepest)
-            }
+            .animation(.easeInOut(duration: 0.25), value: viewModel.allTaken)
+            .padding(.horizontal, DesignTokens.spacing16)
+            .padding(.bottom, DesignTokens.spacing32)
+            .background(DesignTokens.bgDeepest)
         }
     }
 
@@ -270,7 +345,37 @@ struct CheckInFlow: View {
     }
 }
 
+// MARK: - Internal Press Style
+
+private struct CTAPressStyleInternal: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
 #Preview {
-    CheckInFlow()
-        .environment(AppState())
+    let state = AppState()
+    state.isSubscribed = true
+    state.activePlan = SupplementPlan(supplements: [
+        // AM — Empty Stomach
+        PlanSupplement(name: "L-Theanine", dosage: "200mg", timing: .emptyStomach),
+        // AM — Morning
+        PlanSupplement(name: "Omega-3 (EPA/DHA)", dosage: "1000mg", timing: .morning),
+        PlanSupplement(name: "Vitamin B Complex", dosage: "1 cap", timing: .morning),
+        // AM — With Food
+        PlanSupplement(name: "Vitamin D3 + K2", dosage: "5000 IU", timing: .withFood),
+        PlanSupplement(name: "Ashwagandha KSM-66", dosage: "600mg", timing: .withFood),
+        PlanSupplement(name: "Coenzyme Q10", dosage: "200mg", timing: .withFood),
+        // PM — Evening
+        PlanSupplement(name: "Magnesium Glycinate", dosage: "400mg", timing: .evening),
+        PlanSupplement(name: "Tart Cherry Extract", dosage: "500mg", timing: .evening),
+        // PM — Bedtime
+        PlanSupplement(name: "Melatonin", dosage: "0.5mg", timing: .bedtime),
+    ])
+    state.streak = UserStreak(currentStreak: 12, longestStreak: 12, lastCheckInDate: Date())
+
+    return CheckInFlow()
+        .environment(state)
 }

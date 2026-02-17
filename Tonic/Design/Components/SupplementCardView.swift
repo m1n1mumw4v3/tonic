@@ -39,6 +39,7 @@ struct SupplementCardView: View {
     var expansionMode: SupplementCardExpansionMode = .inline
     var detailLevel: SupplementCardDetailLevel = .standard
     var menuActions: [SupplementCardMenuAction] = []
+    var inlineGoals: [HealthGoal] = []
     var isIncluded: Bool = true
     var isExpanded: Bool = false
     var onTap: (() -> Void)? = nil
@@ -91,7 +92,9 @@ struct SupplementCardView: View {
             // Expanded content
             if expansionMode == .inline && isExpanded {
                 expandedContent
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .transition(
+                        .opacity.combined(with: .scale(scale: 0.98, anchor: .top))
+                    )
             }
 
             // Chevron hint (only for expandable cards)
@@ -139,6 +142,11 @@ struct SupplementCardView: View {
                         .font(DesignTokens.labelMono)
                         .foregroundStyle(DesignTokens.textSecondary)
                 }
+
+                if !inlineGoals.isEmpty {
+                    inlineGoalChips
+                        .padding(.top, 4)
+                }
             }
 
             Spacer()
@@ -147,6 +155,26 @@ struct SupplementCardView: View {
 
             if !menuActions.isEmpty {
                 kebabMenu
+            }
+        }
+    }
+
+    // MARK: - Inline Goal Chips
+
+    private var inlineGoalChips: some View {
+        FlowLayout(spacing: 6) {
+            ForEach(inlineGoals) { goal in
+                HStack(spacing: 3) {
+                    Image(systemName: goal.icon)
+                        .font(.system(size: 9))
+                    Text(goal.shortLabel)
+                        .font(DesignTokens.smallMono)
+                }
+                .foregroundStyle(goal.accentColor)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(goal.accentColor.opacity(0.12))
+                .clipShape(Capsule())
             }
         }
     }
@@ -315,9 +343,11 @@ struct SupplementCardView: View {
             Text(isExpanded ? "Show less" : "Learn more")
                 .font(DesignTokens.captionFont)
                 .foregroundStyle(DesignTokens.textTertiary)
-            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+            Image(systemName: "chevron.down")
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(DesignTokens.textTertiary)
+                .rotationEffect(.degrees(isExpanded ? -180 : 0))
+                .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 6)

@@ -55,7 +55,6 @@ struct WeightScreen: View {
 
                 CTAButton(title: "Next", style: .primary) {
                     syncToViewModel()
-                    viewModel.includeWeight = true
                     onContinue()
                 }
                 .padding(.horizontal, DesignTokens.spacing24)

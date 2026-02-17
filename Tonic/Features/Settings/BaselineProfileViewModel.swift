@@ -6,13 +6,13 @@ class BaselineProfileViewModel {
     var firstName: String
     var age: Int
     var sex: Sex
+    var isPregnant: Bool
+    var isBreastfeeding: Bool
     var heightFeet: Int
     var heightInches: Int
     var heightCm: Int
-    var includeHeight: Bool
     var weightLbs: Int
     var weightKg: Int
-    var includeWeight: Bool
 
     // Goals
     var healthGoals: Set<HealthGoal>
@@ -56,28 +56,17 @@ class BaselineProfileViewModel {
         firstName = profile.firstName
         age = profile.age
         sex = profile.sex
+        isPregnant = profile.isPregnant
+        isBreastfeeding = profile.isBreastfeeding
 
-        if let totalInches = profile.heightInches {
-            heightFeet = totalInches / 12
-            heightInches = totalInches % 12
-            heightCm = Int(round(Double(totalInches) * 2.54))
-            includeHeight = true
-        } else {
-            heightFeet = 5
-            heightInches = 8
-            heightCm = 173
-            includeHeight = false
-        }
+        let totalInches = profile.heightInches ?? 68
+        heightFeet = totalInches / 12
+        heightInches = totalInches % 12
+        heightCm = Int(round(Double(totalInches) * 2.54))
 
-        if let lbs = profile.weightLbs {
-            weightLbs = lbs
-            weightKg = Int(round(Double(lbs) * 0.453592))
-            includeWeight = true
-        } else {
-            weightLbs = 160
-            weightKg = 73
-            includeWeight = false
-        }
+        let lbs = profile.weightLbs ?? 160
+        weightLbs = lbs
+        weightKg = Int(round(Double(lbs) * 0.453592))
 
         healthGoals = Set(profile.healthGoals)
 
@@ -116,8 +105,15 @@ class BaselineProfileViewModel {
         profile.firstName = firstName.trimmingCharacters(in: .whitespaces)
         profile.age = age
         profile.sex = sex
-        profile.heightInches = includeHeight ? (heightFeet * 12 + heightInches) : nil
-        profile.weightLbs = includeWeight ? weightLbs : nil
+        if sex == .female {
+            profile.isPregnant = isPregnant
+            profile.isBreastfeeding = isBreastfeeding
+        } else {
+            profile.isPregnant = false
+            profile.isBreastfeeding = false
+        }
+        profile.heightInches = heightFeet * 12 + heightInches
+        profile.weightLbs = weightLbs
 
         profile.healthGoals = Array(healthGoals)
 
@@ -182,6 +178,8 @@ class BaselineProfileViewModel {
         return updated.firstName != original.firstName
             || updated.age != original.age
             || updated.sex != original.sex
+            || updated.isPregnant != original.isPregnant
+            || updated.isBreastfeeding != original.isBreastfeeding
             || updated.heightInches != original.heightInches
             || updated.weightLbs != original.weightLbs
             || Set(updated.healthGoals) != Set(original.healthGoals)
@@ -212,6 +210,8 @@ class BaselineProfileViewModel {
             || updated.dietType != original.dietType
             || updated.age != original.age
             || updated.sex != original.sex
+            || updated.isPregnant != original.isPregnant
+            || updated.isBreastfeeding != original.isBreastfeeding
             || updated.weightLbs != original.weightLbs
     }
 }

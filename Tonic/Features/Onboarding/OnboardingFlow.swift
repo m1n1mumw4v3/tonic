@@ -6,13 +6,12 @@ struct OnboardingFlow: View {
     @State private var currentScreen: Int = 0
     @State private var navigatingForward: Bool = true
 
-    private let totalScreens = 24
+    private let totalScreens = 25
 
     private var skippedScreens: Set<Int> {
         var skipped = Set<Int>()
         if viewModel.healthKitProvidedSex { skipped.insert(7) }
-        if viewModel.healthKitProvidedHeight { skipped.insert(8) }
-        if viewModel.healthKitProvidedWeight { skipped.insert(9) }
+        if viewModel.sex != .female { skipped.insert(8) }
         return skipped
     }
 
@@ -64,36 +63,38 @@ struct OnboardingFlow: View {
                     case 7:
                         SexScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 8:
-                        HeightScreen(viewModel: viewModel, onContinue: nextScreen)
+                        PregnancyScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 9:
-                        WeightScreen(viewModel: viewModel, onContinue: nextScreen)
+                        HeightScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 10:
-                        GoalsScreen(viewModel: viewModel, onContinue: nextScreen)
+                        WeightScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 11:
-                        CurrentSuppsScreen(viewModel: viewModel, onContinue: nextScreen)
+                        GoalsScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 12:
-                        MedicationsScreen(viewModel: viewModel, onContinue: nextScreen)
+                        CurrentSuppsScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 13:
-                        AllergiesScreen(viewModel: viewModel, onContinue: nextScreen)
+                        MedicationsScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 14:
-                        DietScreen(viewModel: viewModel, onContinue: nextScreen)
+                        AllergiesScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 15:
-                        ExerciseScreen(viewModel: viewModel, onContinue: nextScreen)
+                        DietScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 16:
-                        CaffeineScreen(viewModel: viewModel, onContinue: nextScreen)
+                        ExerciseScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 17:
-                        AlcoholScreen(viewModel: viewModel, onContinue: nextScreen)
+                        CaffeineScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 18:
-                        StressScreen(viewModel: viewModel, onContinue: nextScreen)
+                        AlcoholScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 19:
-                        BaselineScreen(viewModel: viewModel, onContinue: nextScreen)
+                        StressScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 20:
-                        NotificationReminderScreen(viewModel: viewModel, onContinue: nextScreen)
+                        BaselineScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 21:
-                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
+                        NotificationReminderScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 22:
-                        PlanRevealScreen(viewModel: viewModel, onConfirm: nextScreen)
+                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
                     case 23:
+                        PlanRevealScreen(viewModel: viewModel, onConfirm: nextScreen)
+                    case 24:
                         PaywallScreen(viewModel: viewModel, onSubscribe: completeOnboarding, onDismiss: dismissPaywall)
                     default:
                         EmptyView()

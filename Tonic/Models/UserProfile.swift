@@ -12,6 +12,8 @@ struct UserProfile: Codable, Identifiable {
     var age: Int = 30
     var dateOfBirth: Date?
     var sex: Sex = .preferNotToSay
+    var isPregnant: Bool = false
+    var isBreastfeeding: Bool = false
     var heightInches: Int?
     var weightLbs: Int?
 

@@ -23,7 +23,7 @@ struct GoalsScreen: View {
                             HeadlineText(text: "What are your top health goals?")
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("Select up to \(HealthGoal.maxSelection).")
+                            Text("Please select up to \(HealthGoal.maxSelection).")
                                 .font(DesignTokens.captionFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,11 +111,11 @@ struct GoalsScreen: View {
                     .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
                     .padding(DesignTokens.spacing12)
             }
-            .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
+            .background(isSelected ? accent.opacity(0.15) : DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
+                    .stroke(isSelected ? accent : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
             .opacity(!isSelected && viewModel.isAtGoalLimit ? 0.4 : 1.0)
         }

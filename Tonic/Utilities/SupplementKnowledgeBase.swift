@@ -490,6 +490,68 @@ enum SupplementKnowledgeBase {
         )
     ]
 
+    // MARK: - Onset Timelines
+
+    static let onsetTimelines: [String: (min: Int, max: Int, description: String)] = [
+        "Magnesium Glycinate": (1, 14, "Calming effects within hours; sleep quality improvements over 1-2 weeks"),
+        "Vitamin D3 + K2": (14, 56, "Blood levels rise over 4-8 weeks; energy benefits in 2-3 weeks"),
+        "Omega-3 (EPA/DHA)": (7, 84, "Anti-inflammatory benefits in 1-2 weeks; cognitive gains over 8-12 weeks"),
+        "Ashwagandha KSM-66": (3, 28, "Calming effects within days; full stress reduction over 2-4 weeks"),
+        "L-Theanine": (1, 14, "Calming effects within 30-60 minutes; cumulative benefits over 1-2 weeks"),
+        "Vitamin B Complex": (3, 28, "Energy improvements within the first week; full benefits over 2-4 weeks"),
+        "Probiotics": (7, 56, "Digestive improvements in 1-2 weeks; full microbiome rebalancing in 4-8 weeks"),
+        "Zinc": (7, 56, "Immune benefits in 1-2 weeks; skin improvements over 4-8 weeks"),
+        "Vitamin C": (1, 56, "Immune support begins immediately; skin benefits build over 4-8 weeks"),
+        "CoQ10": (14, 84, "Energy improvements in 2-4 weeks; cardiovascular benefits over 4-12 weeks"),
+        "Creatine Monohydrate": (21, 28, "Muscle saturation takes 3-4 weeks; strength gains follow"),
+        "Collagen Peptides": (14, 56, "Nail strength in 2-4 weeks; skin elasticity by 6-8 weeks"),
+        "Lion's Mane": (14, 56, "Subtle cognitive improvements in 2 weeks; significant focus gains over 4-8 weeks"),
+        "Rhodiola Rosea": (3, 28, "Anti-fatigue effects within days; full adaptogenic benefits over 2-4 weeks"),
+        "Melatonin": (1, 1, "Sleep onset improvements typically felt the first night"),
+        "Biotin": (21, 120, "Nail improvements in 3-4 weeks; hair benefits require 3-6 months"),
+        "Iron": (14, 180, "Energy improvements in 2-4 weeks if deficient; ferritin normalizes over 3-6 months"),
+        "NAC": (7, 56, "Glutathione levels rise in 1-2 weeks; full antioxidant benefits over 4-8 weeks"),
+        "Berberine": (7, 84, "Digestive improvements in 1-2 weeks; metabolic benefits over 8-12 weeks"),
+        "Tart Cherry Extract": (3, 14, "Sleep onset improvements within days; recovery benefits over 1-2 weeks"),
+    ]
+
+    // MARK: - Daily Tips
+
+    static let dailyTips: [String] = [
+        "Fat-soluble vitamins (D3, K2, CoQ10) absorb up to 3x better when taken with a meal containing healthy fats.",
+        "Magnesium glycinate is one of the most bioavailable forms and causes less GI distress than oxide or citrate.",
+        "Taking probiotics on an empty stomach helps more live cultures survive the journey through stomach acid.",
+        "Omega-3 fish oil in triglyceride form is 70% better absorbed than the cheaper ethyl ester form.",
+        "L-Theanine crosses the blood-brain barrier within 30 minutes, promoting alpha brain waves for calm focus.",
+        "Ashwagandha KSM-66 is standardized to 5% withanolides — the active compounds that reduce cortisol.",
+        "Splitting your Vitamin C dose into two servings improves utilization since it's water-soluble.",
+        "Creatine doesn't require a loading phase at 5g/day — full muscle saturation occurs within 3-4 weeks.",
+        "Biotin can interfere with certain lab tests. Let your doctor know you're taking it before blood work.",
+        "Iron bisglycinate is 4x better absorbed than ferrous sulfate with significantly fewer side effects.",
+        "Taking iron with Vitamin C can enhance absorption by up to 67%.",
+        "Zinc and iron compete for absorption — space them at least 2 hours apart for best results.",
+        "Collagen synthesis requires Vitamin C as a cofactor — pairing them together maximizes skin benefits.",
+        "NAC is best absorbed on an empty stomach, where it directly feeds glutathione production.",
+        "Rhodiola Rosea works best when taken in the morning on an empty stomach.",
+        "Tart cherry extract contains natural melatonin precursors plus anti-inflammatory anthocyanins.",
+        "Methylated B vitamins (methylfolate, methylcobalamin) are important for those with MTHFR variations.",
+        "CoQ10 in ubiquinol form is 2-3x better absorbed than ubiquinone and is already in its active form.",
+        "Lion's Mane dual-extracted (water + alcohol) provides the full spectrum of hericenones and erinacines.",
+        "Consistency matters more than timing for most supplements — the same time daily builds the habit.",
+        "Melatonin works best at low doses (0.5-1mg). Higher doses often cause grogginess without better sleep.",
+        "Berberine's naturally low bioavailability improves significantly when taken with a meal.",
+        "Delayed-release probiotic capsules deliver 10x more viable bacteria to the intestines than standard ones.",
+        "Vitamin D3 (cholecalciferol) is 87% more effective than D2 at raising serum levels.",
+        "K2 in the MK-7 form has the longest half-life, directing calcium to bones instead of arteries.",
+        "Hydrolyzed collagen peptides have over 90% absorption — they dissolve in both hot and cold liquids.",
+        "Morning supplements like B vitamins can be energizing — avoid taking them close to bedtime.",
+        "Store probiotics according to label instructions — some require refrigeration to maintain potency.",
+        "Sublingual melatonin absorbs directly through oral mucosa, working in 15-20 minutes vs 45 for swallowed tablets.",
+        "Your supplement plan is personalized — taking them consistently helps us measure what's actually working.",
+        "Adaptogens like Ashwagandha and Rhodiola work by modulating your stress response, not masking it.",
+        "Water-soluble vitamins (B, C) are safely excreted if you take more than needed — no toxicity risk.",
+    ]
+
     // MARK: - Category Helpers
 
     static func categoryLabel(for key: String) -> String {

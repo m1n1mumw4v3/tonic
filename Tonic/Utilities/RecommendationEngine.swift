@@ -41,7 +41,7 @@ struct RecommendationEngine {
 
         // Step 2: Interaction filter
         let medicationKeywords = extractMedicationKeywords(from: profile)
-        let excludedSupplements = findExcludedSupplements(medications: medicationKeywords, allergies: profile.allergies)
+        let excludedSupplements = findExcludedSupplements(medications: medicationKeywords, allergies: profile.allergies, profile: profile)
 
         let filteredCandidates = candidateScores.filter { !excludedSupplements.contains($0.key) }
 
@@ -383,7 +383,7 @@ struct RecommendationEngine {
         }
     }
 
-    func findExcludedSupplements(medications: [String], allergies: [String]) -> Set<String> {
+    func findExcludedSupplements(medications: [String], allergies: [String], profile: UserProfile) -> Set<String> {
         var excluded: Set<String> = []
 
         // Check medication interactions
@@ -402,6 +402,12 @@ struct RecommendationEngine {
         }
         if allergyKeywords.contains("soy") {
             // Some supplements use soy-based capsules
+        }
+
+        // Pregnancy / breastfeeding contraindications
+        if profile.isPregnant || profile.isBreastfeeding {
+            excluded.insert("Ashwagandha KSM-66")
+            excluded.insert("Berberine")
         }
 
         return excluded

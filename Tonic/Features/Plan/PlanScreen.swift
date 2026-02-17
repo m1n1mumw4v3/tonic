@@ -185,7 +185,8 @@ struct PlanScreen: View {
                     ],
                     isExpanded: expandedCardId == supplement.id,
                     onTap: {
-                        withAnimation(.easeInOut(duration: 0.25)) {
+                        HapticManager.selection()
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                             expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
                         }
                     }
@@ -203,7 +204,7 @@ struct PlanScreen: View {
     private var removedSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
             Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                     isRemovedExpanded.toggle()
                 }
             } label: {
@@ -249,7 +250,8 @@ struct PlanScreen: View {
                         isIncluded: false,
                         isExpanded: expandedCardId == supplement.id,
                         onTap: {
-                            withAnimation(.easeInOut(duration: 0.25)) {
+                            HapticManager.selection()
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                                 expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
                             }
                         }
@@ -268,7 +270,7 @@ struct PlanScreen: View {
     private func planReasoningCard(reasoning: String) -> some View {
         VStack(alignment: .leading, spacing: isOverviewExpanded ? DesignTokens.spacing12 : 0) {
             Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                     isOverviewExpanded.toggle()
                 }
             } label: {
