@@ -54,7 +54,7 @@ class AppState {
         currentUser = profile
 
         // Generate plan from profile
-        let engine = RecommendationEngine()
+        let engine = RecommendationEngine(kb: KnowledgeBaseProvider())
         var plan = engine.generatePlan(for: profile)
         plan.aiReasoning = "Your plan targets sleep quality, sustained energy, mental clarity, and gut health. Magnesium and Ashwagandha form the core foundation, supported by Omega-3 for brain health and Probiotics for digestion. Timing is optimized to match your daily rhythm."
         activePlan = plan

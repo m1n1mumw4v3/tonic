@@ -4,6 +4,7 @@ import UIKit
 struct PlanRevealScreen: View {
     var viewModel: OnboardingViewModel
     let onConfirm: () -> Void
+    @Environment(KnowledgeBaseProvider.self) private var kb
 
     // MARK: - Animation State
 
@@ -201,8 +202,8 @@ struct PlanRevealScreen: View {
         supplement.matchedGoals
             .compactMap { HealthGoal(rawValue: $0) }
             .sorted {
-                SupplementKnowledgeBase.weight(for: supplement.name, goal: $0.rawValue) >
-                SupplementKnowledgeBase.weight(for: supplement.name, goal: $1.rawValue)
+                kb.weight(for: supplement.name, goal: $0.rawValue) >
+                kb.weight(for: supplement.name, goal: $1.rawValue)
             }
     }
 
@@ -534,13 +535,14 @@ private struct RevealPulseModifier: ViewModifier {
 // MARK: - Preview
 
 #Preview {
+    let kb = KnowledgeBaseProvider()
     PlanRevealScreen(
         viewModel: {
             let vm = OnboardingViewModel()
             vm.firstName = "Matt"
             vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
 
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(kb: kb)
             let profile = vm.buildUserProfile()
             vm.generatedPlan = engine.generatePlan(for: profile)
 
@@ -548,4 +550,5 @@ private struct RevealPulseModifier: ViewModifier {
         }(),
         onConfirm: {}
     )
+    .environment(kb)
 }

@@ -3,6 +3,7 @@ import SwiftUI
 @Observable
 class CheckInViewModel {
     private let dataStore: DataStore
+    var kb: KnowledgeBaseProvider = KnowledgeBaseProvider()
 
     // Step 1: Wellness scores
     var sleepScore: Double = 5
@@ -217,7 +218,7 @@ class CheckInViewModel {
         let consecutiveDays = appState.streak.currentStreak
 
         for supplement in plan.supplements {
-            guard let onset = SupplementKnowledgeBase.onsetTimelines[supplement.name] else { continue }
+            guard let onset = kb.onsetTimelines[supplement.name] else { continue }
 
             // Check if user is approaching or within onset window
             if consecutiveDays >= onset.min && consecutiveDays <= onset.max {
@@ -266,7 +267,7 @@ class CheckInViewModel {
     }
 
     private func generateDailyTip() -> SupplementTip {
-        let tips = SupplementKnowledgeBase.dailyTips
+        let tips = kb.dailyTips
         let index = Calendar.current.component(.day, from: Date()) % tips.count
         return SupplementTip(
             supplementName: nil,
@@ -356,7 +357,7 @@ class CheckInViewModel {
             recentlyShownKeys: RecentInsightTracker.recentKeys()
         )
 
-        let insight = CheckInInsightGenerator().generate(from: context)
+        let insight = CheckInInsightGenerator(kb: kb).generate(from: context)
         completionInsight = insight
         if let key = insight?.key {
             RecentInsightTracker.record(key)

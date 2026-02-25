@@ -30,6 +30,9 @@ fastlane/test_output
 # Claude Code
 .claude/settings.local.json
 
+# Secrets
+Secrets.xcconfig
+
 # Misc
 *.moved-aside
 *.pbxuser

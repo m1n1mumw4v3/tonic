@@ -328,14 +328,16 @@ struct PlanScreen: View {
 
 #Preview {
     let appState = AppState()
+    let kb = KnowledgeBaseProvider()
     var user = UserProfile(firstName: "Matt")
     user.healthGoals = [.sleep, .energy, .focus]
     appState.currentUser = user
     appState.isOnboardingComplete = true
 
-    let engine = RecommendationEngine()
+    let engine = RecommendationEngine(kb: kb)
     appState.activePlan = engine.generatePlan(for: user)
 
     return PlanScreen()
         .environment(appState)
+        .environment(kb)
 }

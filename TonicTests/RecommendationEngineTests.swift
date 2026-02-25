@@ -2,7 +2,7 @@ import XCTest
 @testable import Tonic
 
 final class RecommendationEngineTests: XCTestCase {
-    let engine = RecommendationEngine()
+    let engine = RecommendationEngine(kb: KnowledgeBaseProvider())
 
     // MARK: - Goal Mapping
 

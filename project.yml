@@ -27,6 +27,9 @@ targets:
   Tonic:
     type: application
     platform: iOS
+    configFiles:
+      Debug: Secrets.xcconfig
+      Release: Secrets.xcconfig
     sources:
       - path: Tonic
         excludes:
@@ -39,6 +42,8 @@ targets:
     info:
       path: Tonic/Info.plist
       properties:
+        SUPABASE_URL: $(SUPABASE_URL)
+        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
           UISceneConfigurations: {}

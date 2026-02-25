@@ -4,6 +4,7 @@ struct SupplementPickerSheet: View {
     @Binding var selectedSupplements: Set<String>
     @Binding var customSupplementText: String
     @Environment(\.dismiss) private var dismiss
+    @Environment(KnowledgeBaseProvider.self) private var kb
 
     @State private var searchText = ""
     @FocusState private var isOtherFieldFocused: Bool
@@ -14,10 +15,10 @@ struct SupplementPickerSheet: View {
 
     private var filteredGroups: [(category: String, label: String, supplements: [Supplement])] {
         if searchText.isEmpty {
-            return SupplementKnowledgeBase.supplementsByCategory
+            return kb.supplementsByCategory
         }
         let query = searchText.lowercased()
-        return SupplementKnowledgeBase.supplementsByCategory.compactMap { group in
+        return kb.supplementsByCategory.compactMap { group in
             let filtered = group.supplements.filter { $0.name.lowercased().contains(query) }
             guard !filtered.isEmpty else { return nil }
             return (category: group.category, label: group.label, supplements: filtered)

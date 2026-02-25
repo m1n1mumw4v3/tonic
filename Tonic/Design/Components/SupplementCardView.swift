@@ -301,7 +301,7 @@ struct SupplementCardView: View {
                 .foregroundStyle(DesignTokens.textSecondary)
                 .frame(width: 18, alignment: .center)
 
-            Text(SupplementKnowledgeBase.categoryLabel(for: supplement.category))
+            Text(KnowledgeBaseProvider.categoryLabelStatic(for: supplement.category))
                 .font(DesignTokens.labelMono)
                 .foregroundStyle(DesignTokens.textSecondary)
                 .padding(.horizontal, 10)

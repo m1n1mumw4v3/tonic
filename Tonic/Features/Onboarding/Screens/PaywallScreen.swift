@@ -755,13 +755,14 @@ private struct TrialTimelineView: View {
 // MARK: - Preview
 
 #Preview {
+    let kb = KnowledgeBaseProvider()
     PaywallScreen(
         viewModel: {
             let vm = OnboardingViewModel()
             vm.firstName = "Matt"
             vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
 
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(kb: kb)
             let profile = vm.buildUserProfile()
             vm.generatedPlan = engine.generatePlan(for: profile)
 
@@ -769,4 +770,5 @@ private struct TrialTimelineView: View {
         }(),
         onSubscribe: {}
     )
+    .environment(kb)
 }

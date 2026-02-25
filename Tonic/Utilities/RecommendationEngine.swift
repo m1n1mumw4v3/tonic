@@ -2,6 +2,12 @@ import Foundation
 
 struct RecommendationEngine {
 
+    let kb: KnowledgeBaseProvider
+
+    init(kb: KnowledgeBaseProvider = KnowledgeBaseProvider()) {
+        self.kb = kb
+    }
+
     // MARK: - Known Synergies
 
     private static let knownSynergies: [String: [(partner: String, reason: String)]] = [
@@ -32,7 +38,7 @@ struct RecommendationEngine {
         let goalKeys = profile.healthGoals.map { $0.rawValue }
 
         for goal in goalKeys {
-            if let entries = SupplementKnowledgeBase.goalSupplementMap[goal] {
+            if let entries = kb.goalSupplementMap[goal] {
                 for entry in entries {
                     candidateScores[entry.name, default: 0] += entry.weight
                 }
@@ -58,7 +64,7 @@ struct RecommendationEngine {
 
         for (name, _) in ranked {
             guard selected.count < maxSupplements else { break }
-            guard let supplement = SupplementKnowledgeBase.supplement(named: name) else { continue }
+            guard let supplement = kb.supplement(named: name) else { continue }
 
             // Allow max 2 per category for diversity
             let categoryCount = selected.filter { $0.category == supplement.category }.count
@@ -90,10 +96,10 @@ struct RecommendationEngine {
 
             // Compute matched goals: which of the user's goals map to this supplement
             let matched = userGoalKeys.filter { goalKey in
-                SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
+                kb.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
             }
             let weightedScore = matched.reduce(0) { sum, goalKey in
-                sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
+                sum + kb.weight(for: supplement.name, goal: goalKey)
             }
 
             return PlanSupplement(
@@ -157,10 +163,10 @@ struct RecommendationEngine {
         let timing = resolveTiming(for: supplement, profile: profile)
 
         let matched = userGoalKeys.filter { goalKey in
-            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
+            kb.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
         }
         let weightedScore = matched.reduce(0) { sum, goalKey in
-            sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
+            sum + kb.weight(for: supplement.name, goal: goalKey)
         }
 
         let planNames = Set(existingSupplements.map(\.name) + [supplement.name])
@@ -245,8 +251,8 @@ struct RecommendationEngine {
 
         // Sort goals by weight so the strongest benefit leads the sentence
         let sorted = matchedGoals.sorted { a, b in
-            SupplementKnowledgeBase.weight(for: supplement.name, goal: a) >
-            SupplementKnowledgeBase.weight(for: supplement.name, goal: b)
+            kb.weight(for: supplement.name, goal: a) >
+            kb.weight(for: supplement.name, goal: b)
         }
 
         let phrases = sorted.compactMap { goalDescriptors[$0] }
@@ -345,8 +351,8 @@ struct RecommendationEngine {
 
         // Medication safety
         if !profile.medications.isEmpty {
-            let kb = SupplementKnowledgeBase.supplement(named: supplementName)
-            let hasConflict = kb.map { SupplementKnowledgeBase.hasInteraction(supplement: $0, medications: profile.medications) } ?? false
+            let supplement = kb.supplement(named: supplementName)
+            let hasConflict = supplement.map { kb.hasInteraction(supplement: $0, medications: profile.medications) } ?? false
             if !hasConflict {
                 parts.append("No conflicts with your current medications.")
             }
@@ -388,7 +394,7 @@ struct RecommendationEngine {
 
         // Check medication interactions
         for keyword in medications {
-            let interactions = SupplementKnowledgeBase.interactionsForMedication(keyword)
+            let interactions = kb.interactionsForMedication(keyword)
             excluded.formUnion(interactions)
         }
 
@@ -416,7 +422,7 @@ struct RecommendationEngine {
     private func addIfMissing(_ name: String, to list: inout [Supplement], excluded: Set<String>) {
         guard !excluded.contains(name) else { return }
         guard !list.contains(where: { $0.name == name }) else { return }
-        if let supplement = SupplementKnowledgeBase.supplement(named: name) {
+        if let supplement = kb.supplement(named: name) {
             list.append(supplement)
         }
     }

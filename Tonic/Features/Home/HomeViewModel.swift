@@ -21,7 +21,7 @@ class HomeViewModel {
         self.dataStore = dataStore
     }
 
-    func load(appState: AppState) {
+    func load(appState: AppState, kb: KnowledgeBaseProvider) {
         userName = appState.userName
         greeting = "\(Date().greetingPrefix), \(userName)"
         dateLabel = Date().monoDateLabel
@@ -35,7 +35,7 @@ class HomeViewModel {
 
         // Generate discovery tips when no real insights exist
         if insightFeed.isEmpty {
-            discoveryTips = DiscoveryTipProvider.tips(for: appState.activePlan)
+            discoveryTips = DiscoveryTipProvider.tips(for: appState.activePlan, kb: kb)
         } else {
             discoveryTips = []
         }

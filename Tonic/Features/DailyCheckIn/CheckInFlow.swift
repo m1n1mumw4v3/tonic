@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CheckInFlow: View {
     @Environment(AppState.self) private var appState
+    @Environment(KnowledgeBaseProvider.self) private var kb
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = CheckInViewModel()
 
@@ -42,6 +43,7 @@ struct CheckInFlow: View {
             }
         }
         .onAppear {
+            viewModel.kb = kb
             viewModel.initializeSupplements(from: appState.activePlan, existingCheckIn: appState.todayCheckIn)
             viewModel.loadTrailingAverages(from: appState)
         }

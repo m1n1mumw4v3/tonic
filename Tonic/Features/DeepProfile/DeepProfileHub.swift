@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeepProfileHub: View {
     @Environment(AppState.self) private var appState
+    @Environment(KnowledgeBaseProvider.self) private var kb
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = DeepProfileHubViewModel()
     @State private var appearedRows: Set<String> = []
@@ -153,7 +154,7 @@ struct DeepProfileHub: View {
         try? storage.saveProfile(updatedProfile)
 
         if needsRegeneration {
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(kb: kb)
             let newPlan = engine.generatePlan(for: updatedProfile)
             appState.activePlan = newPlan
             try? storage.savePlan(newPlan)

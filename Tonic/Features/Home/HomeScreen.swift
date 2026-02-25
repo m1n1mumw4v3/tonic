@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeScreen: View {
     @Environment(AppState.self) private var appState
+    @Environment(KnowledgeBaseProvider.self) private var kb
     @State private var viewModel = HomeViewModel()
 
     var body: some View {
@@ -44,7 +45,7 @@ struct HomeScreen: View {
                 .environment(appState)
         }
         .onAppear {
-            viewModel.load(appState: appState)
+            viewModel.load(appState: appState, kb: kb)
         }
     }
 

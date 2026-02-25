@@ -35,6 +35,8 @@ enum RecentInsightTracker {
 
 struct CheckInInsightGenerator {
 
+    var kb: KnowledgeBaseProvider = KnowledgeBaseProvider()
+
     struct Context {
         let todayScores: [WellnessDimension: Int]
         let baselines: [WellnessDimension: Int]
@@ -127,8 +129,8 @@ struct CheckInInsightGenerator {
 
                 // Look up notes from knowledge base
                 var hint = ""
-                if let kb = SupplementKnowledgeBase.supplement(named: supp.name) {
-                    hint = " " + kb.notes
+                if let supplementInfo = kb.supplement(named: supp.name) {
+                    hint = " " + supplementInfo.notes
                 }
 
                 return CheckInInsight(
@@ -358,11 +360,11 @@ struct CheckInInsightGenerator {
 
     private func supplementTip(_ context: Context) -> CheckInInsight? {
         for supp in context.supplementsTakenToday {
-            if let kb = SupplementKnowledgeBase.supplement(named: supp.name) {
+            if let supplementInfo = kb.supplement(named: supp.name) {
                 let nameSlug = supp.name.lowercased().replacingOccurrences(of: " ", with: "_")
                 return CheckInInsight(
                     key: "supp_tip_\(nameSlug)",
-                    message: "\(supp.name) tip: \(kb.notes)",
+                    message: "\(supp.name) tip: \(supplementInfo.notes)",
                     icon: "lightbulb.fill",
                     accentColor: DesignTokens.info,
                     dimension: nil

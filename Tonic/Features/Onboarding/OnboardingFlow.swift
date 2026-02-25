@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingFlow: View {
     @Environment(AppState.self) private var appState
+    @Environment(KnowledgeBaseProvider.self) private var kb
     @State private var viewModel = OnboardingViewModel()
     @State private var currentScreen: Int = 0
     @State private var navigatingForward: Bool = true
@@ -137,7 +138,7 @@ struct OnboardingFlow: View {
     private func onInterstitialComplete() {
         // Build profile and generate plan, store on viewModel for the Plan Reveal screen
         let profile = viewModel.buildUserProfile()
-        let engine = RecommendationEngine()
+        let engine = RecommendationEngine(kb: kb)
         let plan = engine.generatePlan(for: profile)
         viewModel.generatedPlan = plan
         nextScreen()
@@ -153,7 +154,7 @@ struct OnboardingFlow: View {
             appState.activePlan = plan
         } else {
             // Fallback: generate fresh if somehow missing
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(kb: kb)
             let plan = engine.generatePlan(for: profile)
             appState.activePlan = plan
         }
@@ -169,7 +170,7 @@ struct OnboardingFlow: View {
             plan.supplements = plan.supplements.filter(\.isIncluded)
             appState.activePlan = plan
         } else {
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(kb: kb)
             let plan = engine.generatePlan(for: profile)
             appState.activePlan = plan
         }
