@@ -110,7 +110,7 @@ struct AllergiesScreen: View {
 
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 18))
-                        .foregroundStyle(isSelected ? DesignTokens.accentClarity : DesignTokens.textTertiary)
+                        .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
                 }
 
                 Text(allergy)
@@ -161,7 +161,7 @@ struct AllergiesScreen: View {
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 18))
-                    .foregroundStyle(isSelected ? DesignTokens.accentClarity : DesignTokens.textTertiary)
+                    .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
             }
             .padding(DesignTokens.spacing12)
             .frame(maxWidth: .infinity)
@@ -204,7 +204,7 @@ struct AllergiesScreen: View {
 
                     Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 18))
-                        .foregroundStyle(isActive ? DesignTokens.accentClarity : DesignTokens.textTertiary)
+                        .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textTertiary)
                 }
                 .padding(DesignTokens.spacing12)
             }

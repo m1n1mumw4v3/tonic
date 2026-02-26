@@ -27,7 +27,7 @@ struct DeepProfileHub: View {
                 VStack(spacing: DesignTokens.spacing16) {
                     // Header
                     header
-                        .padding(.top, DesignTokens.spacing8)
+                        .padding(.top, DesignTokens.spacing24)
 
                     // Spectrum progress bar
                     SpectrumBar(progress: service.completionProgress)
@@ -65,7 +65,7 @@ struct DeepProfileHub: View {
                     .background(DesignTokens.bgElevated)
                     .clipShape(Circle())
             }
-            .padding(.top, DesignTokens.spacing12)
+            .padding(.top, DesignTokens.spacing24)
             .padding(.trailing, DesignTokens.spacing16)
         }
         .sheet(item: $viewModel.selectedModule) { moduleType in
@@ -153,7 +153,7 @@ struct DeepProfileHub: View {
         try? storage.saveProfile(updatedProfile)
 
         if needsRegeneration {
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
             let newPlan = engine.generatePlan(for: updatedProfile)
             appState.activePlan = newPlan
             try? storage.savePlan(newPlan)
@@ -210,18 +210,21 @@ struct DeepProfileHub: View {
 
                 // Text
                 VStack(alignment: .leading, spacing: DesignTokens.spacing2) {
-                    Text(moduleType.displayName)
-                        .font(DesignTokens.bodyFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
+                    HStack(spacing: DesignTokens.spacing8) {
+                        Text(moduleType.displayName)
+                            .font(DesignTokens.bodyFont)
+                            .foregroundStyle(DesignTokens.textPrimary)
+                            .lineLimit(1)
 
-                    if isRecommended && !isCompleted {
-                        Text("Recommended")
-                            .font(DesignTokens.smallMono)
-                            .foregroundStyle(DesignTokens.accentEnergy)
-                            .padding(.horizontal, DesignTokens.spacing4)
-                            .padding(.vertical, 2)
-                            .background(DesignTokens.accentEnergy.opacity(0.15))
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                        if isRecommended && !isCompleted {
+                            Text("Recommended")
+                                .font(DesignTokens.smallMono)
+                                .foregroundStyle(DesignTokens.accentLongevity)
+                                .padding(.horizontal, DesignTokens.spacing4)
+                                .padding(.vertical, 2)
+                                .background(DesignTokens.accentLongevity.opacity(0.15))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                        }
                     }
 
                     Text(isCompleted ? "Completed" : "\(moduleType.questionCount) questions \u{00B7} \(moduleType.estimatedTimeLabel)")

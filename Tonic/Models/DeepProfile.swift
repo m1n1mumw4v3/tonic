@@ -154,6 +154,19 @@ enum DeepProfileModuleType: String, Codable, CaseIterable, Identifiable {
         return "~\(minutes) min"
     }
 
+    var benefitCopy: String {
+        switch self {
+        case .sleepCircadian: return "Complete your sleep profile to refine your magnesium timing."
+        case .stressNervousSystem: return "Share your stress patterns to optimize your adaptogen dosing."
+        case .cognitiveFunction: return "Map your cognitive goals to sharpen your nootropic stack."
+        case .hormonalMetabolic: return "Add metabolic data to fine-tune your vitamin D and CoQ10 dosing."
+        case .gutHealth: return "Detail your gut health to personalize your probiotic recommendation."
+        case .musculoskeletalRecovery: return "Log your recovery patterns to adjust your creatine and collagen timing."
+        case .labWorkBiomarkers: return "Add lab results for evidence-based dosage adjustments."
+        case .environmentExposures: return "Share your environment to identify targeted antioxidant needs."
+        }
+    }
+
     /// Related health goals — used to determine which modules to recommend
     var relatedGoals: [HealthGoal] {
         switch self {

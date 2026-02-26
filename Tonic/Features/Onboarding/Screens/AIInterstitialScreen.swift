@@ -7,7 +7,6 @@ struct AIInterstitialScreen: View {
     @State private var currentStage: Int = 0
     @State private var progress: CGFloat = 0
     @State private var displayPercent: Int = 0
-    @State private var blobs: [GradientBlob] = []
     @State private var hasCompleted = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -27,7 +26,8 @@ struct AIInterstitialScreen: View {
             ZStack {
                 DesignTokens.bgDeepest.ignoresSafeArea()
 
-                gradientBackground
+                GradientFlowBackground(fullScreen: true)
+                GrainOverlay()
 
                 // Greeting — pinned at ~1/4 down the screen
                 HeadlineText(
@@ -66,7 +66,6 @@ struct AIInterstitialScreen: View {
         }
         .ignoresSafeArea()
         .onAppear {
-            blobs = Self.generateBlobs()
             startSequence()
         }
     }
@@ -114,108 +113,6 @@ struct AIInterstitialScreen: View {
         }
     }
 
-    // MARK: - Gradient Blobs
-
-    private struct GradientBlob: Identifiable {
-        let id = UUID()
-        var x: CGFloat
-        var y: CGFloat
-        var size: CGFloat
-        var color: Color
-        var duration: Double
-        var delay: Double
-        // Pre-computed drift targets so they don't change on re-render
-        var driftX: CGFloat
-        var driftY: CGFloat
-        var targetScale: CGFloat
-        var initialScale: CGFloat
-    }
-
-    // Vibrant variants — the standard accent palette looks muddy when blurred at low opacity on dark bg
-    private static let spectrumColors: [Color] = [
-        Color(hex: "#A33EC0"),  // vivid purple  (from accentSleep)
-        Color(hex: "#F5D84A"),  // bright gold   (from accentEnergy)
-        Color(hex: "#3DA5F2"),  // sky blue       (from accentClarity)
-        Color(hex: "#F0A830"),  // warm amber     (from accentMood)
-        Color(hex: "#7EE05A"),  // lime green     (from accentGut)
-    ]
-
-    private static func generateBlobs() -> [GradientBlob] {
-        (0..<5).map { index in
-            GradientBlob(
-                x: CGFloat.random(in: 0.1...0.9),
-                y: CGFloat.random(in: 0.05...0.55),
-                size: CGFloat.random(in: 250...400),
-                color: spectrumColors[index % spectrumColors.count],
-                duration: Double.random(in: 10...15),
-                delay: Double(index) * 0.6,
-                driftX: CGFloat.random(in: -1...1) * 0.15,
-                driftY: CGFloat.random(in: -1...1) * 0.15,
-                targetScale: CGFloat.random(in: 1.0...1.2),
-                initialScale: CGFloat.random(in: 0.8...1.0)
-            )
-        }
-    }
-
-    private var gradientBackground: some View {
-        GeometryReader { geometry in
-            ForEach(blobs) { blob in
-                Ellipse()
-                    .fill(blob.color)
-                    .frame(width: blob.size, height: blob.size)
-                    .blur(radius: 60)
-                    .opacity(0.45)
-                    .position(
-                        x: blob.x * geometry.size.width,
-                        y: blob.y * geometry.size.height
-                    )
-                    .modifier(DriftModifier(
-                        targetOffsetX: blob.driftX * geometry.size.width,
-                        targetOffsetY: blob.driftY * geometry.size.height,
-                        targetScale: blob.targetScale,
-                        initialScale: blob.initialScale,
-                        duration: blob.duration,
-                        delay: blob.delay,
-                        isActive: !reduceMotion
-                    ))
-            }
-        }
-        .ignoresSafeArea()
-    }
-}
-
-// MARK: - Drift Animation Modifier
-
-private struct DriftModifier: ViewModifier {
-    let targetOffsetX: CGFloat
-    let targetOffsetY: CGFloat
-    let targetScale: CGFloat
-    let initialScale: CGFloat
-    let duration: Double
-    let delay: Double
-    let isActive: Bool
-
-    @State private var isAnimating = false
-
-    func body(content: Content) -> some View {
-        content
-            .offset(
-                x: isAnimating ? targetOffsetX : 0,
-                y: isAnimating ? targetOffsetY : 0
-            )
-            .scaleEffect(isAnimating ? targetScale : initialScale)
-            .animation(
-                isActive
-                    ? .easeInOut(duration: duration).repeatForever(autoreverses: true).delay(delay)
-                    : .default,
-                value: isAnimating
-            )
-            .onAppear {
-                if isActive {
-                    isAnimating = true
-                }
-            }
-    }
 }
 
 // MARK: - Shimmer Effect Modifier

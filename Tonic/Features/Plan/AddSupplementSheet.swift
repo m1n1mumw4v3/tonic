@@ -9,8 +9,8 @@ class AddSupplementViewModel {
     var excludedSupplementNames: Set<String> = []
     var planSupplementNames: Set<String> = []
 
-    func load(profile: UserProfile, existingSupplements: [PlanSupplement]) {
-        let engine = RecommendationEngine()
+    func load(profile: UserProfile, existingSupplements: [PlanSupplement], catalog: SupplementCatalog) {
+        let engine = RecommendationEngine(catalog: catalog)
         let medicationKeywords = engine.extractMedicationKeywords(from: profile)
         excludedSupplementNames = engine.findExcludedSupplements(
             medications: medicationKeywords,
@@ -22,11 +22,11 @@ class AddSupplementViewModel {
 
         let userGoalKeys = Set(profile.healthGoals.map(\.rawValue))
 
-        // Score all KB supplements by evidence weight
+        // Score all catalog supplements by evidence weight
         var scored: [(supplement: Supplement, score: Int)] = []
-        for supplement in SupplementKnowledgeBase.allSupplements {
+        for supplement in catalog.allSupplements {
             let weightedScore = userGoalKeys.reduce(0) { sum, goalKey in
-                sum + SupplementKnowledgeBase.weight(for: supplement.name, goal: goalKey)
+                sum + catalog.weight(for: supplement.name, goal: goalKey)
             }
             scored.append((supplement, weightedScore))
         }
@@ -45,10 +45,10 @@ class AddSupplementViewModel {
         otherSupplements = noGoalMatch
     }
 
-    func matchedGoals(for supplement: Supplement, profile: UserProfile) -> [HealthGoal] {
+    func matchedGoals(for supplement: Supplement, profile: UserProfile, catalog: SupplementCatalog) -> [HealthGoal] {
         let userGoalKeys = Set(profile.healthGoals.map(\.rawValue))
         let matched = userGoalKeys.filter { goalKey in
-            SupplementKnowledgeBase.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
+            catalog.goalMappings(for: goalKey).contains { $0.name == supplement.name }
         }
         return profile.healthGoals.filter { matched.contains($0.rawValue) }
     }
@@ -61,18 +61,21 @@ struct AddSupplementSheet: View {
     let existingSupplements: [PlanSupplement]
     let onAdd: ([PlanSupplement]) -> Void
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
 
     @State private var viewModel = AddSupplementViewModel()
     @State private var selectedTab = 0
     @State private var stagedSupplements: Set<UUID> = []
     @State private var searchText = ""
 
+    private var catalog: SupplementCatalog { appState.supplementCatalog }
+
     private var filteredGroups: [(category: String, label: String, supplements: [Supplement])] {
         if searchText.isEmpty {
-            return SupplementKnowledgeBase.supplementsByCategory
+            return catalog.supplementsByCategory
         }
         let query = searchText.lowercased()
-        return SupplementKnowledgeBase.supplementsByCategory.compactMap { group in
+        return catalog.supplementsByCategory.compactMap { group in
             let filtered = group.supplements.filter { $0.name.lowercased().contains(query) }
             guard !filtered.isEmpty else { return nil }
             return (category: group.category, label: group.label, supplements: filtered)
@@ -122,7 +125,7 @@ struct AddSupplementSheet: View {
         .presentationDetents([.fraction(0.85), .large])
         .presentationDragIndicator(.visible)
         .onAppear {
-            viewModel.load(profile: profile, existingSupplements: existingSupplements)
+            viewModel.load(profile: profile, existingSupplements: existingSupplements, catalog: catalog)
         }
     }
 
@@ -213,7 +216,7 @@ struct AddSupplementSheet: View {
         let isInPlan = viewModel.planSupplementNames.contains(supplement.name)
         let isExcluded = viewModel.excludedSupplementNames.contains(supplement.name)
         let isSelected = stagedSupplements.contains(supplement.id)
-        let goals = viewModel.matchedGoals(for: supplement, profile: profile)
+        let goals = viewModel.matchedGoals(for: supplement, profile: profile, catalog: catalog)
 
         return RecommendationCard(
             supplement: supplement,
@@ -251,9 +254,9 @@ struct AddSupplementSheet: View {
                     title: "Add \(count) Supplement\(count == 1 ? "" : "s") to Plan",
                     style: .primary,
                     action: {
-                        let engine = RecommendationEngine()
+                        let engine = RecommendationEngine(catalog: catalog)
                         let newSupplements = stagedSupplements.compactMap { id -> PlanSupplement? in
-                            guard let supplement = SupplementKnowledgeBase.allSupplements.first(where: { $0.id == id }) else { return nil }
+                            guard let supplement = catalog.supplement(byId: id) else { return nil }
                             return engine.buildPlanSupplement(from: supplement, for: profile, existingSupplements: existingSupplements)
                         }
                         HapticManager.notification(.success)

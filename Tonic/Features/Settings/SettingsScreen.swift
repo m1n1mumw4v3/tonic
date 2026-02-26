@@ -35,7 +35,7 @@ struct SettingsScreen: View {
                             settingsRow(icon: "info.circle", label: "Version 1.0.0")
                         }
                     }
-                    .padding(.horizontal, DesignTokens.spacing16)
+                    .padding(.horizontal, DesignTokens.screenMargin)
                     .padding(.bottom, DesignTokens.spacing32)
                 }
             }
@@ -167,7 +167,7 @@ struct SettingsScreen: View {
         try? storage.saveProfile(updatedProfile)
 
         if needsRegeneration {
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
             let newPlan = engine.generatePlan(for: updatedProfile)
             appState.activePlan = newPlan
             try? storage.savePlan(newPlan)

@@ -68,6 +68,7 @@ enum DesignTokens {
     static let smallMono     = Font.custom("GeistMono-Regular", size: 10)
 
     // MARK: - Spacing
+    static let screenMargin: CGFloat = 20
     static let spacing2:  CGFloat = 2
     static let spacing4:  CGFloat = 4
     static let spacing8:  CGFloat = 8

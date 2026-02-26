@@ -27,6 +27,9 @@ targets:
   Tonic:
     type: application
     platform: iOS
+    configFiles:
+      Debug: Configuration/Debug.xcconfig
+      Release: Configuration/Release.xcconfig
     sources:
       - path: Tonic
         excludes:
@@ -52,6 +55,12 @@ targets:
           - GeistMono-Regular.ttf
           - GeistMono-Medium.ttf
           - GeistPixel-Grid.ttf
+          - Roboto-Medium.ttf
+        SupabaseURL: $(SUPABASE_URL)
+        SupabaseAnonKey: $(SUPABASE_ANON_KEY)
+        RevenueCatAPIKey: $(REVENUECAT_API_KEY)
+        PostHogAPIKey: $(POSTHOG_API_KEY)
+        PostHogHost: $(POSTHOG_HOST)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations~iphone:
           - UIInterfaceOrientationPortrait

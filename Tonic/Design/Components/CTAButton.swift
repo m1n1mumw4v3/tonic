@@ -40,7 +40,7 @@ struct CTAButton: View {
         case .secondary:
             Color.clear
         case .ghost:
-            Color.clear
+            Color.white
         }
     }
 
@@ -51,7 +51,7 @@ struct CTAButton: View {
         case .secondary:
             return DesignTokens.textPrimary
         case .ghost:
-            return DesignTokens.textSecondary
+            return DesignTokens.textPrimary
         }
     }
 
@@ -75,7 +75,9 @@ struct CTAButton: View {
                 )
         } else {
             switch style {
-            case .primary, .ghost:
+            case .primary:
+                EmptyView()
+            case .ghost:
                 EmptyView()
             case .secondary:
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
@@ -85,7 +87,7 @@ struct CTAButton: View {
     }
 }
 
-private struct CTAPressStyle: ButtonStyle {
+struct CTAPressStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)

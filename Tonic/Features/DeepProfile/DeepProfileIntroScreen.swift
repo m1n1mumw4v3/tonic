@@ -16,8 +16,8 @@ struct DeepProfileIntroScreen: View {
                 }
                 Spacer()
             }
-            .padding(.horizontal, DesignTokens.spacing16)
-            .padding(.top, DesignTokens.spacing8)
+            .padding(.horizontal, DesignTokens.spacing24)
+            .padding(.top, DesignTokens.spacing24)
 
             Spacer()
 

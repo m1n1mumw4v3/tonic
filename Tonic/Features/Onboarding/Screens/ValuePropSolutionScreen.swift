@@ -48,7 +48,7 @@ struct ValuePropSolutionScreen: View {
                             Text("HOW IT WORKS")
                                 .font(.custom("GeistMono-Medium", size: 11))
                                 .tracking(1.2)
-                                .foregroundStyle(Color.white.opacity(0.6))
+                                .foregroundStyle(DesignTokens.textSecondary)
 
                             // Timeline steps
                             VStack(alignment: .leading, spacing: 0) {
@@ -59,7 +59,7 @@ struct ValuePropSolutionScreen: View {
                                             // Connector line drawn first, behind the circle
                                             if index < steps.count - 1 {
                                                 Rectangle()
-                                                    .fill(Color.white.opacity(0.25))
+                                                    .fill(DesignTokens.borderDefault)
                                                     .frame(width: 1.5)
                                                     .frame(maxHeight: .infinity)
                                                     .padding(.top, 20) // start below circle center
@@ -67,16 +67,16 @@ struct ValuePropSolutionScreen: View {
 
                                             // Opaque background to mask the connector line
                                             Circle()
-                                                .fill(Color(hex: "8C7E6A"))
+                                                .fill(DesignTokens.bgSurface)
                                                 .frame(width: 24, height: 24)
 
                                             Circle()
-                                                .fill(Color.white.opacity(0.15))
+                                                .fill(DesignTokens.accentImmunity)
                                                 .frame(width: 24, height: 24)
 
                                             Text(step.number)
                                                 .font(.custom("GeistMono-Medium", size: 12))
-                                                .foregroundStyle(Color.white)
+                                                .foregroundStyle(.white)
                                                 .frame(width: 24, height: 24)
                                         }
                                         .frame(width: 24)
@@ -85,11 +85,11 @@ struct ValuePropSolutionScreen: View {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(step.title)
                                                 .font(.custom("Geist-Medium", size: 14))
-                                                .foregroundStyle(Color.white)
+                                                .foregroundStyle(DesignTokens.textPrimary)
 
                                             Text(step.description)
                                                 .font(.custom("Geist-Regular", size: 13))
-                                                .foregroundStyle(Color.white.opacity(0.7))
+                                                .foregroundStyle(DesignTokens.textSecondary)
                                                 .fixedSize(horizontal: false, vertical: true)
                                         }
                                         .padding(.top, 2)
@@ -101,11 +101,11 @@ struct ValuePropSolutionScreen: View {
                             }
                         }
                         .padding(DesignTokens.spacing16)
-                        .background(Color(hex: "8C7E6A"))
+                        .background(DesignTokens.bgSurface)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusLarge))
                         .overlay(
                             RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
-                                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                                .stroke(DesignTokens.borderDefault, lineWidth: 1)
                         )
                         .padding(.horizontal, DesignTokens.spacing24)
                         .padding(.bottom, DesignTokens.spacing16)

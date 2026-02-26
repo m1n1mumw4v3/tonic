@@ -5,13 +5,32 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if !appState.isOnboardingComplete {
-                OnboardingFlow()    
+            if appState.isCatalogLoading && !appState.supplementCatalog.isLoaded {
+                catalogLoadingView
+            } else if !appState.isOnboardingComplete {
+                OnboardingFlow()
             } else {
                 MainTabView()
             }
         }
         .animation(.easeInOut(duration: 0.35), value: appState.isOnboardingComplete)
+        .animation(.easeInOut(duration: 0.25), value: appState.supplementCatalog.isLoaded)
+    }
+
+    private var catalogLoadingView: some View {
+        ZStack {
+            DesignTokens.bgDeepest.ignoresSafeArea()
+
+            VStack(spacing: DesignTokens.spacing16) {
+                ProgressView()
+                    .tint(DesignTokens.textSecondary)
+                    .scaleEffect(1.2)
+
+                Text("Loading your supplements...")
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textTertiary)
+            }
+        }
     }
 }
 
@@ -22,54 +41,26 @@ struct MainTabView: View {
         @Bindable var state = appState
 
         TabView(selection: $state.selectedTab) {
-            HomeScreen()
+            TodayScreen()
                 .tabItem {
-                    Label(AppTab.home.label, systemImage: AppTab.home.icon)
+                    Label(AppTab.today.label, systemImage: AppTab.today.icon)
                 }
-                .tag(AppTab.home)
+                .tag(AppTab.today)
+
+            InsightsScreen()
+                .tabItem {
+                    Label(AppTab.progress.label, systemImage: AppTab.progress.icon)
+                }
+                .tag(AppTab.progress)
 
             PlanScreen()
                 .tabItem {
                     Label(AppTab.plan.label, systemImage: AppTab.plan.icon)
                 }
                 .tag(AppTab.plan)
-
-            InsightsScreen()
-                .tabItem {
-                    Label(AppTab.insights.label, systemImage: AppTab.insights.icon)
-                }
-                .tag(AppTab.insights)
-
-            SettingsScreen()
-                .tabItem {
-                    Label(AppTab.settings.label, systemImage: AppTab.settings.icon)
-                }
-                .tag(AppTab.settings)
         }
         .tint(DesignTokens.positive)
         .preferredColorScheme(.light)
-        .fullScreenCover(isPresented: $state.showPaywall) {
-            PaywallScreen(
-                viewModel: Self.paywallViewModel(from: appState),
-                onSubscribe: {
-                    appState.isSubscribed = true
-                    appState.showPaywall = false
-                },
-                onDismiss: {
-                    appState.showPaywall = false
-                }
-            )
-        }
-    }
-
-    private static func paywallViewModel(from appState: AppState) -> OnboardingViewModel {
-        let vm = OnboardingViewModel()
-        if let user = appState.currentUser {
-            vm.firstName = user.firstName
-            vm.healthGoals = Set(user.healthGoals)
-        }
-        vm.generatedPlan = appState.activePlan
-        return vm
     }
 }
 

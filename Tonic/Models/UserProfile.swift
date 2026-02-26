@@ -84,8 +84,8 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
     case stressAnxiety = "stress_anxiety"
     case focus
     case gutHealth = "gut_health"
-    case immunity
-    case muscleDevelopment = "fitness_recovery"
+    case immunity = "immune_support"
+    case muscleDevelopment = "muscle_recovery"
     case skinHairNails = "skin_hair_nails"
     case heartHealth = "heart_health"
     case longevity

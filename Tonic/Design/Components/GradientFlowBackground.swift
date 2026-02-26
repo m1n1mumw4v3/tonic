@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct GradientFlowBackground: View {
+    var fullScreen: Bool = false
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var blobs = GradientFlowBackground.generateBlobs()
+    @State private var blobs: [GradientBlob] = []
 
     private static let spectrumColors: [Color] = [
         DesignTokens.accentSleep,
@@ -38,20 +40,13 @@ struct GradientFlowBackground: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            // Vertical gradient mask: transparent at top, opaque at bottom
-            .mask(
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0.25),
-                        .init(color: .white, location: 0.55)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            .modifier(GradientMaskModifier(enabled: !fullScreen))
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
+        .onAppear {
+            blobs = Self.generateBlobs(fullScreen: fullScreen)
+        }
     }
 
     // MARK: - Blob Model
@@ -72,13 +67,13 @@ struct GradientFlowBackground: View {
         var initialScale: CGFloat
     }
 
-    private static func generateBlobs() -> [GradientBlob] {
+    private static func generateBlobs(fullScreen: Bool) -> [GradientBlob] {
         (0..<6).map { index in
             GradientBlob(
                 x: CGFloat.random(in: 0.1...0.9),
-                y: CGFloat.random(in: 0.60...0.95),
-                size: CGFloat.random(in: 300...500),
-                blur: CGFloat.random(in: 40...65),
+                y: CGFloat.random(in: fullScreen ? 0.10...0.90 : 0.60...0.95),
+                size: CGFloat.random(in: fullScreen ? 200...320 : 300...500),
+                blur: CGFloat.random(in: fullScreen ? 50...75 : 40...65),
                 opacity: Double.random(in: 0.50...0.70),
                 color: spectrumColors[index % spectrumColors.count],
                 duration: Double.random(in: 5...8),
@@ -88,6 +83,29 @@ struct GradientFlowBackground: View {
                 targetScale: CGFloat.random(in: 1.0...1.15),
                 initialScale: CGFloat.random(in: 0.85...1.0)
             )
+        }
+    }
+
+    // MARK: - Gradient Mask
+
+    private struct GradientMaskModifier: ViewModifier {
+        let enabled: Bool
+
+        func body(content: Content) -> some View {
+            if enabled {
+                content.mask(
+                    LinearGradient(
+                        stops: [
+                            .init(color: .clear, location: 0.25),
+                            .init(color: .white, location: 0.55)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+            } else {
+                content
+            }
         }
     }
 

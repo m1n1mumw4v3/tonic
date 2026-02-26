@@ -133,8 +133,8 @@ struct DeepProfileHomeCard: View {
     private var subtitleText: String {
         if isComplete {
             return "Your profile is fully complete."
-        } else if service.hasStarted {
-            return "Complete your full health profile to unlock even more personalized recommendations."
+        } else if let next = service.nextIncompleteModule {
+            return next.benefitCopy
         }
         return "Complete targeted health modules to fine-tune your supplement plan."
     }

@@ -12,9 +12,14 @@ class AppState {
     var insights: [Insight] = []
     var deepProfileService = DeepProfileService()
 
+    // Supplement catalog (Supabase-backed)
+    var supplementCatalog = SupplementCatalog()
+    var isCatalogLoading: Bool = false
+    var catalogLoadError: Error?
+
     // Navigation
-    var selectedTab: AppTab = .home
-    var showCheckInFlow: Bool = false
+    var selectedTab: AppTab = .today
+    var showSettings: Bool = false
     var showPaywall: Bool = false
 
     // Computed
@@ -35,9 +40,53 @@ class AppState {
         todayCheckIn?.wellbeingScore
     }
 
+    var hasCompletedWellbeingToday: Bool {
+        todayCheckIn?.wellbeingCompleted == true
+    }
+
+    var mostRecentWellbeingScore: DailyCheckIn? {
+        recentCheckIns.first(where: { $0.wellbeingCompleted })
+    }
+
+    var isDayComplete: Bool {
+        hasCheckedInToday && hasCompletedWellbeingToday && {
+            guard let checkIn = todayCheckIn, let plan = activePlan else { return false }
+            let active = plan.supplements.filter { !$0.isRemoved }
+            return active.allSatisfy { supplement in
+                checkIn.supplementLogs.contains { $0.planSupplementId == supplement.id && $0.taken }
+            }
+        }()
+    }
+
+    // MARK: - Supplement Catalog Loading
+
+    func loadSupplementCatalog() async {
+        isCatalogLoading = true
+        catalogLoadError = nil
+
+        do {
+            let service = SupplementService()
+            let data = try await service.loadCatalog()
+            supplementCatalog.populate(
+                supplements: data.supplements,
+                goalMaps: data.goalMaps,
+                synergyPairings: data.synergies
+            )
+        } catch {
+            catalogLoadError = error
+            // Fall back to static data so the app still works
+            supplementCatalog.populateFromStatic()
+        }
+
+        isCatalogLoading = false
+    }
+
     // MARK: - Demo Data
 
     func loadDemoData() {
+        // Populate catalog from static data for demo mode
+        supplementCatalog.populateFromStatic()
+
         // User profile
         var profile = UserProfile(firstName: "Matt")
         profile.age = 32
@@ -54,7 +103,7 @@ class AppState {
         currentUser = profile
 
         // Generate plan from profile
-        let engine = RecommendationEngine()
+        let engine = RecommendationEngine(catalog: supplementCatalog)
         var plan = engine.generatePlan(for: profile)
         plan.aiReasoning = "Your plan targets sleep quality, sustained energy, mental clarity, and gut health. Magnesium and Ashwagandha form the core foundation, supported by Omega-3 for brain health and Probiotics for digestion. Timing is optimized to match your daily rhythm."
         activePlan = plan
@@ -100,6 +149,7 @@ class AppState {
         for (i, scores) in demoScores.enumerated() {
             let daysAgo = demoScores.count - 1 - i
             let date = calendar.date(byAdding: .day, value: -daysAgo, to: today)!
+            let isToday = daysAgo == 0
             var checkIn = DailyCheckIn(
                 checkInDate: date,
                 createdAt: date,
@@ -107,7 +157,8 @@ class AppState {
                 energyScore: scores.energy,
                 clarityScore: scores.clarity,
                 moodScore: scores.mood,
-                gutScore: scores.gut
+                gutScore: scores.gut,
+                wellbeingCompleted: !isToday
             )
             // Add supplement logs for each check-in
             if let supplements = activePlan?.supplements {
@@ -115,7 +166,7 @@ class AppState {
                     SupplementLog(
                         planSupplementId: supp.id,
                         loggedDate: date,
-                        taken: Bool.random() || i > 3, // more adherent recently
+                        taken: isToday ? false : (Bool.random() || i > 3), // today starts unlogged
                         loggedAt: date
                     )
                 }
@@ -162,26 +213,23 @@ class AppState {
 }
 
 enum AppTab: Int, CaseIterable {
-    case home = 0
+    case today = 0
+    case progress
     case plan
-    case insights
-    case settings
 
     var label: String {
         switch self {
-        case .home: return "Home"
+        case .today: return "Today"
+        case .progress: return "Progress"
         case .plan: return "Plan"
-        case .insights: return "Insights"
-        case .settings: return "Settings"
         }
     }
 
     var icon: String {
         switch self {
-        case .home: return "house.fill"
+        case .today: return "sun.max.fill"
+        case .progress: return "chart.line.uptrend.xyaxis"
         case .plan: return "pill.fill"
-        case .insights: return "chart.line.uptrend.xyaxis"
-        case .settings: return "gearshape.fill"
         }
     }
 }

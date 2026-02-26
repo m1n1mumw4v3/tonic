@@ -289,7 +289,7 @@ struct NotificationReminderScreen: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(enabled.wrappedValue ? DesignTokens.accentClarity : DesignTokens.borderDefault, lineWidth: 1)
+                .stroke(enabled.wrappedValue ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: 1)
         )
     }
 }

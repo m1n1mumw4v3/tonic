@@ -20,6 +20,17 @@ enum EvidenceLevel: String, Codable {
         case .emerging: return "sparkles"
         }
     }
+
+    var description: String {
+        switch self {
+        case .strong:
+            return "This supplement is backed by a large body of high-quality evidence, including multiple randomized controlled trials and systematic reviews. Benefits are well-established and consistently replicated across diverse populations."
+        case .moderate:
+            return "This supplement is supported by human clinical trials demonstrating clear benefits. The evidence is strong, though it may not yet span the breadth of populations, dosages, or long-term outcomes needed to be considered fully established. Confidence is high — the research just hasn't reached textbook status yet."
+        case .emerging:
+            return "This supplement shows promise based on preliminary studies, animal models, or early-phase human trials. The mechanism of action is plausible and initial findings are encouraging, but large-scale human trials are still needed to confirm efficacy."
+        }
+    }
 }
 
 // MARK: - Supplement Definition
@@ -81,7 +92,7 @@ enum SupplementKnowledgeBase {
             GoalSupplementEntry(name: "Collagen Peptides", weight: 1),
             GoalSupplementEntry(name: "Zinc", weight: 1),
         ],
-        "immunity": [
+        "immune_support": [
             GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 3),
             GoalSupplementEntry(name: "Vitamin C", weight: 2),
             GoalSupplementEntry(name: "Zinc", weight: 2),
@@ -93,7 +104,7 @@ enum SupplementKnowledgeBase {
             GoalSupplementEntry(name: "Magnesium Glycinate", weight: 2),
             GoalSupplementEntry(name: "Rhodiola Rosea", weight: 2),
         ],
-        "fitness_recovery": [
+        "muscle_recovery": [
             GoalSupplementEntry(name: "Creatine Monohydrate", weight: 3),
             GoalSupplementEntry(name: "Magnesium Glycinate", weight: 2),
             GoalSupplementEntry(name: "Omega-3 (EPA/DHA)", weight: 2),
@@ -121,30 +132,6 @@ enum SupplementKnowledgeBase {
         ],
     ]
 
-    // MARK: - Known Drug Interactions
-
-    static let knownDrugInteractions: [String: [String]] = [
-        "warfarin": ["Omega-3 (EPA/DHA)"],
-        "blood_thinner": ["Omega-3 (EPA/DHA)"],
-        "coumadin": ["Omega-3 (EPA/DHA)"],
-        "ssri": ["Omega-3 (EPA/DHA)"],
-        "snri": ["Omega-3 (EPA/DHA)"],
-        "sertraline": ["Omega-3 (EPA/DHA)"],
-        "fluoxetine": ["Omega-3 (EPA/DHA)"],
-        "escitalopram": ["Omega-3 (EPA/DHA)"],
-        "blood_pressure": ["CoQ10", "Magnesium Glycinate"],
-        "lisinopril": ["CoQ10", "Magnesium Glycinate"],
-        "amlodipine": ["CoQ10", "Magnesium Glycinate"],
-        "levothyroxine": ["Iron", "Magnesium Glycinate", "Zinc"],
-        "synthroid": ["Iron", "Magnesium Glycinate", "Zinc"],
-        "immunosuppressant": ["Vitamin C", "NAC"],
-        "metformin": ["Berberine"],
-        "diabetes": ["Berberine"],
-        "statin": ["CoQ10"],
-        "atorvastatin": ["CoQ10"],
-        "rosuvastatin": ["CoQ10"]
-    ]
-
     // MARK: - Seeded Supplements
 
     static let allSupplements: [Supplement] = [
@@ -155,7 +142,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "200-400mg",
             recommendedDosageMg: 400,
             recommendedTiming: .evening,
-            benefits: ["sleep", "stress_anxiety", "fitness_recovery", "heart_health"],
+            benefits: ["sleep", "stress_anxiety", "muscle_recovery", "heart_health"],
             contraindications: [],
             drugInteractions: ["blood_pressure", "levothyroxine"],
             notes: "Best absorbed form of magnesium. Take in the evening for sleep support.",
@@ -172,7 +159,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "2000-5000 IU",
             recommendedDosageMg: 2000,
             recommendedTiming: .morning,
-            benefits: ["immunity", "energy", "longevity", "heart_health"],
+            benefits: ["immune_support", "energy", "longevity", "heart_health"],
             contraindications: [],
             drugInteractions: [],
             notes: "K2 ensures calcium goes to bones, not arteries. Take with fat-containing food.",
@@ -189,7 +176,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "1000-2000mg",
             recommendedDosageMg: 1000,
             recommendedTiming: .morning,
-            benefits: ["focus", "longevity", "fitness_recovery", "heart_health"],
+            benefits: ["focus", "longevity", "muscle_recovery", "heart_health"],
             contraindications: [],
             drugInteractions: ["warfarin", "blood_thinner", "ssri"],
             notes: "Look for high EPA+DHA content. Take with food to reduce fishy aftertaste.",
@@ -257,7 +244,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "10-50B CFU",
             recommendedDosageMg: 0,
             recommendedTiming: .emptyStomach,
-            benefits: ["gut_health", "immunity"],
+            benefits: ["gut_health", "immune_support"],
             contraindications: [],
             drugInteractions: [],
             notes: "Take on empty stomach for best survival rate through digestive tract.",
@@ -274,7 +261,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "15-30mg",
             recommendedDosageMg: 25,
             recommendedTiming: .evening,
-            benefits: ["immunity", "skin_hair_nails", "gut_health"],
+            benefits: ["immune_support", "skin_hair_nails", "gut_health"],
             contraindications: [],
             drugInteractions: ["levothyroxine"],
             notes: "Take with food to avoid nausea. Don't take with iron or calcium.",
@@ -291,7 +278,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "500-1000mg",
             recommendedDosageMg: 1000,
             recommendedTiming: .morning,
-            benefits: ["immunity", "skin_hair_nails"],
+            benefits: ["immune_support", "skin_hair_nails"],
             contraindications: [],
             drugInteractions: ["immunosuppressant"],
             notes: "Enhances iron absorption. Split doses for better absorption.",
@@ -325,7 +312,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "3-5g",
             recommendedDosageMg: 5000,
             recommendedTiming: .morning,
-            benefits: ["fitness_recovery", "focus"],
+            benefits: ["muscle_recovery", "focus"],
             contraindications: [],
             drugInteractions: [],
             notes: "Most researched supplement. No loading phase needed at 5g/day.",
@@ -444,7 +431,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "600-1200mg",
             recommendedDosageMg: 600,
             recommendedTiming: .morning,
-            benefits: ["immunity", "longevity"],
+            benefits: ["immune_support", "longevity"],
             contraindications: [],
             drugInteractions: ["immunosuppressant"],
             notes: "Precursor to glutathione. Take on empty stomach for best absorption.",
@@ -478,7 +465,7 @@ enum SupplementKnowledgeBase {
             commonDosageRange: "500-1000mg",
             recommendedDosageMg: 500,
             recommendedTiming: .evening,
-            benefits: ["sleep", "fitness_recovery"],
+            benefits: ["sleep", "muscle_recovery"],
             contraindications: [],
             drugInteractions: [],
             notes: "Natural source of melatonin and anti-inflammatory compounds.",
@@ -552,79 +539,4 @@ enum SupplementKnowledgeBase {
         "Water-soluble vitamins (B, C) are safely excreted if you take more than needed — no toxicity risk.",
     ]
 
-    // MARK: - Category Helpers
-
-    static func categoryLabel(for key: String) -> String {
-        switch key {
-        case "mineral": return "Minerals"
-        case "vitamin": return "Vitamins"
-        case "fatty_acid": return "Fatty Acids"
-        case "adaptogen": return "Adaptogens"
-        case "amino_acid": return "Amino Acids"
-        case "probiotic": return "Probiotics"
-        case "coenzyme": return "Coenzymes"
-        case "protein": return "Proteins"
-        case "mushroom": return "Mushrooms"
-        case "hormone": return "Hormones"
-        case "plant_extract": return "Plant Extracts"
-        case "fruit_extract": return "Fruit Extracts"
-        default: return key.capitalized
-        }
-    }
-
-    static let allCategories: [String] = {
-        var seen = Set<String>()
-        var ordered: [String] = []
-        for supplement in allSupplements {
-            if seen.insert(supplement.category).inserted {
-                ordered.append(supplement.category)
-            }
-        }
-        return ordered
-    }()
-
-    static let supplementsByCategory: [(category: String, label: String, supplements: [Supplement])] = {
-        allCategories.map { cat in
-            (category: cat,
-             label: categoryLabel(for: cat),
-             supplements: allSupplements.filter { $0.category == cat })
-        }
-    }()
-
-    // MARK: - Lookup Functions
-
-    static func supplement(named name: String) -> Supplement? {
-        allSupplements.first { $0.name == name }
-    }
-
-    static func supplements(for goalKey: String) -> [Supplement] {
-        guard let entries = goalSupplementMap[goalKey] else { return [] }
-        return entries.compactMap { supplement(named: $0.name) }
-    }
-
-    static func weight(for supplementName: String, goal goalKey: String) -> Int {
-        goalSupplementMap[goalKey]?.first { $0.name == supplementName }?.weight ?? 0
-    }
-
-    static func hasInteraction(supplement: Supplement, medications: [String]) -> Bool {
-        let medKeywords = medications.flatMap { med in
-            med.lowercased().split(separator: " ").map(String.init)
-        }
-        return supplement.drugInteractions.contains { interaction in
-            medKeywords.contains { keyword in
-                interaction.lowercased().contains(keyword) || keyword.contains(interaction.lowercased())
-            }
-        }
-    }
-
-    static func interactionsForMedication(_ medication: String) -> [String] {
-        let keywords = medication.lowercased().split(separator: " ").map(String.init)
-        var interactions: [String] = []
-        for (drugKey, supplementNames) in knownDrugInteractions {
-            if keywords.contains(where: { $0.contains(drugKey) || drugKey.contains($0) }) {
-                interactions.append(contentsOf: supplementNames)
-            }
-        }
-        return Array(Set(interactions))
-    }
 }

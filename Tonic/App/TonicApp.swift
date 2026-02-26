@@ -13,6 +13,9 @@ struct TonicApp: App {
             ContentView()
                 .environment(appState)
                 .preferredColorScheme(.light)
+                .task {
+                    await appState.loadSupplementCatalog()
+                }
         }
     }
 }

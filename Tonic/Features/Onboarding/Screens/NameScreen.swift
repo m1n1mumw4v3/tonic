@@ -29,7 +29,7 @@ struct NameScreen: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                             .stroke(
-                                isFieldFocused ? DesignTokens.accentClarity : DesignTokens.borderDefault,
+                                isFieldFocused ? DesignTokens.accentGut : DesignTokens.borderDefault,
                                 lineWidth: 1
                             )
                     )

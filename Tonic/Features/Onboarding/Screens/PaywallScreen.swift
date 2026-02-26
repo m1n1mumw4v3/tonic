@@ -13,6 +13,7 @@ struct PaywallScreen: View {
     @State private var showSubtitle = false
     @State private var visibleTeaserCards: Int = 0
     @State private var visibleBenefitRows: Int = 0
+    @State private var showTimeline = false
     @State private var visibleTimelineNodes: Int = 0
     @State private var showPricing = false
     @State private var showCTA = false
@@ -79,6 +80,17 @@ struct PaywallScreen: View {
             return "\(count) more supplements"
         }
         return "\(count) more supplements targeting your \(goalText) goals"
+    }
+
+    @Environment(AppState.self) private var appState
+
+    private func sortedGoals(for supplement: PlanSupplement) -> [HealthGoal] {
+        supplement.matchedGoals
+            .compactMap { HealthGoal(rawValue: $0) }
+            .sorted {
+                appState.supplementCatalog.weight(for: supplement.name, goal: $0.rawValue) >
+                appState.supplementCatalog.weight(for: supplement.name, goal: $1.rawValue)
+            }
     }
 
     private var ctaSubtext: String {
@@ -194,6 +206,7 @@ struct PaywallScreen: View {
                     supplement: supplement,
                     trailingAccessory: .goalChips(Array(viewModel.healthGoals)),
                     expansionMode: .inline,
+                    inlineGoals: sortedGoals(for: supplement),
                     isExpanded: expandedCardID == supplement.id,
                     onTap: {
                         withAnimation(.easeInOut(duration: 0.3)) {
@@ -301,6 +314,8 @@ struct PaywallScreen: View {
             RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
+        .opacity(showTimeline ? 1 : 0)
+        .offset(y: showTimeline || reduceMotion ? 0 : 8)
     }
 
     // MARK: - Pricing Section
@@ -486,6 +501,13 @@ struct PaywallScreen: View {
                 withAnimation(.easeOut(duration: fadeDuration)) {
                     visibleBenefitRows = i + 1
                 }
+            }
+        }
+
+        // 1.5s: Timeline card appears
+        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.22 : 1.5)) {
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showTimeline = true
             }
         }
 
@@ -755,13 +777,15 @@ private struct TrialTimelineView: View {
 // MARK: - Preview
 
 #Preview {
-    PaywallScreen(
+    let appState = AppState()
+    appState.supplementCatalog.populateFromStatic()
+    return PaywallScreen(
         viewModel: {
             let vm = OnboardingViewModel()
             vm.firstName = "Matt"
             vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
 
-            let engine = RecommendationEngine()
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
             let profile = vm.buildUserProfile()
             vm.generatedPlan = engine.generatePlan(for: profile)
 
@@ -769,4 +793,5 @@ private struct TrialTimelineView: View {
         }(),
         onSubscribe: {}
     )
+    .environment(appState)
 }

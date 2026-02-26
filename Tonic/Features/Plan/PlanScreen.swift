@@ -9,6 +9,7 @@ struct PlanScreen: View {
     @State private var undoMessage = ""
     @State private var expandedCardId: UUID?
     @State private var isRemovedExpanded = false
+    @State private var evidenceInfoLevel: EvidenceLevel?
 
     private var userGoals: [HealthGoal] {
         appState.currentUser?.healthGoals.sorted { $0.rawValue < $1.rawValue } ?? []
@@ -89,7 +90,7 @@ struct PlanScreen: View {
                         emptyState
                     }
                 }
-                .padding(.horizontal, DesignTokens.spacing16)
+                .padding(.horizontal, DesignTokens.screenMargin)
                 .padding(.bottom, DesignTokens.spacing32)
             }
 
@@ -110,6 +111,17 @@ struct PlanScreen: View {
                     .padding(.bottom, DesignTokens.spacing48)
                 }
                 .animation(.easeInOut(duration: 0.3), value: showUndoToast)
+            }
+
+            // Evidence info modal overlay
+            if let level = evidenceInfoLevel {
+                EvidenceInfoModal(level: level) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        evidenceInfoLevel = nil
+                    }
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .center)))
+                .zIndex(2)
             }
         }
         .onAppear {
@@ -184,6 +196,11 @@ struct PlanScreen: View {
                         }
                     ],
                     isExpanded: expandedCardId == supplement.id,
+                    onEvidenceInfoTapped: { level in
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            evidenceInfoLevel = level
+                        }
+                    },
                     onTap: {
                         HapticManager.selection()
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
@@ -249,6 +266,11 @@ struct PlanScreen: View {
                         ],
                         isIncluded: false,
                         isExpanded: expandedCardId == supplement.id,
+                        onEvidenceInfoTapped: { level in
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                evidenceInfoLevel = level
+                            }
+                        },
                         onTap: {
                             HapticManager.selection()
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
@@ -328,12 +350,13 @@ struct PlanScreen: View {
 
 #Preview {
     let appState = AppState()
+    appState.supplementCatalog.populateFromStatic()
     var user = UserProfile(firstName: "Matt")
     user.healthGoals = [.sleep, .energy, .focus]
     appState.currentUser = user
     appState.isOnboardingComplete = true
 
-    let engine = RecommendationEngine()
+    let engine = RecommendationEngine(catalog: appState.supplementCatalog)
     appState.activePlan = engine.generatePlan(for: user)
 
     return PlanScreen()
