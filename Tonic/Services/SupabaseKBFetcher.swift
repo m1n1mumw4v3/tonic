@@ -4,7 +4,7 @@ import Supabase
 struct SupabaseKBFetcher {
     private let client: SupabaseClient
 
-    init(client: SupabaseClient = SupabaseConfig.supabaseClient) {
+    init(client: SupabaseClient = AppConfiguration.supabaseClient) {
         self.client = client
     }
 

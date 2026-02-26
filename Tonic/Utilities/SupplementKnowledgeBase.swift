@@ -477,6 +477,10 @@ enum SupplementKnowledgeBase {
         )
     ]
 
+    // MARK: - Drug Interactions (populated from Supabase; empty fallback for hardcoded)
+
+    static let knownDrugInteractions: [String: [String]] = [:]
+
     // MARK: - Onset Timelines
 
     static let onsetTimelines: [String: (min: Int, max: Int, description: String)] = [

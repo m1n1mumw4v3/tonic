@@ -1,6 +1,14 @@
 import Foundation
+import Supabase
 
 enum AppConfiguration {
+
+    // MARK: - Supabase Client
+
+    static let supabaseClient = SupabaseClient(
+        supabaseURL: supabaseURL,
+        supabaseKey: supabaseAnonKey
+    )
 
     // MARK: - Supabase
 

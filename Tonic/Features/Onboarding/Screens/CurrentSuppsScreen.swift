@@ -4,7 +4,6 @@ struct CurrentSuppsScreen: View {
     var viewModel: OnboardingViewModel
     let onContinue: () -> Void
 
-    @Environment(KnowledgeBaseProvider.self) private var kb
     @State private var showingSupplementPicker = false
     @State private var showError = false
 
@@ -133,8 +132,7 @@ struct CurrentSuppsScreen: View {
         .sheet(isPresented: $showingSupplementPicker) {
             SupplementPickerSheet(
                 selectedSupplements: Bindable(viewModel).currentSupplements,
-                customSupplementText: Bindable(viewModel).customSupplementText,
-                kb: kb
+                customSupplementText: Bindable(viewModel).customSupplementText
             )
         }
     }
@@ -179,11 +177,15 @@ struct CurrentSuppsScreen: View {
 }
 
 private struct CurrentSuppsScreenPreview: View {
+    @State private var appState: AppState = {
+        let s = AppState()
+        s.loadDemoData()
+        return s
+    }()
     @State private var viewModel = OnboardingViewModel()
-    @State private var kb = KnowledgeBaseProvider()
 
     var body: some View {
         CurrentSuppsScreen(viewModel: viewModel, onContinue: {})
-            .environment(kb)
+            .environment(appState)
     }
 }

@@ -2,7 +2,6 @@ import SwiftUI
 
 struct BaselineProfileSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(KnowledgeBaseProvider.self) private var kb
     var viewModel: BaselineProfileViewModel
     let onSave: (UserProfile, Bool) -> Void
 
@@ -95,8 +94,7 @@ struct BaselineProfileSheet: View {
         .sheet(isPresented: $showSupplementPicker) {
             SupplementPickerSheet(
                 selectedSupplements: Bindable(viewModel).currentSupplements,
-                customSupplementText: Bindable(viewModel).customSupplementText,
-                kb: kb
+                customSupplementText: Bindable(viewModel).customSupplementText
             )
         }
         .sheet(isPresented: $showMedicationPicker) {
