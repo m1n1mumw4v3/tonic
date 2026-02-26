@@ -53,7 +53,7 @@ struct UserProfile: Codable, Identifiable {
     var morningReminderEnabled: Bool = false
     var eveningReminderEnabled: Bool = false
     var morningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 8, minute: 0))!
-    var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 21, minute: 0))!
+    var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 20, minute: 0))!
 }
 
 // MARK: - Enums

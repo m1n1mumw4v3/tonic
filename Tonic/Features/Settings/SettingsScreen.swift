@@ -155,6 +155,7 @@ struct SettingsScreen: View {
                     viewModel: BaselineProfileViewModel(profile: profile),
                     onSave: handleBaselineProfileSave
                 )
+                .environment(kb)
             }
         }
     }

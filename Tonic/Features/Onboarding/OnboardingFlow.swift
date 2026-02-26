@@ -181,6 +181,16 @@ struct OnboardingFlow: View {
 }
 
 #Preview {
-    OnboardingFlow()
-        .environment(AppState())
+    OnboardingFlowPreview()
+}
+
+private struct OnboardingFlowPreview: View {
+    @State private var appState = AppState()
+    @State private var kb = KnowledgeBaseProvider()
+
+    var body: some View {
+        OnboardingFlow()
+            .environment(appState)
+            .environment(kb)
+    }
 }

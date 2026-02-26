@@ -3,8 +3,8 @@ import SwiftUI
 struct SupplementPickerSheet: View {
     @Binding var selectedSupplements: Set<String>
     @Binding var customSupplementText: String
+    var kb: KnowledgeBaseProvider
     @Environment(\.dismiss) private var dismiss
-    @Environment(KnowledgeBaseProvider.self) private var kb
 
     @State private var searchText = ""
     @FocusState private var isOtherFieldFocused: Bool

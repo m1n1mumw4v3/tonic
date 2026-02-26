@@ -18,6 +18,7 @@ class KnowledgeBaseProvider {
     private(set) var dailyTips: [String] = []
     private(set) var isLoaded: Bool = false
     private(set) var dataSource: KBDataSource = .hardcoded
+    private(set) var loadError: String?
 
     // MARK: - Init (synchronous, hardcoded data)
 
@@ -53,11 +54,13 @@ class KnowledgeBaseProvider {
     // MARK: - Async Load (cache → network → fallback)
 
     func loadKnowledgeBase() async {
+        print("[KB] loadKnowledgeBase() called — currently \(allSupplements.count) supplements (\(dataSource))")
         let cache = KnowledgeBaseCacheService()
 
         // Try fresh cache first
         if cache.isFresh(), let snapshot = cache.load() {
             apply(snapshot: snapshot, source: .cached)
+            print("[KB] Loaded \(allSupplements.count) supplements from fresh cache")
             return
         }
 
@@ -67,12 +70,17 @@ class KnowledgeBaseProvider {
             let snapshot = try await fetcher.fetchAll()
             try? cache.save(snapshot)
             apply(snapshot: snapshot, source: .remote)
+            print("[KB] Loaded \(allSupplements.count) supplements from Supabase")
         } catch {
+            loadError = String(describing: error)
+            print("[KB] Supabase fetch failed: \(error)")
             // Fall back to stale cache
             if let stale = cache.loadIgnoringStaleness() {
                 apply(snapshot: stale, source: .cached)
+                print("[KB] Fell back to stale cache (\(allSupplements.count) supplements)")
+            } else {
+                print("[KB] No cache available, staying on hardcoded (\(allSupplements.count) supplements)")
             }
-            // Otherwise stay on hardcoded (already loaded in init)
         }
     }
 

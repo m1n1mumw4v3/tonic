@@ -535,20 +535,29 @@ private struct RevealPulseModifier: ViewModifier {
 // MARK: - Preview
 
 #Preview {
-    let kb = KnowledgeBaseProvider()
-    PlanRevealScreen(
-        viewModel: {
-            let vm = OnboardingViewModel()
-            vm.firstName = "Matt"
-            vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
+    PlanRevealScreenPreview()
+}
 
-            let engine = RecommendationEngine(kb: kb)
-            let profile = vm.buildUserProfile()
-            vm.generatedPlan = engine.generatePlan(for: profile)
+private struct PlanRevealScreenPreview: View {
+    @State private var viewModel: OnboardingViewModel
+    @State private var kb: KnowledgeBaseProvider
 
-            return vm
-        }(),
-        onConfirm: {}
-    )
-    .environment(kb)
+    init() {
+        let kbInstance = KnowledgeBaseProvider()
+        let vm = OnboardingViewModel()
+        vm.firstName = "Matt"
+        vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
+
+        let engine = RecommendationEngine(kb: kbInstance)
+        let profile = vm.buildUserProfile()
+        vm.generatedPlan = engine.generatePlan(for: profile)
+
+        _viewModel = State(initialValue: vm)
+        _kb = State(initialValue: kbInstance)
+    }
+
+    var body: some View {
+        PlanRevealScreen(viewModel: viewModel, onConfirm: {})
+            .environment(kb)
+    }
 }

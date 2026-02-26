@@ -53,7 +53,7 @@ class OnboardingViewModel {
     var morningReminderEnabled: Bool = true
     var eveningReminderEnabled: Bool = true
     var morningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 8, minute: 0))!
-    var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 21, minute: 0))!
+    var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 20, minute: 0))!
 
     // Generated plan (held between AI Interstitial and Plan Reveal)
     var generatedPlan: SupplementPlan?

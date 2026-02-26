@@ -95,16 +95,42 @@ struct SettingsPlaceholderScreen: View {
 }
 
 #Preview("Main Tabs") {
-    let appState = AppState()
-    appState.loadDemoData()
-    return MainTabView()
-        .environment(appState)
+    MainTabPreview()
 }
 
 #Preview("Full App") {
-    let appState = AppState()
-    appState.loadDemoData()
-    appState.isOnboardingComplete = false
-    return ContentView()
-        .environment(appState)
+    FullAppPreview()
+}
+
+private struct MainTabPreview: View {
+    @State private var appState: AppState = {
+        let s = AppState()
+        s.loadDemoData()
+        return s
+    }()
+    @State private var kb = KnowledgeBaseProvider()
+
+    var body: some View {
+        MainTabView()
+            .environment(appState)
+            .environment(kb)
+            .task { await kb.loadKnowledgeBase() }
+    }
+}
+
+private struct FullAppPreview: View {
+    @State private var appState: AppState = {
+        let s = AppState()
+        s.loadDemoData()
+        s.isOnboardingComplete = false
+        return s
+    }()
+    @State private var kb = KnowledgeBaseProvider()
+
+    var body: some View {
+        ContentView()
+            .environment(appState)
+            .environment(kb)
+            .task { await kb.loadKnowledgeBase() }
+    }
 }

@@ -172,5 +172,13 @@ struct MedicationsScreen: View {
 }
 
 #Preview {
-    MedicationsScreen(viewModel: OnboardingViewModel(), onContinue: {})
+    MedicationsScreenPreview()
+}
+
+private struct MedicationsScreenPreview: View {
+    @State private var viewModel = OnboardingViewModel()
+
+    var body: some View {
+        MedicationsScreen(viewModel: viewModel, onContinue: {})
+    }
 }
