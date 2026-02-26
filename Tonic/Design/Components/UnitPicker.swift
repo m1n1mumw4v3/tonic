@@ -22,7 +22,7 @@ struct UnitPicker<Unit: Hashable & CaseIterable>: View where Unit.AllCases: Rand
                         .frame(width: 48, height: 44)
                         .background(
                             selection == unit
-                                ? Color(hex: "#8C7E6A")
+                                ? DesignTokens.textPrimary
                                 : Color.clear
                         )
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))

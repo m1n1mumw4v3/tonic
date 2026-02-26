@@ -32,6 +32,10 @@ class DeepProfileService {
         completedCount > 0
     }
 
+    var nextIncompleteModule: DeepProfileModuleType? {
+        DeepProfileModuleType.allCases.first { !isModuleCompleted($0) }
+    }
+
     // MARK: - Operations
 
     func loadCompletedModules() {

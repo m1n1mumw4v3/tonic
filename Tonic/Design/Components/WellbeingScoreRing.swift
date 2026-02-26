@@ -6,8 +6,8 @@ struct WellbeingScoreRing: View {
     let clarityScore: Int
     let moodScore: Int
     let gutScore: Int
-    var size: CGFloat = 140
-    var lineWidth: CGFloat = 10
+    var size: CGFloat = 180
+    var lineWidth: CGFloat = 12
     var animated: Bool = true
 
     @State private var animationProgress: CGFloat = 0
@@ -38,7 +38,7 @@ struct WellbeingScoreRing: View {
     }
 
     var body: some View {
-        VStack(spacing: DesignTokens.spacing12) {
+        VStack(spacing: DesignTokens.spacing20) {
             // Ring
             ZStack {
                 // Background ring with recessed inner shadow
@@ -133,16 +133,18 @@ struct WellbeingScoreRing: View {
             }
 
             // Mini dimension scores
-            HStack(spacing: DesignTokens.spacing12) {
+            HStack(spacing: DesignTokens.spacing16) {
                 ForEach(dimensions, id: \.0) { dimension, score in
-                    VStack(spacing: 2) {
+                    VStack(spacing: 4) {
                         Text("\(score)")
                             .font(DesignTokens.dataMono)
-                            .foregroundStyle(dimension.color)
-                        Text(dimension.shortLabel)
-                            .font(.custom("GeistMono-Regular", size: 8))
+                            .foregroundStyle(DesignTokens.bgDeepest)
+                            .frame(width: 32, height: 32)
+                            .background(dimension.color)
+                            .clipShape(Circle())
+                        Text(dimension.rawValue.uppercased())
+                            .font(.custom("GeistMono-Regular", size: 9))
                             .tracking(0.8)
-                            .textCase(.uppercase)
                             .foregroundStyle(DesignTokens.textTertiary)
                     }
                 }

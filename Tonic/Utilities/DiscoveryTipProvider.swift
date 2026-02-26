@@ -2,8 +2,8 @@ import SwiftUI
 
 enum DiscoveryTipProvider {
 
-    static func tips(for plan: SupplementPlan?, kb: KnowledgeBaseProvider) -> [DiscoveryTip] {
-        let supplementTips = supplementTips(for: plan, kb: kb)
+    static func tips(for plan: SupplementPlan?, catalog: SupplementCatalog? = nil) -> [DiscoveryTip] {
+        let supplementTips = supplementTips(for: plan, catalog: catalog)
         let habitTips = habitTips
 
         // Interleave: supplement, habit, supplement, habit, ...
@@ -27,13 +27,13 @@ enum DiscoveryTipProvider {
 
     // MARK: - Supplement Tips
 
-    private static func supplementTips(for plan: SupplementPlan?, kb: KnowledgeBaseProvider) -> [DiscoveryTip] {
+    private static func supplementTips(for plan: SupplementPlan?, catalog: SupplementCatalog? = nil) -> [DiscoveryTip] {
         guard let plan else { return [] }
 
         var tips: [DiscoveryTip] = []
 
         for supplement in plan.supplements where supplement.isIncluded {
-            let color = dimensionColor(for: supplement, kb: kb)
+            let color = dimensionColor(for: supplement)
 
             // Fun fact from CheckInInsightGenerator
             if let facts = CheckInInsightGenerator.supplementFunFacts[supplement.name],
@@ -47,12 +47,12 @@ enum DiscoveryTipProvider {
                 ))
             }
 
-            // Absorption/timing tip from knowledge base
-            if let supplementInfo = kb.supplement(named: supplement.name) {
+            // Absorption/timing tip from catalog
+            if let kb = catalog?.supplement(named: supplement.name) {
                 tips.append(DiscoveryTip(
                     category: .supplementFact,
                     title: "\(supplement.name) Tip",
-                    body: supplementInfo.notes,
+                    body: kb.notes,
                     accentColor: color,
                     supplementName: supplement.name
                 ))
@@ -105,7 +105,7 @@ enum DiscoveryTipProvider {
 
     // MARK: - Color Mapping
 
-    private static func dimensionColor(for supplement: PlanSupplement, kb: KnowledgeBaseProvider) -> Color {
+    private static func dimensionColor(for supplement: PlanSupplement) -> Color {
         // Map from matchedGoals to a WellnessDimension color
         let goalToDimension: [String: Color] = [
             "sleep": DesignTokens.accentSleep,
@@ -113,21 +113,14 @@ enum DiscoveryTipProvider {
             "focus": DesignTokens.accentClarity,
             "gut_health": DesignTokens.accentGut,
             "stress_anxiety": DesignTokens.accentMood,
-            "immunity": DesignTokens.accentGut,
-            "fitness_recovery": DesignTokens.accentEnergy,
+            "immune_support": DesignTokens.accentGut,
+            "muscle_recovery": DesignTokens.accentEnergy,
             "skin_hair_nails": DesignTokens.accentMood,
             "longevity": DesignTokens.accentLongevity,
         ]
 
         if let firstGoal = supplement.matchedGoals.first,
            let color = goalToDimension[firstGoal] {
-            return color
-        }
-
-        // Fallback: check knowledge base benefits
-        if let supplementInfo = kb.supplement(named: supplement.name),
-           let firstBenefit = supplementInfo.benefits.first,
-           let color = goalToDimension[firstBenefit] {
             return color
         }
 

@@ -10,6 +10,12 @@ struct SupplementLogList: View {
     var amComplete: Bool = false
     var pmComplete: Bool = false
 
+    @State private var amExpanded = false
+    @State private var pmExpanded = false
+    @State private var amCollapsed = false
+    @State private var pmCollapsed = false
+    @State private var amTakeAllFired = false
+    @State private var pmTakeAllFired = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let amTimings: Set<SupplementTiming> = [.emptyStomach, .morning, .withFood]
@@ -42,6 +48,9 @@ struct SupplementLogList: View {
                     tint: DesignTokens.accentEnergy,
                     progress: amProgress,
                     isComplete: amComplete,
+                    isExpanded: $amExpanded,
+                    isCollapsed: $amCollapsed,
+                    takeAllFired: $amTakeAllFired,
                     supplements: amSupplements
                 )
             }
@@ -54,6 +63,9 @@ struct SupplementLogList: View {
                     tint: DesignTokens.accentSleep,
                     progress: pmProgress,
                     isComplete: pmComplete,
+                    isExpanded: $pmExpanded,
+                    isCollapsed: $pmCollapsed,
+                    takeAllFired: $pmTakeAllFired,
                     supplements: pmSupplements
                 )
             }
@@ -68,57 +80,107 @@ struct SupplementLogList: View {
         tint: Color,
         progress: CGFloat,
         isComplete: Bool,
+        isExpanded: Binding<Bool>,
+        isCollapsed: Binding<Bool>,
+        takeAllFired: Binding<Bool>,
         supplements: [PlanSupplement]
     ) -> some View {
-        VStack(spacing: 0) {
+        let showRows = !isCollapsed.wrappedValue || isExpanded.wrappedValue
+
+        return VStack(spacing: 0) {
             // Section header
             HStack(spacing: DesignTokens.spacing4) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 17, weight: .medium))
                     .foregroundStyle(tint)
                     .opacity(isComplete ? 1.0 : 0.7)
-                    .animation(reduceMotion ? .none : .easeOut(duration: 0.3), value: isComplete)
                 Text(label)
-                    .font(DesignTokens.sectionHeader)
+                    .font(.custom("Geist-SemiBold", size: 16))
                     .tracking(1.5)
                     .foregroundStyle(DesignTokens.textSecondary)
-                if isComplete {
-                    AnimatedCheckmark(isChecked: true, color: DesignTokens.textPrimary, size: 12)
-                        .transition(.opacity)
+                if isCollapsed.wrappedValue {
+                    HStack(spacing: 4) {
+                        AnimatedCheckmark(isChecked: true, color: .white, size: 8)
+                        Text("COMPLETE")
+                            .font(DesignTokens.labelMono)
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, DesignTokens.spacing8)
+                    .padding(.vertical, 3)
+                    .background(DesignTokens.positive)
+                    .clipShape(Capsule())
+                    .transition(.opacity)
                 }
                 Spacer()
-                if !isComplete {
+                if isCollapsed.wrappedValue {
+                    HStack(spacing: DesignTokens.spacing4) {
+                        Text(isExpanded.wrappedValue ? "Edit" : "")
+                            .font(DesignTokens.captionFont)
+                            .foregroundStyle(DesignTokens.textTertiary)
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(DesignTokens.textTertiary)
+                            .rotationEffect(.degrees(isExpanded.wrappedValue ? 180 : 0))
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation(reduceMotion ? .none : .easeInOut(duration: 0.5)) {
+                            isExpanded.wrappedValue.toggle()
+                        }
+                    }
+                    .transition(.opacity)
+                } else if onTakeAllSection != nil {
                     Button {
+                        guard !takeAllFired.wrappedValue else { return }
+                        takeAllFired.wrappedValue = true
+                        HapticManager.impact(.light)
                         onTakeAllSection?(supplements.map(\.id))
                     } label: {
                         Text("TAKE ALL")
-                            .font(DesignTokens.sectionHeader)
-                            .tracking(0.5)
-                            .foregroundStyle(DesignTokens.textTertiary)
+                            .font(DesignTokens.captionFont)
+                            .foregroundStyle(DesignTokens.positive)
                     }
-                    .transition(.opacity)
+                    .disabled(takeAllFired.wrappedValue)
                 }
             }
-            .animation(reduceMotion ? .none : .easeOut(duration: 0.3), value: isComplete)
             .padding(.horizontal, DesignTokens.spacing16)
             .padding(.top, DesignTokens.spacing12)
-            .padding(.bottom, DesignTokens.spacing4)
+            .padding(.bottom, showRows ? DesignTokens.spacing4 : DesignTokens.spacing12)
 
-            // Rows
-            ForEach(Array(supplements.enumerated()), id: \.element.id) { index, supplement in
-                SupplementLogRow(
-                    supplement: supplement,
-                    isTaken: supplementStates[supplement.id] ?? false,
-                    onToggle: { onToggle(supplement.id) }
-                )
+            // Rows (collapse when section is complete and not expanded)
+            if showRows {
+                ForEach(Array(supplements.enumerated()), id: \.element.id) { index, supplement in
+                    SupplementLogRow(
+                        supplement: supplement,
+                        isTaken: supplementStates[supplement.id] ?? false,
+                        onToggle: { onToggle(supplement.id) }
+                    )
+                }
+
             }
-
-            Spacer().frame(height: DesignTokens.spacing4)
+        }
+        .animation(reduceMotion ? .none : .easeInOut(duration: 0.6), value: isCollapsed.wrappedValue)
+        .animation(reduceMotion ? .none : .easeInOut(duration: 0.5), value: isExpanded.wrappedValue)
+        .onChange(of: isComplete) { _, complete in
+            if complete {
+                // Delay the collapse so checkmark animations finish first
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        isCollapsed.wrappedValue = true
+                    }
+                }
+            } else {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    isCollapsed.wrappedValue = false
+                    isExpanded.wrappedValue = false
+                }
+                takeAllFired.wrappedValue = false
+            }
         }
         .background(
             ZStack {
                 // Spectrum glow (behind card)
-                if isComplete {
+                if isCollapsed.wrappedValue {
                     RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                         .stroke(
                             AngularGradient(
@@ -135,7 +197,7 @@ struct SupplementLogList: View {
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                     .fill(DesignTokens.bgSurface)
             }
-            .animation(reduceMotion ? .none : .easeInOut(duration: 0.4), value: isComplete)
+            .animation(reduceMotion ? .none : .easeInOut(duration: 0.6), value: isCollapsed.wrappedValue)
         )
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
@@ -144,7 +206,7 @@ struct SupplementLogList: View {
         .overlay(
             SpectrumProgressBorder(progress: progress, cornerRadius: DesignTokens.radiusMedium)
                 .animation(
-                    reduceMotion ? .none : .easeOut(duration: 0.35),
+                    reduceMotion ? .none : .easeOut(duration: 0.5),
                     value: progress
                 )
         )
@@ -153,7 +215,7 @@ struct SupplementLogList: View {
 
 // MARK: - Spectrum Progress Border
 
-private struct SpectrumProgressBorder: View {
+struct SpectrumProgressBorder: View {
     let progress: CGFloat
     let cornerRadius: CGFloat
 
@@ -172,7 +234,7 @@ private struct SpectrumProgressBorder: View {
 
 // MARK: - Custom Shape (starts top-left)
 
-private struct TopLeftRoundedRect: Shape {
+struct TopLeftRoundedRect: Shape {
     let cornerRadius: CGFloat
 
     func path(in rect: CGRect) -> Path {

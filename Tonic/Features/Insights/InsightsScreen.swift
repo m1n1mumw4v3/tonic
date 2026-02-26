@@ -64,7 +64,7 @@ struct InsightsScreen: View {
                         emptyState
                     }
                 }
-                .padding(.horizontal, DesignTokens.spacing16)
+                .padding(.horizontal, DesignTokens.screenMargin)
                 .padding(.bottom, DesignTokens.spacing32)
             }
         }

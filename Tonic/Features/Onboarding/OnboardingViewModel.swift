@@ -58,6 +58,11 @@ class OnboardingViewModel {
     // Generated plan (held between AI Interstitial and Plan Reveal)
     var generatedPlan: SupplementPlan?
 
+    // Account creation
+    var accountCreated: Bool = false
+    var accountEmail: String = ""
+    var accountProvider: String = "" // "apple", "google", "email"
+
     // Common allergies
     static let commonAllergies = ["Shellfish", "Soy", "Gluten", "Dairy", "Tree Nuts", "Fish"]
 

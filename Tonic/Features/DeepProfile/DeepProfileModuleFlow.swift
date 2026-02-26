@@ -60,8 +60,8 @@ struct DeepProfileModuleFlow: View {
                                 .font(DesignTokens.labelMono)
                                 .foregroundStyle(DesignTokens.textTertiary)
                         }
-                        .padding(.horizontal, DesignTokens.spacing16)
-                        .padding(.top, DesignTokens.spacing8)
+                        .padding(.horizontal, DesignTokens.spacing24)
+                        .padding(.top, DesignTokens.spacing24)
 
                         DeepProfileQuestionScreen(
                             question: question,

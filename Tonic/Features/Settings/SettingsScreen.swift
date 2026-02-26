@@ -2,7 +2,6 @@ import SwiftUI
 
 struct SettingsScreen: View {
     @Environment(AppState.self) private var appState
-    @Environment(KnowledgeBaseProvider.self) private var kb
     @State private var hubViewModel = DeepProfileHubViewModel()
     @State private var showBaselineProfile = false
 
@@ -36,7 +35,7 @@ struct SettingsScreen: View {
                             settingsRow(icon: "info.circle", label: "Version 1.0.0")
                         }
                     }
-                    .padding(.horizontal, DesignTokens.spacing16)
+                    .padding(.horizontal, DesignTokens.screenMargin)
                     .padding(.bottom, DesignTokens.spacing32)
                 }
             }
@@ -155,7 +154,6 @@ struct SettingsScreen: View {
                     viewModel: BaselineProfileViewModel(profile: profile),
                     onSave: handleBaselineProfileSave
                 )
-                .environment(kb)
             }
         }
     }
@@ -169,7 +167,7 @@ struct SettingsScreen: View {
         try? storage.saveProfile(updatedProfile)
 
         if needsRegeneration {
-            let engine = RecommendationEngine(kb: kb)
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
             let newPlan = engine.generatePlan(for: updatedProfile)
             appState.activePlan = newPlan
             try? storage.savePlan(newPlan)

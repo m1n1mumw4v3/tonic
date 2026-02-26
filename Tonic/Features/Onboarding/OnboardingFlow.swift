@@ -2,12 +2,11 @@ import SwiftUI
 
 struct OnboardingFlow: View {
     @Environment(AppState.self) private var appState
-    @Environment(KnowledgeBaseProvider.self) private var kb
     @State private var viewModel = OnboardingViewModel()
     @State private var currentScreen: Int = 0
     @State private var navigatingForward: Bool = true
 
-    private let totalScreens = 25
+    private let totalScreens = 26
 
     private var skippedScreens: Set<Int> {
         var skipped = Set<Int>()
@@ -92,11 +91,13 @@ struct OnboardingFlow: View {
                     case 21:
                         NotificationReminderScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 22:
-                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
+                        AccountCreationScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 23:
-                        PlanRevealScreen(viewModel: viewModel, onConfirm: nextScreen)
+                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
                     case 24:
-                        PaywallScreen(viewModel: viewModel, onSubscribe: completeOnboarding, onDismiss: dismissPaywall)
+                        PaywallScreen(viewModel: viewModel, onSubscribe: nextScreen, onDismiss: dismissPaywall)
+                    case 25:
+                        PlanRevealScreen(viewModel: viewModel, onConfirm: completeOnboarding)
                     default:
                         EmptyView()
                     }
@@ -138,7 +139,7 @@ struct OnboardingFlow: View {
     private func onInterstitialComplete() {
         // Build profile and generate plan, store on viewModel for the Plan Reveal screen
         let profile = viewModel.buildUserProfile()
-        let engine = RecommendationEngine(kb: kb)
+        let engine = RecommendationEngine(catalog: appState.supplementCatalog)
         let plan = engine.generatePlan(for: profile)
         viewModel.generatedPlan = plan
         nextScreen()
@@ -154,7 +155,7 @@ struct OnboardingFlow: View {
             appState.activePlan = plan
         } else {
             // Fallback: generate fresh if somehow missing
-            let engine = RecommendationEngine(kb: kb)
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
             let plan = engine.generatePlan(for: profile)
             appState.activePlan = plan
         }
@@ -170,7 +171,7 @@ struct OnboardingFlow: View {
             plan.supplements = plan.supplements.filter(\.isIncluded)
             appState.activePlan = plan
         } else {
-            let engine = RecommendationEngine(kb: kb)
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
             let plan = engine.generatePlan(for: profile)
             appState.activePlan = plan
         }
@@ -181,16 +182,6 @@ struct OnboardingFlow: View {
 }
 
 #Preview {
-    OnboardingFlowPreview()
-}
-
-private struct OnboardingFlowPreview: View {
-    @State private var appState = AppState()
-    @State private var kb = KnowledgeBaseProvider()
-
-    var body: some View {
-        OnboardingFlow()
-            .environment(appState)
-            .environment(kb)
-    }
+    OnboardingFlow()
+        .environment(AppState())
 }

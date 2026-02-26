@@ -4,7 +4,6 @@ import UIKit
 struct PlanRevealScreen: View {
     var viewModel: OnboardingViewModel
     let onConfirm: () -> Void
-    @Environment(KnowledgeBaseProvider.self) private var kb
 
     // MARK: - Animation State
 
@@ -24,6 +23,7 @@ struct PlanRevealScreen: View {
     @State private var expandedCardId: UUID?
     @State private var selectedGoalFilter: HealthGoal? = nil
     @State private var animatedSupplementCount: Int = 0
+    @State private var showEvidenceInfo: EvidenceLevel? = nil
 
     private let reduceMotion = UIAccessibility.isReduceMotionEnabled
 
@@ -93,7 +93,18 @@ struct PlanRevealScreen: View {
                 // Fixed bottom CTA
                 ctaSection
             }
+            // Evidence info modal
+            if let level = showEvidenceInfo {
+                EvidenceInfoModal(level: level) {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        showEvidenceInfo = nil
+                    }
+                }
+                .transition(.opacity)
+                .zIndex(10)
+            }
         }
+        .animation(.easeOut(duration: 0.2), value: showEvidenceInfo != nil)
         .onAppear {
             generateParticles()
             startEntranceAnimation()
@@ -198,12 +209,14 @@ struct PlanRevealScreen: View {
         return supplement.matchedGoals.contains(filter.rawValue)
     }
 
+    @Environment(AppState.self) private var appState
+
     private func sortedGoals(for supplement: PlanSupplement) -> [HealthGoal] {
         supplement.matchedGoals
             .compactMap { HealthGoal(rawValue: $0) }
             .sorted {
-                kb.weight(for: supplement.name, goal: $0.rawValue) >
-                kb.weight(for: supplement.name, goal: $1.rawValue)
+                appState.supplementCatalog.weight(for: supplement.name, goal: $0.rawValue) >
+                appState.supplementCatalog.weight(for: supplement.name, goal: $1.rawValue)
             }
     }
 
@@ -235,6 +248,10 @@ struct PlanRevealScreen: View {
                                 inlineGoals: sortedGoals(for: supplement),
                                 isIncluded: supplement.isIncluded,
                                 isExpanded: expandedCardId == supplement.id,
+                                showBottomLearnMore: true,
+                                onEvidenceInfoTapped: { level in
+                                    showEvidenceInfo = level
+                                },
                                 onTap: {
                                     HapticManager.selection()
                                     withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
@@ -535,29 +552,21 @@ private struct RevealPulseModifier: ViewModifier {
 // MARK: - Preview
 
 #Preview {
-    PlanRevealScreenPreview()
-}
+    let appState = AppState()
+    appState.supplementCatalog.populateFromStatic()
+    return PlanRevealScreen(
+        viewModel: {
+            let vm = OnboardingViewModel()
+            vm.firstName = "Matt"
+            vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
 
-private struct PlanRevealScreenPreview: View {
-    @State private var viewModel: OnboardingViewModel
-    @State private var kb: KnowledgeBaseProvider
+            let engine = RecommendationEngine(catalog: appState.supplementCatalog)
+            let profile = vm.buildUserProfile()
+            vm.generatedPlan = engine.generatePlan(for: profile)
 
-    init() {
-        let kbInstance = KnowledgeBaseProvider()
-        let vm = OnboardingViewModel()
-        vm.firstName = "Matt"
-        vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
-
-        let engine = RecommendationEngine(kb: kbInstance)
-        let profile = vm.buildUserProfile()
-        vm.generatedPlan = engine.generatePlan(for: profile)
-
-        _viewModel = State(initialValue: vm)
-        _kb = State(initialValue: kbInstance)
-    }
-
-    var body: some View {
-        PlanRevealScreen(viewModel: viewModel, onConfirm: {})
-            .environment(kb)
-    }
+            return vm
+        }(),
+        onConfirm: {}
+    )
+    .environment(appState)
 }

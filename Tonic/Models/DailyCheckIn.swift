@@ -13,6 +13,9 @@ struct DailyCheckIn: Codable, Identifiable {
     var moodScore: Int = 5
     var gutScore: Int = 5
 
+    // Whether the wellbeing sliders have been submitted (vs just supplement logging)
+    var wellbeingCompleted: Bool = true
+
     // Computed wellbeing score
     var wellbeingScore: Double {
         WellbeingScore.calculate(
@@ -25,6 +28,57 @@ struct DailyCheckIn: Codable, Identifiable {
 
     // Supplement log for this day
     var supplementLogs: [SupplementLog] = []
+
+    enum CodingKeys: String, CodingKey {
+        case id, userId, checkInDate, createdAt
+        case sleepScore, energyScore, clarityScore, moodScore, gutScore
+        case wellbeingCompleted, notes, supplementLogs
+    }
+
+    init(
+        id: UUID = UUID(),
+        userId: UUID? = nil,
+        checkInDate: Date = Date(),
+        createdAt: Date = Date(),
+        sleepScore: Int = 5,
+        energyScore: Int = 5,
+        clarityScore: Int = 5,
+        moodScore: Int = 5,
+        gutScore: Int = 5,
+        wellbeingCompleted: Bool = true,
+        notes: String? = nil,
+        supplementLogs: [SupplementLog] = []
+    ) {
+        self.id = id
+        self.userId = userId
+        self.checkInDate = checkInDate
+        self.createdAt = createdAt
+        self.sleepScore = sleepScore
+        self.energyScore = energyScore
+        self.clarityScore = clarityScore
+        self.moodScore = moodScore
+        self.gutScore = gutScore
+        self.wellbeingCompleted = wellbeingCompleted
+        self.notes = notes
+        self.supplementLogs = supplementLogs
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        userId = try container.decodeIfPresent(UUID.self, forKey: .userId)
+        checkInDate = try container.decode(Date.self, forKey: .checkInDate)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        sleepScore = try container.decode(Int.self, forKey: .sleepScore)
+        energyScore = try container.decode(Int.self, forKey: .energyScore)
+        clarityScore = try container.decode(Int.self, forKey: .clarityScore)
+        moodScore = try container.decode(Int.self, forKey: .moodScore)
+        gutScore = try container.decode(Int.self, forKey: .gutScore)
+        // Backward compatible: existing check-ins without this field were full check-ins
+        wellbeingCompleted = try container.decodeIfPresent(Bool.self, forKey: .wellbeingCompleted) ?? true
+        notes = try container.decodeIfPresent(String.self, forKey: .notes)
+        supplementLogs = try container.decodeIfPresent([SupplementLog].self, forKey: .supplementLogs) ?? []
+    }
 }
 
 struct SupplementLog: Codable, Identifiable {

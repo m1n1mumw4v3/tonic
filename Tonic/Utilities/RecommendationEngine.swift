@@ -1,34 +1,17 @@
 import Foundation
 
 struct RecommendationEngine {
+    private let catalog: SupplementCatalog
+    private let drugInteractions: [DBDrugInteraction]
+    private let contraindications: [DBContraindication]
 
-    let kb: KnowledgeBaseProvider
-
-    init(kb: KnowledgeBaseProvider = KnowledgeBaseProvider()) {
-        self.kb = kb
+    init(catalog: SupplementCatalog,
+         drugInteractions: [DBDrugInteraction] = [],
+         contraindications: [DBContraindication] = []) {
+        self.catalog = catalog
+        self.drugInteractions = drugInteractions
+        self.contraindications = contraindications
     }
-
-    // MARK: - Known Synergies
-
-    private static let knownSynergies: [String: [(partner: String, reason: String)]] = [
-        "L-Theanine": [("caffeine", "promotes calm, focused energy without jitters")],
-        "Vitamin C": [
-            ("Iron", "enhances iron absorption by up to 6x"),
-            ("Collagen Peptides", "essential cofactor for collagen synthesis"),
-            ("NAC", "supports glutathione production"),
-        ],
-        "Iron": [("Vitamin C", "enhances iron absorption by up to 6x")],
-        "Vitamin D3 + K2": [("Magnesium Glycinate", "magnesium aids vitamin D metabolism and activation")],
-        "Magnesium Glycinate": [("Vitamin D3 + K2", "aids vitamin D metabolism and activation")],
-        "Collagen Peptides": [("Vitamin C", "essential cofactor for collagen synthesis")],
-        "CoQ10": [("Omega-3 (EPA/DHA)", "complementary cardiovascular support")],
-        "Omega-3 (EPA/DHA)": [
-            ("CoQ10", "complementary cardiovascular support"),
-            ("Creatine Monohydrate", "combined recovery and anti-inflammatory support"),
-        ],
-        "NAC": [("Vitamin C", "supports glutathione production")],
-        "Creatine Monohydrate": [("Omega-3 (EPA/DHA)", "combined recovery and anti-inflammatory support")],
-    ]
 
     // MARK: - Generate Plan
 
@@ -38,10 +21,9 @@ struct RecommendationEngine {
         let goalKeys = profile.healthGoals.map { $0.rawValue }
 
         for goal in goalKeys {
-            if let entries = kb.goalSupplementMap[goal] {
-                for entry in entries {
-                    candidateScores[entry.name, default: 0] += entry.weight
-                }
+            let entries = catalog.goalMappings(for: goal)
+            for entry in entries {
+                candidateScores[entry.name, default: 0] += entry.weight
             }
         }
 
@@ -64,7 +46,7 @@ struct RecommendationEngine {
 
         for (name, _) in ranked {
             guard selected.count < maxSupplements else { break }
-            guard let supplement = kb.supplement(named: name) else { continue }
+            guard let supplement = catalog.supplement(named: name) else { continue }
 
             // Allow max 2 per category for diversity
             let categoryCount = selected.filter { $0.category == supplement.category }.count
@@ -96,10 +78,10 @@ struct RecommendationEngine {
 
             // Compute matched goals: which of the user's goals map to this supplement
             let matched = userGoalKeys.filter { goalKey in
-                kb.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
+                catalog.goalMappings(for: goalKey).contains { $0.name == supplement.name }
             }
             let weightedScore = matched.reduce(0) { sum, goalKey in
-                sum + kb.weight(for: supplement.name, goal: goalKey)
+                sum + catalog.weight(for: supplement.name, goal: goalKey)
             }
 
             return PlanSupplement(
@@ -163,10 +145,10 @@ struct RecommendationEngine {
         let timing = resolveTiming(for: supplement, profile: profile)
 
         let matched = userGoalKeys.filter { goalKey in
-            kb.goalSupplementMap[goalKey]?.contains { $0.name == supplement.name } == true
+            catalog.goalMappings(for: goalKey).contains { $0.name == supplement.name }
         }
         let weightedScore = matched.reduce(0) { sum, goalKey in
-            sum + kb.weight(for: supplement.name, goal: goalKey)
+            sum + catalog.weight(for: supplement.name, goal: goalKey)
         }
 
         let planNames = Set(existingSupplements.map(\.name) + [supplement.name])
@@ -219,8 +201,8 @@ struct RecommendationEngine {
             "focus": "mental clarity and focus",
             "stress_anxiety": "stress management",
             "gut_health": "digestive health",
-            "immunity": "immune function",
-            "fitness_recovery": "exercise recovery",
+            "immune_support": "immune function",
+            "muscle_recovery": "exercise recovery",
             "skin_hair_nails": "skin, hair, and nail health",
             "longevity": "long-term health",
             "heart_health": "cardiovascular health"
@@ -251,8 +233,8 @@ struct RecommendationEngine {
 
         // Sort goals by weight so the strongest benefit leads the sentence
         let sorted = matchedGoals.sorted { a, b in
-            kb.weight(for: supplement.name, goal: a) >
-            kb.weight(for: supplement.name, goal: b)
+            catalog.weight(for: supplement.name, goal: a) >
+            catalog.weight(for: supplement.name, goal: b)
         }
 
         let phrases = sorted.compactMap { goalDescriptors[$0] }
@@ -334,27 +316,28 @@ struct RecommendationEngine {
     private func generateInteractionNote(supplementName: String, planNames: Set<String>, profile: UserProfile) -> String {
         var parts: [String] = []
 
-        // Check synergies
-        if let synergies = Self.knownSynergies[supplementName] {
+        // Check synergies from catalog
+        if let synergies = catalog.synergies[supplementName] {
             for synergy in synergies {
                 // Check if partner is caffeine (from profile, not plan)
                 if synergy.partner == "caffeine" {
                     let hasCaffeine = profile.coffeeCupsDaily > 0 || profile.teaCupsDaily > 0 || profile.energyDrinksDaily > 0
                     if hasCaffeine {
-                        parts.append("Pairs well with your daily caffeine — \(synergy.reason).")
+                        parts.append("Pairs well with your daily caffeine — \(synergy.mechanism).")
                     }
                 } else if planNames.contains(synergy.partner) {
-                    parts.append("Pairs well with \(synergy.partner) in your plan — \(synergy.reason).")
+                    parts.append("Pairs well with \(synergy.partner) in your plan — \(synergy.mechanism).")
                 }
             }
         }
 
-        // Medication safety
+        // Medication safety using injected drug interactions
         if !profile.medications.isEmpty {
-            let supplement = kb.supplement(named: supplementName)
-            let hasConflict = supplement.map { kb.hasInteraction(supplement: $0, medications: profile.medications) } ?? false
-            if !hasConflict {
-                parts.append("No conflicts with your current medications.")
+            if let supplement = catalog.supplement(named: supplementName) {
+                let hasConflict = catalog.hasInteraction(supplement: supplement, medications: profile.medications, drugInteractions: drugInteractions)
+                if !hasConflict {
+                    parts.append("No conflicts with your current medications.")
+                }
             }
         } else {
             parts.append("No medication interactions to flag.")
@@ -392,22 +375,23 @@ struct RecommendationEngine {
     func findExcludedSupplements(medications: [String], allergies: [String], profile: UserProfile) -> Set<String> {
         var excluded: Set<String> = []
 
-        // Check medication interactions
+        // Check medication interactions using injected drug interactions
         for keyword in medications {
-            let interactions = kb.interactionsForMedication(keyword)
+            let interactions = catalog.interactionsForMedication(keyword, drugInteractions: drugInteractions)
             excluded.formUnion(interactions)
+        }
+
+        // Also check contraindications
+        for contra in contraindications where contra.severity == .absolute {
+            if let name = catalog.supplement(byId: contra.supplementId)?.name ?? contra.supplementName {
+                excluded.insert(name)
+            }
         }
 
         // Check allergies
         let allergyKeywords = allergies.map { $0.lowercased() }
-        if allergyKeywords.contains("shellfish") {
-            // Some glucosamine/chondroitin derived from shellfish, but none in our KB currently
-        }
         if allergyKeywords.contains("fish") || allergyKeywords.contains("shellfish") {
-            excluded.insert("Omega-3 (EPA/DHA)") // Fish-derived; could suggest algae-based instead
-        }
-        if allergyKeywords.contains("soy") {
-            // Some supplements use soy-based capsules
+            excluded.insert("Omega-3 (EPA/DHA)")
         }
 
         // Pregnancy / breastfeeding contraindications
@@ -422,7 +406,7 @@ struct RecommendationEngine {
     private func addIfMissing(_ name: String, to list: inout [Supplement], excluded: Set<String>) {
         guard !excluded.contains(name) else { return }
         guard !list.contains(where: { $0.name == name }) else { return }
-        if let supplement = kb.supplement(named: name) {
+        if let supplement = catalog.supplement(named: name) {
             list.append(supplement)
         }
     }
@@ -432,7 +416,6 @@ struct RecommendationEngine {
 
         // Age adjustments
         if profile.age > 65 {
-            // Reduce stimulant-type supplements for older adults
             if ["Rhodiola Rosea", "CoQ10"].contains(supplement.name) {
                 dosage *= 0.75
             }
@@ -440,15 +423,15 @@ struct RecommendationEngine {
 
         // Sex-based adjustments
         if profile.sex == .female && supplement.name == "Iron" {
-            dosage = 27 // Higher iron for women of reproductive age
+            dosage = 27
         } else if profile.sex == .male && supplement.name == "Iron" {
-            dosage = 8 // Lower for men
+            dosage = 8
         }
 
         // Weight-based adjustments for fat-soluble vitamins
         if let weight = profile.weightLbs, weight > 200 {
             if supplement.name == "Vitamin D3 + K2" {
-                dosage = 4000 // Higher D3 for heavier individuals
+                dosage = 4000
             }
         }
 
@@ -456,7 +439,6 @@ struct RecommendationEngine {
     }
 
     func formatDosage(dosage: Double, supplement: Supplement) -> String {
-        // Special cases
         if supplement.name == "Vitamin D3 + K2" {
             return "\(Int(dosage)) IU"
         }
@@ -481,7 +463,6 @@ struct RecommendationEngine {
     }
 
     func resolveTiming(for supplement: Supplement, profile: UserProfile) -> SupplementTiming {
-        // Use the recommended timing from knowledge base
         return supplement.recommendedTiming
     }
 }

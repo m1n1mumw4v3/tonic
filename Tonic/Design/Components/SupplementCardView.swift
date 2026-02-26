@@ -42,6 +42,8 @@ struct SupplementCardView: View {
     var inlineGoals: [HealthGoal] = []
     var isIncluded: Bool = true
     var isExpanded: Bool = false
+    var showBottomLearnMore: Bool = false
+    var onEvidenceInfoTapped: ((EvidenceLevel) -> Void)? = nil
     var onTap: (() -> Void)? = nil
 
     private var matchedHealthGoals: [HealthGoal] {
@@ -51,6 +53,14 @@ struct SupplementCardView: View {
         case .toggle:
             return []
         }
+    }
+
+    private var visibleChipGoals: [HealthGoal] {
+        Array(matchedHealthGoals.prefix(2))
+    }
+
+    private var overflowChipCount: Int {
+        max(matchedHealthGoals.count - 2, 0)
     }
 
     private var accentColors: [Color] {
@@ -97,9 +107,10 @@ struct SupplementCardView: View {
                     )
             }
 
-            // Chevron hint (only for expandable cards)
-            if expansionMode == .inline {
-                chevronHint
+            // Bottom-centered learn more
+            if expansionMode == .inline && showBottomLearnMore {
+                bottomLearnMore
+                    .padding(.top, isExpanded ? DesignTokens.spacing8 : DesignTokens.spacing12)
             }
         }
         .padding(DesignTokens.spacing16)
@@ -122,13 +133,14 @@ struct SupplementCardView: View {
     // MARK: - Collapsed Row
 
     private var collapsedRow: some View {
-        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+        HStack(alignment: .center, spacing: DesignTokens.spacing8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(supplement.name)
                     .font(DesignTokens.bodyFont)
                     .fontWeight(.semibold)
                     .foregroundStyle(DesignTokens.textPrimary)
                     .strikethrough(!isIncluded, color: DesignTokens.textTertiary)
+                    .lineLimit(1)
 
                 HStack(spacing: DesignTokens.spacing8) {
                     Text(supplement.dosage)
@@ -156,13 +168,17 @@ struct SupplementCardView: View {
             if !menuActions.isEmpty {
                 kebabMenu
             }
+
+            if expansionMode == .inline && !showBottomLearnMore {
+                chevronHint
+            }
         }
     }
 
     // MARK: - Inline Goal Chips
 
     private var inlineGoalChips: some View {
-        FlowLayout(spacing: 6) {
+        HStack(spacing: 6) {
             ForEach(inlineGoals) { goal in
                 HStack(spacing: 3) {
                     Image(systemName: goal.icon)
@@ -170,6 +186,7 @@ struct SupplementCardView: View {
                     Text(goal.shortLabel)
                         .font(DesignTokens.smallMono)
                 }
+                .fixedSize()
                 .foregroundStyle(goal.accentColor)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
@@ -185,15 +202,25 @@ struct SupplementCardView: View {
     private var trailingAccessoryView: some View {
         switch trailingAccessory {
         case .goalChips:
-            if !matchedHealthGoals.isEmpty {
+            if !matchedHealthGoals.isEmpty && inlineGoals.isEmpty {
                 HStack(spacing: 4) {
-                    ForEach(matchedHealthGoals) { goal in
+                    ForEach(visibleChipGoals) { goal in
                         Text(goal.shortLabel)
                             .font(DesignTokens.smallMono)
+                            .fixedSize()
                             .foregroundStyle(goal.accentColor)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(goal.accentColor.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
+                    if overflowChipCount > 0 {
+                        Text("+\(overflowChipCount)")
+                            .font(DesignTokens.smallMono)
+                            .foregroundStyle(DesignTokens.textTertiary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(DesignTokens.textTertiary.opacity(0.10))
                             .clipShape(Capsule())
                     }
                 }
@@ -258,6 +285,19 @@ struct SupplementCardView: View {
                 Text(evidence)
                     .font(DesignTokens.labelMono)
                     .foregroundStyle(DesignTokens.textPrimary)
+
+                if let onEvidenceInfoTapped {
+                    Button {
+                        HapticManager.selection()
+                        onEvidenceInfoTapped(level)
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 12))
+                            .foregroundStyle(DesignTokens.textTertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Learn about \(evidence)")
+                }
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
@@ -301,7 +341,7 @@ struct SupplementCardView: View {
                 .foregroundStyle(DesignTokens.textSecondary)
                 .frame(width: 18, alignment: .center)
 
-            Text(KnowledgeBaseProvider.categoryLabelStatic(for: supplement.category))
+            Text(SupplementCatalog.categoryLabel(for: supplement.category))
                 .font(DesignTokens.labelMono)
                 .foregroundStyle(DesignTokens.textSecondary)
                 .padding(.horizontal, 10)
@@ -340,17 +380,28 @@ struct SupplementCardView: View {
 
     private var chevronHint: some View {
         HStack(spacing: 4) {
-            Text(isExpanded ? "Show less" : "Learn more")
-                .font(DesignTokens.captionFont)
+            Text("MORE")
+                .font(DesignTokens.smallMono)
                 .foregroundStyle(DesignTokens.textTertiary)
-            Image(systemName: "chevron.down")
+            Image(systemName: "chevron.right")
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(DesignTokens.textTertiary)
-                .rotationEffect(.degrees(isExpanded ? -180 : 0))
+                .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
+        }
+    }
+
+    private var bottomLearnMore: some View {
+        HStack(spacing: 4) {
+            Text("LEARN MORE")
+                .font(DesignTokens.smallMono)
+                .foregroundStyle(DesignTokens.textTertiary)
+            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(DesignTokens.textTertiary)
                 .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 6)
     }
 
     // MARK: - Card Background

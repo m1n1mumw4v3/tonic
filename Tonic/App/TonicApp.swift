@@ -18,6 +18,7 @@ struct TonicApp: App {
                 .preferredColorScheme(.light)
                 .task {
                     await knowledgeBase.loadKnowledgeBase()
+                    await appState.loadSupplementCatalog()
                 }
         }
     }
