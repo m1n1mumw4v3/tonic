@@ -4,13 +4,24 @@ struct RecommendationEngine {
     private let catalog: SupplementCatalog
     private let drugInteractions: [DBDrugInteraction]
     private let contraindications: [DBContraindication]
+    private let medications: [DBMedication]
 
     init(catalog: SupplementCatalog,
          drugInteractions: [DBDrugInteraction] = [],
-         contraindications: [DBContraindication] = []) {
+         contraindications: [DBContraindication] = [],
+         medications: [DBMedication] = []) {
         self.catalog = catalog
         self.drugInteractions = drugInteractions
         self.contraindications = contraindications
+        self.medications = medications
+    }
+
+    // MARK: - Interaction Filter Result
+
+    struct InteractionFilterResult {
+        let excluded: Set<String>
+        let warnings: [UUID: [DBDrugInteraction]]
+        let removedInteractions: [UUID: [DBDrugInteraction]]
     }
 
     // MARK: - Generate Plan
@@ -27,11 +38,16 @@ struct RecommendationEngine {
             }
         }
 
-        // Step 2: Interaction filter
-        let medicationKeywords = extractMedicationKeywords(from: profile)
-        let excludedSupplements = findExcludedSupplements(medications: medicationKeywords, allergies: profile.allergies, profile: profile)
+        // Step 2: Interaction filter (key-based)
+        let interactionKeys = collectInteractionKeys(from: profile)
+        let filterResult = filterByInteractions(
+            candidateNames: Array(candidateScores.keys),
+            interactionKeys: interactionKeys,
+            allergies: profile.allergies,
+            profile: profile
+        )
 
-        let filteredCandidates = candidateScores.filter { !excludedSupplements.contains($0.key) }
+        let filteredCandidates = candidateScores.filter { !filterResult.excluded.contains($0.key) }
 
         // Step 3: Sort by score (goal overlap), then apply diversity
         let ranked = filteredCandidates.sorted { a, b in
@@ -58,8 +74,8 @@ struct RecommendationEngine {
 
         // Ensure vegan/vegetarian get B12 and D3
         if profile.dietType == .vegan || profile.dietType == .vegetarian {
-            addIfMissing("Vitamin B Complex", to: &selected, excluded: excludedSupplements)
-            addIfMissing("Vitamin D3 + K2", to: &selected, excluded: excludedSupplements)
+            addIfMissing("Vitamin B Complex", to: &selected, excluded: filterResult.excluded)
+            addIfMissing("Vitamin D3 + K2", to: &selected, excluded: filterResult.excluded)
         }
 
         // Step 5: Build plan supplements with dosage adjustments, timing, tier data, and enriched info
@@ -84,6 +100,19 @@ struct RecommendationEngine {
                 sum + catalog.weight(for: supplement.name, goal: goalKey)
             }
 
+            // Build interaction warnings for this supplement
+            let warnings = filterResult.warnings[supplement.id] ?? []
+            let interactionWarnings: [InteractionWarning]? = warnings.isEmpty ? nil : warnings.map { interaction in
+                InteractionWarning(
+                    id: interaction.id,
+                    drugOrClass: interaction.drugOrClass,
+                    interactionType: interaction.interactionType.rawValue,
+                    severity: interaction.severity.rawValue,
+                    mechanism: interaction.mechanism,
+                    action: interaction.action.rawValue
+                )
+            }
+
             return PlanSupplement(
                 supplementId: supplement.id,
                 name: supplement.name,
@@ -101,7 +130,8 @@ struct RecommendationEngine {
                 whatToLookFor: resolveWhatToLookFor(template: supplement.whatToLookFor, profile: profile),
                 formAndBioavailability: supplement.formAndBioavailability,
                 evidenceDisplay: supplement.evidenceLevel.displayText,
-                evidenceLevel: supplement.evidenceLevel
+                evidenceLevel: supplement.evidenceLevel,
+                interactionWarnings: interactionWarnings
             )
         }
 
@@ -112,8 +142,9 @@ struct RecommendationEngine {
         let planNames = Set(planSupplements.map(\.name))
         for i in planSupplements.indices {
             planSupplements[i].interactionNote = generateInteractionNote(
-                supplementName: planSupplements[i].name,
+                supplement: planSupplements[i],
                 planNames: planNames,
+                interactionKeys: interactionKeys,
                 profile: profile
             )
         }
@@ -131,7 +162,9 @@ struct RecommendationEngine {
             planSupplements[i].sortOrder = i
         }
 
-        return SupplementPlan(supplements: planSupplements)
+        var plan = SupplementPlan(supplements: planSupplements)
+        plan.aiReasoning = generatePlanSummary(supplements: planSupplements, profile: profile)
+        return plan
     }
 
     // MARK: - Build Single Plan Supplement
@@ -152,6 +185,7 @@ struct RecommendationEngine {
         }
 
         let planNames = Set(existingSupplements.map(\.name) + [supplement.name])
+        let interactionKeys = collectInteractionKeys(from: profile)
 
         var planSupplement = PlanSupplement(
             supplementId: supplement.id,
@@ -169,8 +203,16 @@ struct RecommendationEngine {
             expectedTimeline: supplement.expectedTimeline,
             whatToLookFor: resolveWhatToLookFor(template: supplement.whatToLookFor, profile: profile),
             formAndBioavailability: supplement.formAndBioavailability,
-            interactionNote: generateInteractionNote(supplementName: supplement.name, planNames: planNames, profile: profile),
+            interactionNote: "",
             evidenceDisplay: supplement.evidenceLevel.displayText
+        )
+
+        // Generate interaction note
+        planSupplement.interactionNote = generateInteractionNote(
+            supplement: planSupplement,
+            planNames: planNames,
+            interactionKeys: interactionKeys,
+            profile: profile
         )
 
         // Assign tier based on score
@@ -182,6 +224,21 @@ struct RecommendationEngine {
 
         return planSupplement
     }
+
+    // MARK: - Shared Goal Descriptors
+
+    private static let goalDescriptors: [String: String] = [
+        "sleep": "sleep quality",
+        "energy": "daily energy",
+        "focus": "mental clarity and focus",
+        "stress_anxiety": "stress management",
+        "gut_health": "digestive health",
+        "immune_support": "immune function",
+        "muscle_recovery": "exercise recovery",
+        "skin_hair_nails": "skin, hair, and nail health",
+        "longevity": "long-term health",
+        "heart_health": "cardiovascular health"
+    ]
 
     // MARK: - Enriched Text Generation
 
@@ -195,18 +252,7 @@ struct RecommendationEngine {
             return "\(supplement.name) was included based on your overall health profile."
         }
 
-        let goalDescriptors: [String: String] = [
-            "sleep": "sleep quality",
-            "energy": "daily energy",
-            "focus": "mental clarity and focus",
-            "stress_anxiety": "stress management",
-            "gut_health": "digestive health",
-            "immune_support": "immune function",
-            "muscle_recovery": "exercise recovery",
-            "skin_hair_nails": "skin, hair, and nail health",
-            "longevity": "long-term health",
-            "heart_health": "cardiovascular health"
-        ]
+        let goalDescriptors = Self.goalDescriptors
 
         let narrativeOpeners: [String: String] = [
             "Magnesium Glycinate": "Magnesium glycinate is one of the most effective natural supports for",
@@ -313,11 +359,11 @@ struct RecommendationEngine {
         return text
     }
 
-    private func generateInteractionNote(supplementName: String, planNames: Set<String>, profile: UserProfile) -> String {
+    private func generateInteractionNote(supplement: PlanSupplement, planNames: Set<String>, interactionKeys: Set<String>, profile: UserProfile) -> String {
         var parts: [String] = []
 
         // Check synergies from catalog
-        if let synergies = catalog.synergies[supplementName] {
+        if let synergies = catalog.synergies[supplement.name] {
             for synergy in synergies {
                 // Check if partner is caffeine (from profile, not plan)
                 if synergy.partner == "caffeine" {
@@ -331,13 +377,40 @@ struct RecommendationEngine {
             }
         }
 
-        // Medication safety using injected drug interactions
-        if !profile.medications.isEmpty {
-            if let supplement = catalog.supplement(named: supplementName) {
-                let hasConflict = catalog.hasInteraction(supplement: supplement, medications: profile.medications, drugInteractions: drugInteractions)
-                if !hasConflict {
-                    parts.append("No conflicts with your current medications.")
+        // Medication safety using key-based interaction checking
+        if !profile.medicationIds.isEmpty || !profile.medications.isEmpty {
+            if let warnings = supplement.interactionWarnings, !warnings.isEmpty {
+                for warning in warnings {
+                    switch warning.action {
+                    case DBInteractionAction.separateTiming.rawValue:
+                        parts.append("Take separately from \(warning.drugOrClass) — \(warning.mechanism).")
+                    case DBInteractionAction.monitor.rawValue:
+                        parts.append("Monitor when taking with \(warning.drugOrClass) — \(warning.mechanism).")
+                    case DBInteractionAction.adjustDose.rawValue:
+                        parts.append("Dose may need adjustment due to \(warning.drugOrClass) — \(warning.mechanism).")
+                    default:
+                        parts.append("\(warning.mechanism).")
+                    }
                 }
+            } else if let supplementId = supplement.supplementId {
+                // Check via key-based lookup for supplements without pre-populated warnings
+                let decision = catalog.checkInteractions(
+                    supplementId: supplementId,
+                    userInteractionKeys: interactionKeys,
+                    allInteractions: drugInteractions
+                )
+                switch decision {
+                case .clear:
+                    parts.append("No conflicts with your current medications.")
+                case .keepWithWarnings(let matches):
+                    for match in matches {
+                        parts.append("\(match.mechanism).")
+                    }
+                case .remove:
+                    break // Should not happen for included supplements
+                }
+            } else {
+                parts.append("No conflicts with your current medications.")
             }
         } else {
             parts.append("No medication interactions to flag.")
@@ -361,34 +434,53 @@ struct RecommendationEngine {
         }
     }
 
-    // MARK: - Helpers
+    // MARK: - Key-Based Interaction Helpers
 
-    func extractMedicationKeywords(from profile: UserProfile) -> [String] {
-        let meds = profile.medications
-        return meds.flatMap { med in
-            med.lowercased()
-                .components(separatedBy: CharacterSet.alphanumerics.inverted)
-                .filter { !$0.isEmpty }
-        }
+    /// Collect interaction keys from the user's medication IDs
+    func collectInteractionKeys(from profile: UserProfile) -> Set<String> {
+        catalog.collectInteractionKeys(medicationIds: profile.medicationIds, medications: medications)
     }
 
-    func findExcludedSupplements(medications: [String], allergies: [String], profile: UserProfile) -> Set<String> {
+    /// Filter candidate supplements by drug interactions, contraindications, allergies, and pregnancy
+    func filterByInteractions(
+        candidateNames: [String],
+        interactionKeys: Set<String>,
+        allergies: [String],
+        profile: UserProfile
+    ) -> InteractionFilterResult {
         var excluded: Set<String> = []
+        var warnings: [UUID: [DBDrugInteraction]] = [:]
+        var removedInteractions: [UUID: [DBDrugInteraction]] = [:]
 
-        // Check medication interactions using injected drug interactions
-        for keyword in medications {
-            let interactions = catalog.interactionsForMedication(keyword, drugInteractions: drugInteractions)
-            excluded.formUnion(interactions)
+        // Key-based drug interaction checking
+        if !interactionKeys.isEmpty {
+            for name in candidateNames {
+                guard let supplement = catalog.supplement(named: name) else { continue }
+                let decision = catalog.checkInteractions(
+                    supplementId: supplement.id,
+                    userInteractionKeys: interactionKeys,
+                    allInteractions: drugInteractions
+                )
+                switch decision {
+                case .remove(let matches):
+                    excluded.insert(name)
+                    removedInteractions[supplement.id] = matches
+                case .keepWithWarnings(let matches):
+                    warnings[supplement.id] = matches
+                case .clear:
+                    break
+                }
+            }
         }
 
-        // Also check contraindications
+        // Contraindications
         for contra in contraindications where contra.severity == .absolute {
             if let name = catalog.supplement(byId: contra.supplementId)?.name ?? contra.supplementName {
                 excluded.insert(name)
             }
         }
 
-        // Check allergies
+        // Allergies
         let allergyKeywords = allergies.map { $0.lowercased() }
         if allergyKeywords.contains("fish") || allergyKeywords.contains("shellfish") {
             excluded.insert("Omega-3 (EPA/DHA)")
@@ -400,7 +492,25 @@ struct RecommendationEngine {
             excluded.insert("Berberine")
         }
 
-        return excluded
+        return InteractionFilterResult(
+            excluded: excluded,
+            warnings: warnings,
+            removedInteractions: removedInteractions
+        )
+    }
+
+    // MARK: - Legacy Helpers (kept for AddSupplementSheet compatibility)
+
+    /// Collect interaction keys for exclusion checking (replaces extractMedicationKeywords)
+    func findExcludedSupplements(profile: UserProfile) -> Set<String> {
+        let interactionKeys = collectInteractionKeys(from: profile)
+        let result = filterByInteractions(
+            candidateNames: catalog.allSupplements.map(\.name),
+            interactionKeys: interactionKeys,
+            allergies: profile.allergies,
+            profile: profile
+        )
+        return result.excluded
     }
 
     private func addIfMissing(_ name: String, to list: inout [Supplement], excluded: Set<String>) {
@@ -464,5 +574,127 @@ struct RecommendationEngine {
 
     func resolveTiming(for supplement: Supplement, profile: UserProfile) -> SupplementTiming {
         return supplement.recommendedTiming
+    }
+
+    // MARK: - Plan Summary Generation
+
+    func generatePlanSummary(supplements: [PlanSupplement], profile: UserProfile) -> String {
+        var usedTopics: Set<String> = []
+
+        let core = generateCoreSentence(supplements: supplements, profile: profile, usedTopics: &usedTopics)
+        let lifestyle = generateLifestyleSentence(supplements: supplements, profile: profile, usedTopics: &usedTopics)
+        let tip = generateTipSentence(supplements: supplements, profile: profile, usedTopics: &usedTopics)
+
+        return [core, lifestyle, tip].compactMap { $0 }.joined(separator: " ")
+    }
+
+    private func generateCoreSentence(supplements: [PlanSupplement], profile: UserProfile, usedTopics: inout Set<String>) -> String {
+        // Pick core-tier supplements, or fall back to top by score
+        let coreSupplements = supplements.filter { $0.tier == .core }
+        let topSupplements: [PlanSupplement]
+        if !coreSupplements.isEmpty {
+            topSupplements = Array(coreSupplements.prefix(2))
+        } else {
+            topSupplements = Array(supplements.sorted { $0.tierScore > $1.tierScore }.prefix(2))
+        }
+
+        guard !topSupplements.isEmpty else {
+            return "Your personalized supplement plan is ready."
+        }
+
+        let names: String
+        if topSupplements.count == 1 {
+            names = topSupplements[0].name
+        } else {
+            names = "\(topSupplements[0].name) and \(topSupplements[1].name)"
+        }
+
+        // Gather top goal descriptors from user's goals
+        let topGoalKeys = profile.healthGoals.prefix(2).map(\.rawValue)
+        let goalPhrases = topGoalKeys.compactMap { Self.goalDescriptors[$0] }
+
+        let goalPhrase: String
+        if goalPhrases.count == 2 {
+            goalPhrase = "\(goalPhrases[0]) and \(goalPhrases[1])"
+        } else if goalPhrases.count == 1 {
+            goalPhrase = goalPhrases[0]
+        } else {
+            goalPhrase = "your health goals"
+        }
+
+        return "Your plan is built around \(names) as your foundation for \(goalPhrase)."
+    }
+
+    private func generateLifestyleSentence(supplements: [PlanSupplement], profile: UserProfile, usedTopics: inout Set<String>) -> String? {
+        let supplementNames = Set(supplements.map(\.name))
+        let hasCaffeine = profile.coffeeCupsDaily > 0 || profile.teaCupsDaily > 0 || profile.energyDrinksDaily > 0
+        let highStress = profile.stressLevel == .high || profile.stressLevel == .veryHigh
+        let isActive = profile.exerciseFrequency == .threeToFour || profile.exerciseFrequency == .fivePlus
+        let isVeganOrVegetarian = profile.dietType == .vegan || profile.dietType == .vegetarian
+        let lowSleep = profile.baselineSleep <= 4
+
+        // Priority 1: Caffeine + L-Theanine
+        if hasCaffeine && supplementNames.contains("L-Theanine") {
+            usedTopics.insert("caffeine")
+            return "Since you drink coffee daily, we've included L-Theanine to smooth out the energy and keep your focus steady."
+        }
+
+        // Priority 2: High stress + Ashwagandha
+        if highStress && supplementNames.contains("Ashwagandha KSM-66") {
+            usedTopics.insert("stress")
+            return "With your stress running high, Ashwagandha is here to help take the edge off and support your resilience over time."
+        }
+
+        // Priority 3: Active exercise + Creatine
+        if isActive && supplementNames.contains("Creatine Monohydrate") {
+            usedTopics.insert("exercise")
+            return "With your active exercise routine, Creatine will support your recovery and help you get more out of each session."
+        }
+
+        // Priority 4: Vegan/vegetarian + B12/D3
+        if isVeganOrVegetarian && (supplementNames.contains("Vitamin B Complex") || supplementNames.contains("Vitamin D3 + K2")) {
+            usedTopics.insert("diet")
+            return "As a \(profile.dietType.label.lowercased()), we've added key nutrients that are harder to get from diet alone."
+        }
+
+        // Priority 5: Low sleep baseline + Magnesium
+        if lowSleep && supplementNames.contains("Magnesium Glycinate") {
+            usedTopics.insert("sleep")
+            return "With sleep being a challenge right now, Magnesium Glycinate will help you wind down and improve your sleep quality over time."
+        }
+
+        return nil
+    }
+
+    private func generateTipSentence(supplements: [PlanSupplement], profile: UserProfile, usedTopics: inout Set<String>) -> String? {
+        let supplementNames = Set(supplements.map(\.name))
+
+        // Magnesium timing tip (skip if sleep topic already used)
+        if !usedTopics.contains("sleep") && supplementNames.contains("Magnesium Glycinate") {
+            return "Take your Magnesium about 30 minutes before bed for the best results."
+        }
+
+        // Mag + D3 synergy (skip if diet topic already used)
+        if !usedTopics.contains("diet") && supplementNames.contains("Magnesium Glycinate") && supplementNames.contains("Vitamin D3 + K2") {
+            return "Your Magnesium and Vitamin D3 work together — Magnesium helps your body activate vitamin D."
+        }
+
+        // Ashwagandha consistency note (skip if stress topic already used)
+        if !usedTopics.contains("stress") && supplementNames.contains("Ashwagandha KSM-66") {
+            return "Most people start noticing changes within the first 2-4 weeks of consistent use."
+        }
+
+        // Omega-3 with food tip
+        if supplementNames.contains("Omega-3 (EPA/DHA)") {
+            return "Take your Omega-3 with a meal containing some fat for better absorption."
+        }
+
+        // Probiotics timing tip
+        if supplementNames.contains("Probiotics") {
+            return "Take your Probiotics on an empty stomach first thing in the morning for best results."
+        }
+
+        // General consistency tip
+        return "Consistency is key — most supplements need 2-4 weeks of daily use before you'll notice changes."
     }
 }

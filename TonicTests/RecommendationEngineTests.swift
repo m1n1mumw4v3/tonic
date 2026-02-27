@@ -2,7 +2,11 @@ import XCTest
 @testable import Tonic
 
 final class RecommendationEngineTests: XCTestCase {
-    let engine = RecommendationEngine(kb: KnowledgeBaseProvider())
+    let engine: RecommendationEngine = {
+        let catalog = SupplementCatalog()
+        catalog.populateFromStatic()
+        return RecommendationEngine(catalog: catalog)
+    }()
 
     // MARK: - Goal Mapping
 
@@ -148,5 +152,63 @@ final class RecommendationEngineTests: XCTestCase {
     func testWellbeingScoreAllMax() {
         let score = WellbeingScore.calculate(sleep: 100, energy: 100, clarity: 100, mood: 100, gut: 100)
         XCTAssertEqual(score, 100)
+    }
+
+    // MARK: - Plan Summary
+
+    func testPlanSummaryIsGenerated() {
+        var profile = UserProfile()
+        profile.healthGoals = [.sleep, .energy]
+        let plan = engine.generatePlan(for: profile)
+
+        XCTAssertNotNil(plan.aiReasoning, "Plan should have aiReasoning")
+        XCTAssertFalse(plan.aiReasoning?.isEmpty ?? true, "aiReasoning should not be empty")
+    }
+
+    func testPlanSummaryMentionsGoals() {
+        var profile = UserProfile()
+        profile.healthGoals = [.sleep, .energy]
+        let plan = engine.generatePlan(for: profile)
+        let summary = plan.aiReasoning ?? ""
+
+        let mentionsGoal = summary.contains("sleep") || summary.contains("energy")
+        XCTAssertTrue(mentionsGoal, "Summary should reference at least one goal descriptor")
+    }
+
+    func testPlanSummaryMentionsCaffeinePairing() {
+        var profile = UserProfile()
+        profile.healthGoals = [.focus, .energy]
+        profile.coffeeCupsDaily = 3
+        let plan = engine.generatePlan(for: profile)
+        let summary = plan.aiReasoning ?? ""
+
+        if plan.supplements.contains(where: { $0.name == "L-Theanine" }) {
+            XCTAssertTrue(summary.contains("coffee") || summary.contains("L-Theanine"),
+                          "Summary should mention caffeine pairing when user drinks coffee and plan has L-Theanine")
+        }
+    }
+
+    func testPlanSummaryMentionsVeganDiet() {
+        var profile = UserProfile()
+        profile.healthGoals = [.sleep]
+        profile.dietType = .vegan
+        let plan = engine.generatePlan(for: profile)
+        let summary = plan.aiReasoning ?? ""
+
+        XCTAssertTrue(summary.lowercased().contains("vegan") || summary.contains("diet"),
+                      "Summary should mention vegan diet context")
+    }
+
+    func testPlanSummaryDeterministic() {
+        var profile = UserProfile()
+        profile.healthGoals = [.sleep, .energy, .focus]
+        profile.age = 30
+        profile.sex = .male
+        profile.coffeeCupsDaily = 2
+
+        let plan1 = engine.generatePlan(for: profile)
+        let plan2 = engine.generatePlan(for: profile)
+
+        XCTAssertEqual(plan1.aiReasoning, plan2.aiReasoning, "Same profile should produce same summary")
     }
 }

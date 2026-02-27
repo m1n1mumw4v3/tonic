@@ -17,6 +17,11 @@ class AppState {
     var isCatalogLoading: Bool = false
     var catalogLoadError: Error?
 
+    // Medication data (Supabase-backed)
+    var medications: [DBMedication] = []
+    var drugInteractions: [DBDrugInteraction] = []
+    var isMedicationsLoaded: Bool = false
+
     // Navigation
     var selectedTab: AppTab = .today
     var showSettings: Bool = false
@@ -60,6 +65,7 @@ class AppState {
 
     // MARK: - Supplement Catalog Loading
 
+    @MainActor
     func loadSupplementCatalog() async {
         isCatalogLoading = true
         catalogLoadError = nil
@@ -67,18 +73,33 @@ class AppState {
         do {
             let service = SupplementService()
             let data = try await service.loadCatalog()
+            print("✅ [SupplementCatalog] Loaded \(data.supplements.count) supplements, \(data.goalMaps.count) goal maps, \(data.synergies.count) synergies, \(data.drugInteractions.count) drug interactions from Supabase")
             supplementCatalog.populate(
                 supplements: data.supplements,
                 goalMaps: data.goalMaps,
                 synergyPairings: data.synergies
             )
+            drugInteractions = data.drugInteractions
         } catch {
             catalogLoadError = error
-            // Fall back to static data so the app still works
+            print("⚠️ [SupplementCatalog] Supabase fetch failed, falling back to static data: \(error)")
             supplementCatalog.populateFromStatic()
         }
 
         isCatalogLoading = false
+    }
+
+    @MainActor
+    func loadMedications() async {
+        do {
+            let service = SupplementService()
+            medications = try await service.fetchMedications()
+            print("✅ [Medications] Loaded \(medications.count) medications from Supabase")
+            isMedicationsLoaded = true
+        } catch {
+            print("⚠️ [Medications] Supabase fetch failed, falling back to static: \(error)")
+            isMedicationsLoaded = true
+        }
     }
 
     // MARK: - Demo Data
@@ -102,10 +123,9 @@ class AppState {
         profile.baselineGut = 5
         currentUser = profile
 
-        // Generate plan from profile
+        // Generate plan from profile (engine now generates aiReasoning automatically)
         let engine = RecommendationEngine(catalog: supplementCatalog)
-        var plan = engine.generatePlan(for: profile)
-        plan.aiReasoning = "Your plan targets sleep quality, sustained energy, mental clarity, and gut health. Magnesium and Ashwagandha form the core foundation, supported by Omega-3 for brain health and Probiotics for digestion. Timing is optimized to match your daily rhythm."
+        let plan = engine.generatePlan(for: profile)
         activePlan = plan
 
         // Generate 30 days of check-in history

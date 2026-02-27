@@ -10,6 +10,7 @@ struct PlanRevealScreen: View {
     @State private var showBackground = false
     @State private var showHeadline = false
     @State private var showSubtitle = false
+    @State private var showSummary = false
     @State private var visibleGoalChips: Int = 0
     @State private var showTierHeaders: [SupplementTier: Bool] = [
         .core: false, .targeted: false, .supporting: false
@@ -70,11 +71,6 @@ struct PlanRevealScreen: View {
                         headerSection
                             .padding(.top, DesignTokens.spacing40)
 
-                        // Decorative divider
-                        SpectrumBar(height: 5)
-                            .padding(.horizontal, DesignTokens.spacing48)
-                            .opacity(showSubtitle ? 1 : 0)
-
                         // Goal chips
                         goalChipsSection
 
@@ -133,6 +129,48 @@ struct PlanRevealScreen: View {
                     .foregroundStyle(DesignTokens.textSecondary)
             }
             .opacity(showSubtitle ? 1 : 0)
+
+            if let summary = viewModel.generatedPlan?.aiReasoning {
+                VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(DesignTokens.accentClarity)
+                        Text("PERSONALIZED FOR YOU")
+                            .font(DesignTokens.sectionHeader)
+                            .foregroundStyle(DesignTokens.textTertiary)
+                            .tracking(1.2)
+                    }
+
+                    Text(summary)
+                        .font(DesignTokens.bodyFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .lineSpacing(4)
+                        .multilineTextAlignment(.leading)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .cardStyle()
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                        .stroke(
+                            LinearGradient(
+                                colors: [
+                                    DesignTokens.accentSleep,
+                                    DesignTokens.accentEnergy,
+                                    DesignTokens.accentClarity,
+                                    DesignTokens.accentMood,
+                                    DesignTokens.accentGut
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                )
+                .padding(.top, DesignTokens.spacing4)
+                .opacity(showSummary ? 1 : 0)
+                .offset(y: showSummary || reduceMotion ? 0 : 8)
+            }
         }
     }
 
@@ -403,8 +441,15 @@ struct PlanRevealScreen: View {
             startCountAnimation()
         }
 
+        // Plan summary
+        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.12 : 0.9)) {
+            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
+                showSummary = true
+            }
+        }
+
         // Goal chips staggered
-        let chipStart: Double = reduceMotion ? 0.15 : 0.8
+        let chipStart: Double = reduceMotion ? 0.15 : 1.2
         let chipInterval: Double = reduceMotion ? 0.03 : 0.08
         for i in 0..<userGoals.count {
             DispatchQueue.main.asyncAfter(deadline: .now() + chipStart + Double(i) * chipInterval) {
@@ -415,7 +460,7 @@ struct PlanRevealScreen: View {
         }
 
         // Tier headers + cards
-        let cardStart: Double = reduceMotion ? 0.3 : 1.2
+        let cardStart: Double = reduceMotion ? 0.3 : 1.6
         var delay = cardStart
 
         for tier in tiers {
