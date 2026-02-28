@@ -248,12 +248,13 @@ struct PlanRevealScreen: View {
                 // AI label header
                 HStack(spacing: 6) {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 11))
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(DesignTokens.accentClarity)
                     Text("PERSONALIZED FOR YOU")
                         .font(DesignTokens.sectionHeader)
+                        .foregroundStyle(DesignTokens.textSecondary)
                         .tracking(1.2)
                 }
-                .foregroundStyle(DesignTokens.textTertiary)
 
                 // Summary text with line limit
                 Text(text)
