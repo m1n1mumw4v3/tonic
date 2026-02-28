@@ -38,9 +38,11 @@ enum EvidenceLevel: String, Codable {
 struct Supplement: Identifiable {
     let id: UUID
     let name: String
+    var commonNames: [String] = []
     let category: String
     let commonDosageRange: String
     let recommendedDosageMg: Double
+    var displayDose: String? = nil
     let recommendedTiming: SupplementTiming
     let benefits: [String]
     let contraindications: [String]
@@ -60,9 +62,24 @@ struct GoalSupplementEntry {
     let weight: Int  // 3 = meta-analyses or 3+ RCTs, 2 = limited RCTs or mixed results, 1 = mechanistic/preclinical
 }
 
+// MARK: - Exclusion Group Entry
+
+struct ExclusionGroupEntry {
+    let groupKey: String
+    let supplementName: String
+    let priority: Int  // lower wins tiebreak
+}
+
 // MARK: - Knowledge Base
 
 enum SupplementKnowledgeBase {
+
+    // MARK: - Exclusion Groups
+
+    static let exclusionGroups: [ExclusionGroupEntry] = [
+        ExclusionGroupEntry(groupKey: "protein", supplementName: "Whey Protein Isolate", priority: 1),
+        ExclusionGroupEntry(groupKey: "protein", supplementName: "Plant Protein Blend", priority: 2),
+    ]
 
     // MARK: - Goal → Supplement Mapping (Evidence-Weighted)
 
@@ -106,7 +123,9 @@ enum SupplementKnowledgeBase {
         ],
         "muscle_recovery": [
             GoalSupplementEntry(name: "Creatine Monohydrate", weight: 3),
+            GoalSupplementEntry(name: "Whey Protein Isolate", weight: 3),
             GoalSupplementEntry(name: "Magnesium Glycinate", weight: 2),
+            GoalSupplementEntry(name: "Plant Protein Blend", weight: 2),
             GoalSupplementEntry(name: "Omega-3 (EPA/DHA)", weight: 2),
             GoalSupplementEntry(name: "Vitamin D3 + K2", weight: 2),
             GoalSupplementEntry(name: "Tart Cherry Extract", weight: 1),
@@ -141,6 +160,7 @@ enum SupplementKnowledgeBase {
             category: "mineral",
             commonDosageRange: "200-400mg",
             recommendedDosageMg: 400,
+            displayDose: "400mg",
             recommendedTiming: .evening,
             benefits: ["sleep", "stress_anxiety", "muscle_recovery", "heart_health"],
             contraindications: [],
@@ -158,6 +178,7 @@ enum SupplementKnowledgeBase {
             category: "vitamin",
             commonDosageRange: "2000-5000 IU",
             recommendedDosageMg: 2000,
+            displayDose: "2,000 IU",
             recommendedTiming: .morning,
             benefits: ["immune_support", "energy", "longevity", "heart_health"],
             contraindications: [],
@@ -175,6 +196,7 @@ enum SupplementKnowledgeBase {
             category: "fatty_acid",
             commonDosageRange: "1000-2000mg",
             recommendedDosageMg: 1000,
+            displayDose: "1,000mg",
             recommendedTiming: .morning,
             benefits: ["focus", "longevity", "muscle_recovery", "heart_health"],
             contraindications: [],
@@ -192,6 +214,7 @@ enum SupplementKnowledgeBase {
             category: "adaptogen",
             commonDosageRange: "300-600mg",
             recommendedDosageMg: 600,
+            displayDose: "600mg",
             recommendedTiming: .evening,
             benefits: ["stress_anxiety", "energy", "sleep"],
             contraindications: ["thyroid_condition"],
@@ -209,6 +232,7 @@ enum SupplementKnowledgeBase {
             category: "amino_acid",
             commonDosageRange: "100-200mg",
             recommendedDosageMg: 200,
+            displayDose: "200mg",
             recommendedTiming: .morning,
             benefits: ["focus", "sleep", "stress_anxiety"],
             contraindications: [],
@@ -226,6 +250,7 @@ enum SupplementKnowledgeBase {
             category: "vitamin",
             commonDosageRange: "1x daily",
             recommendedDosageMg: 0,
+            displayDose: "1 capsule",
             recommendedTiming: .morning,
             benefits: ["energy", "focus", "mood"],
             contraindications: [],
@@ -243,6 +268,7 @@ enum SupplementKnowledgeBase {
             category: "probiotic",
             commonDosageRange: "10-50B CFU",
             recommendedDosageMg: 0,
+            displayDose: "30B CFU",
             recommendedTiming: .emptyStomach,
             benefits: ["gut_health", "immune_support"],
             contraindications: [],
@@ -260,6 +286,7 @@ enum SupplementKnowledgeBase {
             category: "mineral",
             commonDosageRange: "15-30mg",
             recommendedDosageMg: 25,
+            displayDose: "25mg",
             recommendedTiming: .evening,
             benefits: ["immune_support", "skin_hair_nails", "gut_health"],
             contraindications: [],
@@ -277,6 +304,7 @@ enum SupplementKnowledgeBase {
             category: "vitamin",
             commonDosageRange: "500-1000mg",
             recommendedDosageMg: 1000,
+            displayDose: "1,000mg",
             recommendedTiming: .morning,
             benefits: ["immune_support", "skin_hair_nails"],
             contraindications: [],
@@ -294,6 +322,7 @@ enum SupplementKnowledgeBase {
             category: "coenzyme",
             commonDosageRange: "100-200mg",
             recommendedDosageMg: 200,
+            displayDose: "200mg",
             recommendedTiming: .morning,
             benefits: ["energy", "longevity", "heart_health"],
             contraindications: [],
@@ -311,6 +340,7 @@ enum SupplementKnowledgeBase {
             category: "amino_acid",
             commonDosageRange: "3-5g",
             recommendedDosageMg: 5000,
+            displayDose: "5g",
             recommendedTiming: .morning,
             benefits: ["muscle_recovery", "focus"],
             contraindications: [],
@@ -328,6 +358,7 @@ enum SupplementKnowledgeBase {
             category: "protein",
             commonDosageRange: "10-15g",
             recommendedDosageMg: 10000,
+            displayDose: "10g",
             recommendedTiming: .morning,
             benefits: ["skin_hair_nails", "gut_health"],
             contraindications: [],
@@ -345,6 +376,7 @@ enum SupplementKnowledgeBase {
             category: "mushroom",
             commonDosageRange: "500-1000mg",
             recommendedDosageMg: 1000,
+            displayDose: "1,000mg",
             recommendedTiming: .morning,
             benefits: ["focus", "longevity"],
             contraindications: [],
@@ -362,6 +394,7 @@ enum SupplementKnowledgeBase {
             category: "adaptogen",
             commonDosageRange: "200-400mg",
             recommendedDosageMg: 400,
+            displayDose: "400mg",
             recommendedTiming: .morning,
             benefits: ["energy", "stress_anxiety"],
             contraindications: [],
@@ -379,6 +412,7 @@ enum SupplementKnowledgeBase {
             category: "hormone",
             commonDosageRange: "0.5-3mg",
             recommendedDosageMg: 1,
+            displayDose: "1mg",
             recommendedTiming: .bedtime,
             benefits: ["sleep"],
             contraindications: [],
@@ -396,6 +430,7 @@ enum SupplementKnowledgeBase {
             category: "vitamin",
             commonDosageRange: "2500-5000mcg",
             recommendedDosageMg: 5,
+            displayDose: "5,000mcg",
             recommendedTiming: .morning,
             benefits: ["skin_hair_nails"],
             contraindications: [],
@@ -413,6 +448,7 @@ enum SupplementKnowledgeBase {
             category: "mineral",
             commonDosageRange: "18-27mg",
             recommendedDosageMg: 18,
+            displayDose: "18mg",
             recommendedTiming: .emptyStomach,
             benefits: ["energy"],
             contraindications: ["hemochromatosis"],
@@ -430,6 +466,7 @@ enum SupplementKnowledgeBase {
             category: "amino_acid",
             commonDosageRange: "600-1200mg",
             recommendedDosageMg: 600,
+            displayDose: "600mg",
             recommendedTiming: .morning,
             benefits: ["immune_support", "longevity"],
             contraindications: [],
@@ -447,6 +484,7 @@ enum SupplementKnowledgeBase {
             category: "plant_extract",
             commonDosageRange: "500mg",
             recommendedDosageMg: 500,
+            displayDose: "500mg",
             recommendedTiming: .withFood,
             benefits: ["gut_health", "longevity", "heart_health"],
             contraindications: [],
@@ -464,6 +502,7 @@ enum SupplementKnowledgeBase {
             category: "fruit_extract",
             commonDosageRange: "500-1000mg",
             recommendedDosageMg: 500,
+            displayDose: "500mg",
             recommendedTiming: .evening,
             benefits: ["sleep", "muscle_recovery"],
             contraindications: [],
@@ -474,6 +513,42 @@ enum SupplementKnowledgeBase {
             whatToLookFor: "Easier sleep onset and improved sleep quality. Reduced muscle soreness after exercise{exercise_note}.",
             formAndBioavailability: "Concentrated Montmorency cherry extract — standardized for anthocyanins and natural melatonin precursors. Capsule form provides consistent dosing compared to juice.",
             evidenceLevel: .emerging
+        ),
+        Supplement(
+            id: UUID(uuidString: "00000001-0000-0000-0000-000000000021")!,
+            name: "Whey Protein Isolate",
+            category: "protein",
+            commonDosageRange: "20-30g",
+            recommendedDosageMg: 25000,
+            displayDose: "25g",
+            recommendedTiming: .morning,
+            benefits: ["muscle_recovery"],
+            contraindications: [],
+            drugInteractions: [],
+            notes: "Fast-absorbing complete protein. Ideal post-workout or morning shake.",
+            dosageRationale: "25g — provides the leucine threshold (~2.5g) needed to maximally stimulate muscle protein synthesis per serving.",
+            expectedTimeline: "Amino acids peak in blood within 60-90 minutes. Strength and recovery gains build over 4-8 weeks of consistent training and intake.",
+            whatToLookFor: "Faster post-workout recovery and reduced soreness{exercise_note}. Better maintenance of muscle mass during caloric deficits.",
+            formAndBioavailability: "Whey protein isolate — filtered to 90%+ protein with minimal lactose and fat. Fast-digesting with the highest leucine content of any protein source.",
+            evidenceLevel: .strong
+        ),
+        Supplement(
+            id: UUID(uuidString: "00000001-0000-0000-0000-000000000022")!,
+            name: "Plant Protein Blend",
+            category: "protein",
+            commonDosageRange: "20-30g",
+            recommendedDosageMg: 25000,
+            displayDose: "25g",
+            recommendedTiming: .morning,
+            benefits: ["muscle_recovery"],
+            contraindications: [],
+            drugInteractions: [],
+            notes: "Pea + rice blend for a complete amino acid profile. Vegan-friendly.",
+            dosageRationale: "25g — a blended serving combining pea and rice protein to achieve a complete amino acid profile comparable to whey.",
+            expectedTimeline: "Amino acids absorb within 1-2 hours. Strength and body composition improvements build over 4-8 weeks with consistent training.",
+            whatToLookFor: "Improved post-workout recovery and sustained energy{exercise_note}. A good option if dairy-based proteins cause digestive issues.",
+            formAndBioavailability: "Pea + brown rice blend — complementary amino acid profiles create a complete protein. Slightly slower digestion than whey but comparable muscle protein synthesis at equal doses.",
+            evidenceLevel: .moderate
         )
     ]
 
@@ -504,6 +579,8 @@ enum SupplementKnowledgeBase {
         "NAC": (7, 56, "Glutathione levels rise in 1-2 weeks; full antioxidant benefits over 4-8 weeks"),
         "Berberine": (7, 84, "Digestive improvements in 1-2 weeks; metabolic benefits over 8-12 weeks"),
         "Tart Cherry Extract": (3, 14, "Sleep onset improvements within days; recovery benefits over 1-2 weeks"),
+        "Whey Protein Isolate": (1, 56, "Amino acids peak within 60-90 minutes; strength and recovery gains over 4-8 weeks"),
+        "Plant Protein Blend": (1, 56, "Amino acids absorb within 1-2 hours; body composition improvements over 4-8 weeks"),
     ]
 
     // MARK: - Daily Tips
@@ -541,6 +618,8 @@ enum SupplementKnowledgeBase {
         "Your supplement plan is personalized — taking them consistently helps us measure what's actually working.",
         "Adaptogens like Ashwagandha and Rhodiola work by modulating your stress response, not masking it.",
         "Water-soluble vitamins (B, C) are safely excreted if you take more than needed — no toxicity risk.",
+        "Whey protein isolate has the highest leucine content of any protein source — leucine is the key trigger for muscle protein synthesis.",
+        "Plant protein blends (pea + rice) provide a complete amino acid profile comparable to whey, without dairy.",
     ]
 
 }

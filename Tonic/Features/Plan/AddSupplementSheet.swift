@@ -9,16 +9,19 @@ class AddSupplementViewModel {
     var excludedSupplementNames: Set<String> = []
     var planSupplementNames: Set<String> = []
 
-    func load(profile: UserProfile, existingSupplements: [PlanSupplement], catalog: SupplementCatalog) {
-        let engine = RecommendationEngine(catalog: catalog)
-        let medicationKeywords = engine.extractMedicationKeywords(from: profile)
-        excludedSupplementNames = engine.findExcludedSupplements(
-            medications: medicationKeywords,
-            allergies: profile.allergies,
-            profile: profile
-        )
+    func load(profile: UserProfile, existingSupplements: [PlanSupplement], catalog: SupplementCatalog, drugInteractions: [DBDrugInteraction] = [], medications: [DBMedication] = []) {
+        let engine = RecommendationEngine(catalog: catalog, drugInteractions: drugInteractions, medications: medications)
+        excludedSupplementNames = engine.findExcludedSupplements(profile: profile)
 
         planSupplementNames = Set(existingSupplements.map(\.name))
+
+        // Exclusion groups: if a group peer is already in the plan, exclude the other members
+        for planName in planSupplementNames {
+            let peers = catalog.exclusionGroupPeers(for: planName)
+            for peer in peers {
+                excludedSupplementNames.insert(peer)
+            }
+        }
 
         let userGoalKeys = Set(profile.healthGoals.map(\.rawValue))
 
@@ -69,6 +72,8 @@ struct AddSupplementSheet: View {
     @State private var searchText = ""
 
     private var catalog: SupplementCatalog { appState.supplementCatalog }
+    private var drugInteractions: [DBDrugInteraction] { appState.drugInteractions }
+    private var dbMedications: [DBMedication] { appState.medications }
 
     private var filteredGroups: [(category: String, label: String, supplements: [Supplement])] {
         if searchText.isEmpty {
@@ -76,7 +81,10 @@ struct AddSupplementSheet: View {
         }
         let query = searchText.lowercased()
         return catalog.supplementsByCategory.compactMap { group in
-            let filtered = group.supplements.filter { $0.name.lowercased().contains(query) }
+            let filtered = group.supplements.filter {
+                $0.name.lowercased().contains(query)
+                    || $0.commonNames.contains(where: { $0.lowercased().contains(query) })
+            }
             guard !filtered.isEmpty else { return nil }
             return (category: group.category, label: group.label, supplements: filtered)
         }
@@ -125,7 +133,7 @@ struct AddSupplementSheet: View {
         .presentationDetents([.fraction(0.85), .large])
         .presentationDragIndicator(.visible)
         .onAppear {
-            viewModel.load(profile: profile, existingSupplements: existingSupplements, catalog: catalog)
+            viewModel.load(profile: profile, existingSupplements: existingSupplements, catalog: catalog, drugInteractions: drugInteractions, medications: dbMedications)
         }
     }
 
@@ -173,6 +181,7 @@ struct AddSupplementSheet: View {
                 TextField("Search supplements...", text: $searchText)
                     .font(DesignTokens.bodyFont)
                     .foregroundStyle(DesignTokens.textPrimary)
+                    .autocorrectionDisabled()
             }
             .padding(DesignTokens.spacing12)
             .background(DesignTokens.bgSurface)
@@ -254,7 +263,7 @@ struct AddSupplementSheet: View {
                     title: "Add \(count) Supplement\(count == 1 ? "" : "s") to Plan",
                     style: .primary,
                     action: {
-                        let engine = RecommendationEngine(catalog: catalog)
+                        let engine = RecommendationEngine(catalog: catalog, drugInteractions: drugInteractions, medications: dbMedications)
                         let newSupplements = stagedSupplements.compactMap { id -> PlanSupplement? in
                             guard let supplement = catalog.supplement(byId: id) else { return nil }
                             return engine.buildPlanSupplement(from: supplement, for: profile, existingSupplements: existingSupplements)

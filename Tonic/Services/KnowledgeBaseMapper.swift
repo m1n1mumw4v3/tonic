@@ -107,6 +107,7 @@ enum KnowledgeBaseMapper {
             return Supplement(
                 id: s.id,
                 name: s.name,
+                commonNames: s.commonNames ?? [],
                 category: s.category,
                 commonDosageRange: dosageRange,
                 recommendedDosageMg: dosageMg,

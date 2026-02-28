@@ -21,7 +21,10 @@ struct SupplementPickerSheet: View {
         }
         let query = searchText.lowercased()
         return catalog.supplementsByCategory.compactMap { group in
-            let filtered = group.supplements.filter { $0.name.lowercased().contains(query) }
+            let filtered = group.supplements.filter {
+                $0.name.lowercased().contains(query)
+                    || $0.commonNames.contains(where: { $0.lowercased().contains(query) })
+            }
             guard !filtered.isEmpty else { return nil }
             return (category: group.category, label: group.label, supplements: filtered)
         }
@@ -74,6 +77,7 @@ struct SupplementPickerSheet: View {
                     TextField("Search supplements...", text: $searchText)
                         .font(DesignTokens.bodyFont)
                         .foregroundStyle(DesignTokens.textPrimary)
+                        .autocorrectionDisabled()
                 }
                 .padding(DesignTokens.spacing12)
                 .background(DesignTokens.bgSurface)
@@ -92,7 +96,7 @@ struct SupplementPickerSheet: View {
                             // Section header
                             Text(group.label.uppercased())
                                 .font(DesignTokens.sectionHeader)
-                                .foregroundStyle(DesignTokens.textSecondary)
+                                .foregroundStyle(DesignTokens.accentLongevity)
                                 .tracking(1)
                                 .padding(.horizontal, DesignTokens.spacing20)
                                 .padding(.top, DesignTokens.spacing16)
@@ -107,7 +111,7 @@ struct SupplementPickerSheet: View {
                         if showOtherRow {
                             Text("OTHER")
                                 .font(DesignTokens.sectionHeader)
-                                .foregroundStyle(DesignTokens.textSecondary)
+                                .foregroundStyle(DesignTokens.accentLongevity)
                                 .tracking(1)
                                 .padding(.horizontal, DesignTokens.spacing20)
                                 .padding(.top, DesignTokens.spacing16)
@@ -165,15 +169,9 @@ struct SupplementPickerSheet: View {
             }
         } label: {
             HStack(spacing: DesignTokens.spacing12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(supplement.name)
-                        .font(DesignTokens.bodyFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
-
-                    Text(supplement.commonDosageRange)
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                }
+                Text(supplement.name)
+                    .font(DesignTokens.bodyFont)
+                    .foregroundStyle(DesignTokens.textPrimary)
 
                 Spacer()
 

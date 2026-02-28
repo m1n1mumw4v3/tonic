@@ -47,25 +47,23 @@ enum DBSupplementCategory: String, Codable {
 }
 
 enum DBInteractionType: String, Codable {
-    case pharmacokinetic
-    case pharmacodynamic
-    case nutrientDepletion = "nutrient_depletion"
-    case additive
+    case reducesEfficacy = "reduces_efficacy"
+    case increasesEffect = "increases_effect"
+    case increasesToxicity = "increases_toxicity"
+    case absorptionInterference = "absorption_interference"
 }
 
 enum DBSeverityLevel: String, Codable {
-    case minor
+    case low
     case moderate
-    case major
-    case contraindicated
+    case high
 }
 
 enum DBInteractionAction: String, Codable {
     case avoid
-    case spaceDoses = "space_doses"
-    case monitorLevels = "monitor_levels"
     case adjustDose = "adjust_dose"
-    case informProvider = "inform_provider"
+    case monitor
+    case separateTiming = "separate_timing"
 }
 
 enum DBContraindicationSeverity: String, Codable {
@@ -157,76 +155,129 @@ enum DBSynthesisConfidence: String, Codable {
 struct DBSupplement: Codable, Identifiable {
     let id: UUID
     let name: String
-    let slug: String
-    let category: DBSupplementCategory
-    let commonDosageRange: String
-    let recommendedDosageMg: Double
-    let dosageUnit: String
-    let timingOfDay: DBTimingOfDay
-    let foodTiming: DBFoodTiming
-    let evidenceClassification: DBEvidenceClassification
-    let formAndBioavailability: String
-    let dosageRationale: String
-    let expectedTimeline: String
-    let whatToLookFor: String
-    let notes: String
-    let availabilityTier: DBAvailabilityTier?
-    let costTier: DBCostTier?
+    let category: String
+    let commonNames: [String]?
+    let primaryAction: String?
+    let defaultForm: String?
+    let defaultDose: String?
+    let displayDose: String?
+    let doseRangeLow: String?
+    let doseRangeHigh: String?
+    let upperTolerableLimit: String?
+    let toxicityThreshold: String?
+    let timingOfDay: String?
+    let withFood: String?
+    let timingRationale: String?
+    let timingRelativeNotes: String?
+    let synthesisConfidence: String?
+    let conflictingEvidenceNotes: String?
+    let lastReviewed: String?
+    let reviewTrigger: String?
+    let createdAt: String?
+    let updatedAt: String?
+    let onsetRangeLow: String?
+    let onsetRangeHigh: String?
     let onsetMinDays: Int?
     let onsetMaxDays: Int?
     let onsetDescription: String?
-    let createdAt: String?
-    let updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, slug, category
-        case commonDosageRange = "common_dosage_range"
-        case recommendedDosageMg = "recommended_dosage_mg"
-        case dosageUnit = "dosage_unit"
-        case timingOfDay = "timing_of_day"
-        case foodTiming = "food_timing"
-        case evidenceClassification = "evidence_classification"
-        case formAndBioavailability = "form_and_bioavailability"
-        case dosageRationale = "dosage_rationale"
-        case expectedTimeline = "expected_timeline"
-        case whatToLookFor = "what_to_look_for"
-        case notes
-        case availabilityTier = "availability_tier"
-        case costTier = "cost_tier"
+        case id, name, category
+        case commonNames = "common_names"
+        case primaryAction = "primary_action"
+        case defaultForm = "default_form"
+        case defaultDose = "default_dose"
+        case displayDose = "display_dose"
+        case doseRangeLow = "dose_range_low"
+        case doseRangeHigh = "dose_range_high"
+        case upperTolerableLimit = "upper_tolerable_limit"
+        case toxicityThreshold = "toxicity_threshold"
+        case timingOfDay = "time_of_day"
+        case withFood = "with_food"
+        case timingRationale = "timing_rationale"
+        case timingRelativeNotes = "timing_relative_notes"
+        case synthesisConfidence = "synthesis_confidence"
+        case conflictingEvidenceNotes = "conflicting_evidence_notes"
+        case lastReviewed = "last_reviewed"
+        case reviewTrigger = "review_trigger"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case onsetRangeLow = "onset_range_low"
+        case onsetRangeHigh = "onset_range_high"
         case onsetMinDays = "onset_min_days"
         case onsetMaxDays = "onset_max_days"
         case onsetDescription = "onset_description"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
     }
 
-    /// Convert to the legacy Supplement type for compatibility during migration
-    func toSupplement(benefits: [String] = [], contraindications: [String] = [], drugInteractions: [String] = []) -> Supplement {
-        let timing: SupplementTiming
-        if foodTiming == .withFood {
-            timing = .withFood
-        } else if foodTiming == .withoutFood {
-            timing = .emptyStomach
-        } else {
-            timing = timingOfDay.toSupplementTiming
+    // MARK: - Derived Properties
+
+    /// Category as the typed enum, falling back to .botanical
+    var categoryEnum: DBSupplementCategory {
+        DBSupplementCategory(rawValue: category) ?? .botanical
+    }
+
+    /// Dosage range string built from DB fields
+    var dosageRange: String {
+        if let low = doseRangeLow, let high = doseRangeHigh {
+            return "\(low)–\(high)"
         }
+        return defaultDose ?? ""
+    }
+
+    /// Best-effort numeric dosage parsed from defaultDose (e.g. "400 mg" → 400)
+    var dosageMg: Double {
+        guard let dose = defaultDose else { return 0 }
+        let digits = dose.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        return Double(digits) ?? 0
+    }
+
+    /// Map synthesis_confidence to the app's evidence level
+    var evidenceLevel: EvidenceLevel {
+        switch synthesisConfidence?.lowercased() {
+        case "high": return .strong
+        case "moderate": return .moderate
+        default: return .emerging
+        }
+    }
+
+    /// Map timing fields to app's SupplementTiming
+    var timing: SupplementTiming {
+        if withFood == "with_food" { return .withFood }
+        if withFood == "without_food" { return .emptyStomach }
+        switch timingOfDay?.lowercased() {
+        case "evening": return .evening
+        default: return .morning
+        }
+    }
+
+    /// Convert to the app's Supplement type
+    func toSupplement(benefits: [String] = [], contraindications: [String] = [], drugInteractions: [String] = []) -> Supplement {
+        let timeline: String = {
+            if let desc = onsetDescription { return desc }
+            if let min = onsetMinDays, let max = onsetMaxDays {
+                return "Effects typically appear within \(min)–\(max) days"
+            }
+            return ""
+        }()
 
         return Supplement(
             id: id,
             name: name,
-            category: category.rawValue,
-            commonDosageRange: commonDosageRange,
-            recommendedDosageMg: recommendedDosageMg,
+            commonNames: commonNames ?? [],
+            category: categoryEnum.rawValue,
+            commonDosageRange: dosageRange,
+            recommendedDosageMg: dosageMg,
+            displayDose: displayDose,
             recommendedTiming: timing,
             benefits: benefits,
             contraindications: contraindications,
             drugInteractions: drugInteractions,
-            notes: notes,
-            dosageRationale: dosageRationale,
-            expectedTimeline: expectedTimeline,
-            whatToLookFor: whatToLookFor,
-            formAndBioavailability: formAndBioavailability,
-            evidenceLevel: evidenceClassification.toEvidenceLevel
+            notes: primaryAction ?? "",
+            dosageRationale: timingRationale ?? "",
+            expectedTimeline: timeline,
+            whatToLookFor: defaultForm ?? "",
+            formAndBioavailability: defaultForm ?? "",
+            evidenceLevel: evidenceLevel
         )
     }
 }
@@ -234,17 +285,24 @@ struct DBSupplement: Codable, Identifiable {
 struct DBSupplementGoalMap: Codable, Identifiable {
     let id: UUID
     let supplementId: UUID
-    let healthGoal: String
-    let evidenceWeight: DBEvidenceWeight
-    let evidenceClassification: DBEvidenceClassification?
+    let goal: String
+    let weight: String
+    let classification: String?
+    let mechanismKey: String?
+    let rationale: String?
+    let keySources: String?
+    let createdAt: String?
 
     enum CodingKeys: String, CodingKey {
-        case id
+        case id, goal, weight, classification, rationale
         case supplementId = "supplement_id"
-        case healthGoal = "health_goal"
-        case evidenceWeight = "evidence_weight"
-        case evidenceClassification = "evidence_classification"
+        case mechanismKey = "mechanism_key"
+        case keySources = "key_sources"
+        case createdAt = "created_at"
     }
+
+    /// Weight as Int (defaults to 1)
+    var weightInt: Int { Int(weight) ?? 1 }
 }
 
 struct DBSupplementMechanism: Codable, Identifiable {
@@ -302,21 +360,19 @@ struct DBSupplementForm: Codable, Identifiable {
 struct DBDrugInteraction: Codable, Identifiable {
     let id: UUID
     let supplementId: UUID
-    let drugName: String
-    let drugClass: String?
+    let drugOrClass: String
     let interactionType: DBInteractionType
     let severity: DBSeverityLevel
     let action: DBInteractionAction
-    let explanation: String
+    let mechanism: String
     let supplementName: String?
 
     enum CodingKeys: String, CodingKey {
         case id
         case supplementId = "supplement_id"
-        case drugName = "drug_name"
-        case drugClass = "drug_class"
+        case drugOrClass = "drug_or_class"
         case interactionType = "interaction_type"
-        case severity, action, explanation
+        case severity, action, mechanism
         case supplementName = "supplement_name"
     }
 }
@@ -356,21 +412,21 @@ struct DBLabTestInterference: Codable, Identifiable {
 
 struct DBSynergisticPairing: Codable, Identifiable {
     let id: UUID
-    let supplementAId: UUID
-    let supplementBId: UUID
-    let mechanism: String
-    let directionality: DBSynergyDirectionality
-    let evidence: DBSynergyEvidence
-    let supplementAName: String?
-    let supplementBName: String?
+    let supplementId: UUID
+    let partnerSupplementId: UUID?
+    let partnerName: String
+    let mechanism: String?
+    let evidenceLevel: String?
+    let directionality: String?
+    let createdAt: String?
 
     enum CodingKeys: String, CodingKey {
-        case id
-        case supplementAId = "supplement_a_id"
-        case supplementBId = "supplement_b_id"
-        case mechanism, directionality, evidence
-        case supplementAName = "supplement_a_name"
-        case supplementBName = "supplement_b_name"
+        case id, mechanism, directionality
+        case supplementId = "supplement_id"
+        case partnerSupplementId = "partner_supplement_id"
+        case partnerName = "partner_name"
+        case evidenceLevel = "evidence_level"
+        case createdAt = "created_at"
     }
 }
 
