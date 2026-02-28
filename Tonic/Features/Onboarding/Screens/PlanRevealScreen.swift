@@ -25,6 +25,8 @@ struct PlanRevealScreen: View {
     @State private var selectedGoalFilter: HealthGoal? = nil
     @State private var animatedSupplementCount: Int = 0
     @State private var showEvidenceInfo: EvidenceLevel? = nil
+    @State private var isSummaryExpanded: Bool = false
+    @State private var showShimmer: Bool = true
 
     private let reduceMotion = UIAccessibility.isReduceMotionEnabled
 
@@ -73,6 +75,11 @@ struct PlanRevealScreen: View {
 
                         // Goal chips
                         goalChipsSection
+
+                        // AI reasoning as flowing text
+                        if let summary = viewModel.generatedPlan?.aiReasoning {
+                            summaryBlurb(summary)
+                        }
 
                         // Tiered supplement sections
                         supplementSections
@@ -129,48 +136,6 @@ struct PlanRevealScreen: View {
                     .foregroundStyle(DesignTokens.textSecondary)
             }
             .opacity(showSubtitle ? 1 : 0)
-
-            if let summary = viewModel.generatedPlan?.aiReasoning {
-                VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "wand.and.stars")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(DesignTokens.accentClarity)
-                        Text("PERSONALIZED FOR YOU")
-                            .font(DesignTokens.sectionHeader)
-                            .foregroundStyle(DesignTokens.textTertiary)
-                            .tracking(1.2)
-                    }
-
-                    Text(summary)
-                        .font(DesignTokens.bodyFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
-                        .lineSpacing(4)
-                        .multilineTextAlignment(.leading)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .cardStyle()
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(
-                            LinearGradient(
-                                colors: [
-                                    DesignTokens.accentSleep,
-                                    DesignTokens.accentEnergy,
-                                    DesignTokens.accentClarity,
-                                    DesignTokens.accentMood,
-                                    DesignTokens.accentGut
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ),
-                            lineWidth: 1.5
-                        )
-                )
-                .padding(.top, DesignTokens.spacing4)
-                .opacity(showSummary ? 1 : 0)
-                .offset(y: showSummary || reduceMotion ? 0 : 8)
-            }
         }
     }
 
@@ -258,6 +223,69 @@ struct PlanRevealScreen: View {
             }
     }
 
+    // MARK: - Summary Blurb
+
+    private func summaryBlurb(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: DesignTokens.spacing12) {
+            // Spectrum gradient left accent bar
+            RoundedRectangle(cornerRadius: 1)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            DesignTokens.accentSleep,
+                            DesignTokens.accentEnergy,
+                            DesignTokens.accentClarity,
+                            DesignTokens.accentMood,
+                            DesignTokens.accentGut
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(width: 2)
+
+            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+                // AI label header
+                HStack(spacing: 6) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 11))
+                    Text("PERSONALIZED FOR YOU")
+                        .font(DesignTokens.sectionHeader)
+                        .tracking(1.2)
+                }
+                .foregroundStyle(DesignTokens.textTertiary)
+
+                // Summary text with line limit
+                Text(text)
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textSecondary)
+                    .lineSpacing(4)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(isSummaryExpanded ? nil : 3)
+                    .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
+
+                // Read more / Less button
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                        isSummaryExpanded.toggle()
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(isSummaryExpanded ? "LESS" : "READ MORE")
+                            .font(DesignTokens.smallMono)
+                        Image(systemName: isSummaryExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 9, weight: .medium))
+                    }
+                    .foregroundStyle(DesignTokens.textTertiary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.vertical, DesignTokens.spacing4)
+        .opacity(showSummary ? 1 : 0)
+        .offset(y: showSummary || reduceMotion ? 0 : 8)
+    }
+
     // MARK: - Supplement Sections
 
     private var supplementSections: some View {
@@ -309,29 +337,28 @@ struct PlanRevealScreen: View {
     }
 
     private func tierHeader(for tier: SupplementTier, count: Int) -> some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: DesignTokens.spacing8) {
-                    Image(systemName: tier.icon)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(tierAccentColor(for: tier))
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: DesignTokens.spacing8) {
+                Image(systemName: tier.icon)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(tierAccentColor(for: tier))
 
+                HStack(spacing: 4) {
                     Text(tier.label)
                         .font(DesignTokens.sectionHeader)
                         .foregroundStyle(DesignTokens.textPrimary)
                         .tracking(1.2)
-                }
 
-                Text(tier.description)
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
+                    Text("(\(count))")
+                        .font(DesignTokens.sectionHeader)
+                        .foregroundStyle(DesignTokens.textTertiary)
+                        .tracking(1.2)
+                }
             }
 
-            Spacer()
-
-            Text("\(count) supplement\(count == 1 ? "" : "s")")
-                .font(DesignTokens.labelMono)
-                .foregroundStyle(DesignTokens.textTertiary)
+            Text(tier.description)
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(DesignTokens.textSecondary)
         }
     }
 
@@ -441,15 +468,8 @@ struct PlanRevealScreen: View {
             startCountAnimation()
         }
 
-        // Plan summary
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.12 : 0.9)) {
-            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
-                showSummary = true
-            }
-        }
-
         // Goal chips staggered
-        let chipStart: Double = reduceMotion ? 0.15 : 1.2
+        let chipStart: Double = reduceMotion ? 0.12 : 0.9
         let chipInterval: Double = reduceMotion ? 0.03 : 0.08
         for i in 0..<userGoals.count {
             DispatchQueue.main.asyncAfter(deadline: .now() + chipStart + Double(i) * chipInterval) {
@@ -459,8 +479,25 @@ struct PlanRevealScreen: View {
             }
         }
 
+        // Plan summary (after chips, before supplements)
+        let summaryStart = chipStart + Double(userGoals.count) * chipInterval + (reduceMotion ? 0.05 : 0.2)
+        DispatchQueue.main.asyncAfter(deadline: .now() + summaryStart) {
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showSummary = true
+            }
+        }
+
+        // Stop shimmer after 2.5s
+        if !reduceMotion {
+            DispatchQueue.main.asyncAfter(deadline: .now() + summaryStart + 2.5) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    showShimmer = false
+                }
+            }
+        }
+
         // Tier headers + cards
-        let cardStart: Double = reduceMotion ? 0.3 : 1.6
+        let cardStart: Double = summaryStart + (reduceMotion ? 0.1 : 0.4)
         var delay = cardStart
 
         for tier in tiers {
@@ -591,6 +628,46 @@ private struct RevealPulseModifier: ViewModifier {
             .onAppear {
                 isAnimating = true
             }
+    }
+}
+
+// MARK: - One-Shot Shimmer
+
+private struct OneShotShimmerModifier: ViewModifier {
+    let isActive: Bool
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        if isActive {
+            content
+                .overlay {
+                    GeometryReader { geometry in
+                        let width = geometry.size.width
+                        let bandWidth = width * 0.5
+
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0),
+                                .init(color: .white.opacity(0.7), location: 0.35),
+                                .init(color: .white.opacity(0.7), location: 0.65),
+                                .init(color: .clear, location: 1.0)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(width: bandWidth)
+                        .offset(x: -bandWidth + phase * (width + bandWidth))
+                    }
+                    .mask(content)
+                }
+                .onAppear {
+                    withAnimation(.linear(duration: 2.5)) {
+                        phase = 1.0
+                    }
+                }
+        } else {
+            content
+        }
     }
 }
 
