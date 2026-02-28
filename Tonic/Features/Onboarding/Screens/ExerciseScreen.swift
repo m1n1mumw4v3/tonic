@@ -8,20 +8,18 @@ struct ExerciseScreen: View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: DesignTokens.spacing12) {
+                ForEach(ExerciseFrequency.allCases) { option in
+                    optionCard(for: option)
+                }
+            }
+            .padding(.horizontal, DesignTokens.spacing24)
+
+            VStack {
                 HeadlineText(text: "How often do you exercise?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
-
-                Spacer()
-
-                VStack(spacing: DesignTokens.spacing12) {
-                    ForEach(ExerciseFrequency.allCases) { option in
-                        optionCard(for: option)
-                    }
-                }
-                .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
             }

@@ -5,7 +5,7 @@ struct CaffeineScreen: View {
     let onContinue: () -> Void
 
     private var isNone: Bool {
-        viewModel.coffeeCupsDaily == 0 && viewModel.teaCupsDaily == 0 && viewModel.energyDrinksDaily == 0
+        viewModel.coffeeCupsDaily == 0 && viewModel.teaCupsDaily == 0 && viewModel.energyDrinksDaily == 0 && viewModel.sodaCupsDaily == 0
     }
 
     var body: some View {
@@ -59,6 +59,7 @@ struct CaffeineScreen: View {
                         label: "Energy Drink",
                         count: viewModel.energyDrinksDaily,
                         isActive: viewModel.energyDrinksDaily > 0,
+                        unit: "Cans",
                         onDecrement: {
                             HapticManager.selection()
                             viewModel.energyDrinksDaily = max(0, viewModel.energyDrinksDaily - 1)
@@ -66,6 +67,22 @@ struct CaffeineScreen: View {
                         onIncrement: {
                             HapticManager.selection()
                             viewModel.energyDrinksDaily += 1
+                        }
+                    )
+
+                    // Soda stepper
+                    stepperCard(
+                        label: "Soda",
+                        count: viewModel.sodaCupsDaily,
+                        isActive: viewModel.sodaCupsDaily > 0,
+                        unit: "Cans",
+                        onDecrement: {
+                            HapticManager.selection()
+                            viewModel.sodaCupsDaily = max(0, viewModel.sodaCupsDaily - 1)
+                        },
+                        onIncrement: {
+                            HapticManager.selection()
+                            viewModel.sodaCupsDaily += 1
                         }
                     )
                 }
@@ -88,6 +105,7 @@ struct CaffeineScreen: View {
             viewModel.coffeeCupsDaily = 0
             viewModel.teaCupsDaily = 0
             viewModel.energyDrinksDaily = 0
+            viewModel.sodaCupsDaily = 0
         } label: {
             Text("None")
                 .font(DesignTokens.bodyFont)
@@ -111,6 +129,7 @@ struct CaffeineScreen: View {
         label: String,
         count: Int,
         isActive: Bool,
+        unit: String = "Cups",
         onDecrement: @escaping () -> Void,
         onIncrement: @escaping () -> Void
     ) -> some View {
@@ -142,7 +161,7 @@ struct CaffeineScreen: View {
                     Text("\(count)")
                         .font(DesignTokens.bodyFont)
                         .foregroundStyle(DesignTokens.textPrimary)
-                    Text("Cups")
+                    Text(unit)
                         .font(DesignTokens.captionFont)
                         .foregroundStyle(DesignTokens.textSecondary)
                 }

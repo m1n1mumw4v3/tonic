@@ -35,22 +35,7 @@ struct DietScreen: View {
                                 }
                             }
 
-                            dietCard(for: .other)
-
-                            if viewModel.dietType == .other {
-                                TextField("", text: Bindable(viewModel).customDietText, prompt: Text("e.g. Whole30, Carnivore...").foregroundStyle(DesignTokens.textSecondary), axis: .vertical)
-                                    .font(DesignTokens.bodyFont)
-                                    .foregroundStyle(DesignTokens.textPrimary)
-                                    .lineLimit(1...2)
-                                    .padding(DesignTokens.spacing12)
-                                    .background(DesignTokens.bgSurface)
-                                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                            .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                                    )
-                                    .focused($isTextFieldFocused)
-                            }
+                            otherDietTile()
                         }
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
@@ -73,14 +58,10 @@ struct DietScreen: View {
         Button {
             HapticManager.selection()
             viewModel.dietType = option
-            if option == .other {
-                isTextFieldFocused = true
-            } else {
-                viewModel.customDietText = ""
-                isTextFieldFocused = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    onContinue()
-                }
+            viewModel.customDietText = ""
+            isTextFieldFocused = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                onContinue()
             }
         } label: {
             Text(option.label)
@@ -96,6 +77,68 @@ struct DietScreen: View {
                         .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
                 )
         }
+    }
+
+    // MARK: - Other Diet Tile
+
+    @ViewBuilder
+    private func otherDietTile() -> some View {
+        let isExpanded = viewModel.dietType == .other
+        let hasCustomText = !viewModel.customDietText.trimmingCharacters(in: .whitespaces).isEmpty
+        let isActive = isExpanded || hasCustomText
+
+        VStack(spacing: 0) {
+            Button {
+                HapticManager.selection()
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    if viewModel.dietType == .other {
+                        viewModel.dietType = nil
+                        viewModel.customDietText = ""
+                        isTextFieldFocused = false
+                    } else {
+                        viewModel.dietType = .other
+                        isTextFieldFocused = true
+                    }
+                }
+            } label: {
+                HStack(spacing: DesignTokens.spacing8) {
+                    Text("✏️")
+                        .font(.system(size: 20))
+
+                    Text("Other")
+                        .font(DesignTokens.bodyFont)
+                        .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textSecondary)
+
+                }
+                .padding(DesignTokens.spacing12)
+            }
+
+            if isExpanded {
+                VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+                    TextField("", text: Bindable(viewModel).customDietText, prompt: Text("e.g. Whole30, Carnivore...").foregroundStyle(DesignTokens.textSecondary), axis: .vertical)
+                        .font(DesignTokens.bodyFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .lineLimit(1...2)
+                        .padding(DesignTokens.spacing12)
+                        .background(DesignTokens.bgDeepest)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+                        .focused($isTextFieldFocused)
+
+                    Text("Describe your diet or eating style.")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textTertiary)
+                }
+                .padding(.horizontal, DesignTokens.spacing12)
+                .padding(.bottom, DesignTokens.spacing12)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
+        )
     }
 }
 

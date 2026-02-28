@@ -8,20 +8,18 @@ struct StressScreen: View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: DesignTokens.spacing12) {
+                ForEach(StressLevel.allCases) { option in
+                    optionCard(for: option)
+                }
+            }
+            .padding(.horizontal, DesignTokens.spacing24)
+
+            VStack {
                 HeadlineText(text: "What's your typical\nstress level?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
-
-                Spacer()
-
-                VStack(spacing: DesignTokens.spacing12) {
-                    ForEach(StressLevel.allCases) { option in
-                        optionCard(for: option)
-                    }
-                }
-                .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
             }

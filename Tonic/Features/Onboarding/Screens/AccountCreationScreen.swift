@@ -77,8 +77,8 @@ struct AccountCreationScreen: View {
                 VStack(spacing: DesignTokens.spacing24) {
                     // Header
                     VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                        HeadlineText(text: "Save your profile")
-                        Text("Your custom plan is ready to be built.")
+                        HeadlineText(text: "Ready to build your plan")
+                        Text("Create an account and we'll get started.")
                             .font(DesignTokens.bodyFont)
                             .foregroundStyle(DesignTokens.textSecondary)
                     }
@@ -140,57 +140,69 @@ struct AccountCreationScreen: View {
                             .transition(.move(edge: .top).combined(with: .opacity))
                     }
 
-                    // Auth buttons
-                    VStack(spacing: DesignTokens.spacing12) {
-                        // Sign in with Apple
-                        AppleSignInButton(label: "Continue with Apple") { request in
-                            request.requestedScopes = [.email, .fullName]
-                        } onCompletion: { result in
-                            handleAppleSignIn(result)
-                        }
-
-                        // Sign in with Google
-                        Button(action: handleGoogleSignIn) {
-                            HStack(spacing: DesignTokens.spacing8) {
-                                Image("GoogleLogo")
-                                    .renderingMode(.original)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 20, height: 20)
-                                Text("Continue with Google")
-                                    .font(DesignTokens.ctaFont)
-                                    .tracking(0.32)
+                    if !showEmailForm {
+                        // Auth buttons
+                        VStack(spacing: DesignTokens.spacing12) {
+                            // Sign in with Apple
+                            AppleSignInButton(label: "Continue with Apple") { request in
+                                request.requestedScopes = [.email, .fullName]
+                            } onCompletion: { result in
+                                handleAppleSignIn(result)
                             }
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(Color.white)
-                            .foregroundStyle(DesignTokens.textPrimary)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                            )
-                        }
-                        .buttonStyle(CTAPressStyle())
 
-                        // Email option
-                        if !showEmailForm {
+                            // Sign in with Google
+                            Button(action: handleGoogleSignIn) {
+                                HStack(spacing: DesignTokens.spacing8) {
+                                    Image("GoogleLogo")
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 20, height: 20)
+                                    Text("Continue with Google")
+                                        .font(DesignTokens.ctaFont)
+                                        .tracking(0.32)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                                .background(Color.white)
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(CTAPressStyle())
+
+                            // Email option
                             Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showEmailForm = true
                                 }
                             }) {
-                                Text("Or continue with email")
-                                    .font(DesignTokens.bodyFont)
-                                    .foregroundStyle(DesignTokens.textSecondary)
+                                HStack(spacing: DesignTokens.spacing8) {
+                                    Image(systemName: "envelope")
+                                        .font(.system(size: 18))
+                                    Text("Continue with Email")
+                                        .font(DesignTokens.ctaFont)
+                                        .tracking(0.32)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                                .background(Color.white)
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                                )
                             }
-                            .padding(.top, DesignTokens.spacing4)
+                            .buttonStyle(CTAPressStyle())
                         }
-                    }
-                    .padding(.horizontal, DesignTokens.spacing24)
-
-                    // Email form
-                    if showEmailForm {
+                        .padding(.horizontal, DesignTokens.spacing24)
+                        .transition(.opacity)
+                    } else {
+                        // Email form
                         VStack(spacing: DesignTokens.spacing16) {
                             // Email field
                             TextField("", text: $email, prompt: Text("Email address").foregroundStyle(DesignTokens.textSecondary))
@@ -257,9 +269,20 @@ struct AccountCreationScreen: View {
                             CTAButton(title: "Create account", style: .primary, action: handleEmailSignUp)
                                 .opacity(isFormValid ? 1.0 : 0.4)
                                 .disabled(!isFormValid)
+
+                            // Back to other sign-in options
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showEmailForm = false
+                                }
+                            }) {
+                                Text("Other sign-in options")
+                                    .font(DesignTokens.bodyFont)
+                                    .foregroundStyle(DesignTokens.textSecondary)
+                            }
                         }
                         .padding(.horizontal, DesignTokens.spacing24)
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .transition(.opacity)
                     }
 
                     Spacer(minLength: DesignTokens.spacing16)
@@ -268,21 +291,22 @@ struct AccountCreationScreen: View {
             .scrollDismissesKeyboard(.interactively)
             .safeAreaInset(edge: .bottom) {
                 VStack(spacing: DesignTokens.spacing12) {
-                    Text(termsAttributedString)
-                        .font(DesignTokens.captionFont)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, DesignTokens.spacing24)
-
                     // Sign in link
                     Button(action: { showSignInSheet = true }) {
                         HStack(spacing: DesignTokens.spacing4) {
                             Text("Already have an account?")
                                 .foregroundStyle(DesignTokens.textTertiary)
                             Text("Sign in")
+                                .underline()
                                 .foregroundStyle(DesignTokens.accentClarity)
                         }
                         .font(DesignTokens.captionFont)
                     }
+
+                    Text(termsAttributedString)
+                        .font(DesignTokens.captionFont)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, DesignTokens.spacing24)
                 }
                 .padding(.top, DesignTokens.spacing12)
                 .padding(.bottom, DesignTokens.spacing16)

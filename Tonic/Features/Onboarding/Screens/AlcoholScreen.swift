@@ -8,20 +8,18 @@ struct AlcoholScreen: View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: DesignTokens.spacing12) {
+                ForEach(AlcoholIntake.allCases) { option in
+                    optionCard(for: option)
+                }
+            }
+            .padding(.horizontal, DesignTokens.spacing24)
+
+            VStack {
                 HeadlineText(text: "How much alcohol\ndo you drink weekly?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
-
-                Spacer()
-
-                VStack(spacing: DesignTokens.spacing12) {
-                    ForEach(AlcoholIntake.allCases) { option in
-                        optionCard(for: option)
-                    }
-                }
-                .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
             }

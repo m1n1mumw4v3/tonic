@@ -14,6 +14,8 @@ struct AllergiesScreen: View {
         ("Dairy", "🥛"),
         ("Tree Nuts", "🌰"),
         ("Fish", "🐟"),
+        ("Eggs", "🥚"),
+        ("Peanuts", "🥜"),
     ]
 
     private let columns = [
@@ -33,16 +35,16 @@ struct AllergiesScreen: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, DesignTokens.spacing24)
 
-                        // No known allergies option
-                        noKnownAllergiesTile()
-
-                        // Divider
-                        Rectangle()
-                            .fill(DesignTokens.borderDefault)
-                            .frame(height: 1)
-
-                        // Allergy grid + Other allergies (consistent spacing)
                         VStack(spacing: DesignTokens.spacing12) {
+                            // No known allergies option
+                            noKnownAllergiesTile()
+
+                            // Divider
+                            Rectangle()
+                                .fill(DesignTokens.borderDefault)
+                                .frame(height: 1)
+
+                            // Allergy grid
                             LazyVGrid(columns: columns, spacing: DesignTokens.spacing12) {
                                 ForEach(Self.allergyOptions, id: \.name) { option in
                                     allergyCard(for: option.name, icon: option.icon)
@@ -53,18 +55,6 @@ struct AllergiesScreen: View {
                             otherAllergiesTile()
                         }
 
-                        // Disclaimer
-                        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
-                            Image(systemName: "info.circle")
-                                .font(.system(size: 14))
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .padding(.top, 2)
-
-                            Text("We check for known interactions, but always consult your doctor before taking anything new.")
-                                .font(DesignTokens.captionFont)
-                                .foregroundStyle(DesignTokens.textSecondary)
-                                .lineSpacing(2)
-                        }
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.bottom, DesignTokens.spacing24)
@@ -74,7 +64,22 @@ struct AllergiesScreen: View {
                 // CTA
                 CTAButton(title: "Continue", style: .primary, action: onContinue)
                     .padding(.horizontal, DesignTokens.spacing24)
-                    .padding(.bottom, DesignTokens.spacing48)
+
+                // Disclaimer
+                HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 14))
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .padding(.top, 2)
+
+                    Text("We check for known interactions, but always consult your doctor before taking anything new.")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .lineSpacing(2)
+                }
+                .padding(.horizontal, DesignTokens.spacing24)
+                .padding(.top, DesignTokens.spacing12)
+                .padding(.bottom, DesignTokens.spacing24)
             }
         }
         .onAppear {
