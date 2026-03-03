@@ -1,12 +1,12 @@
-# Ample Design System
+# Estus Design System
 
-> Internal module: `Tonic` · iOS 17+ · Light-mode only · All tokens live in `DesignTokens.swift`
+> Module: `Estus` · iOS 17+ · Light-mode only · All tokens live in `DesignTokens.swift`
 
 ---
 
 ## Philosophy
 
-Ample's visual language is **warm, biological, and precise**. The interface feels like a well-made physical object — warm off-white surfaces, olive-toned text, subtle grain textures, and organic accent colors drawn from biology (chlorophyll greens, membrane golds, deep purples). Typography is clinical and modern (Geist), but the palette and micro-interactions add warmth. Every element uses design tokens — no raw literals.
+Estus's visual language is **warm, biological, and precise**. The interface feels like a well-made physical object — warm off-white surfaces, olive-toned text, subtle grain textures, and organic accent colors drawn from biology (chlorophyll greens, membrane golds, deep purples). Typography is clinical and modern (Geist), but the palette and micro-interactions add warmth. Every element uses design tokens — no raw literals.
 
 ---
 
