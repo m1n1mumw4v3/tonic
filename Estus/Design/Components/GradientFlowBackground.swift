@@ -72,9 +72,9 @@ struct GradientFlowBackground: View {
             GradientBlob(
                 x: CGFloat.random(in: 0.1...0.9),
                 y: CGFloat.random(in: fullScreen ? 0.10...0.90 : 0.60...0.95),
-                size: CGFloat.random(in: fullScreen ? 200...320 : 300...500),
-                blur: CGFloat.random(in: fullScreen ? 50...75 : 40...65),
-                opacity: Double.random(in: 0.50...0.70),
+                size: CGFloat.random(in: fullScreen ? 240...360 : 300...500),
+                blur: CGFloat.random(in: fullScreen ? 45...65 : 40...65),
+                opacity: Double.random(in: fullScreen ? 0.70...0.88 : 0.50...0.70),
                 color: spectrumColors[index % spectrumColors.count],
                 duration: Double.random(in: 5...8),
                 delay: Double(index) * 0.4,

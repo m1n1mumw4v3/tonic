@@ -8,9 +8,10 @@ struct HeadlineText: View {
     let text: String
     var alignment: TextAlignment = .leading
     var fontSize: CGFloat? = nil
+    var color: Color = DesignTokens.textPrimary
 
     var body: some View {
-        HeadlineLabel(text: text, alignment: alignment, fontSize: fontSize)
+        HeadlineLabel(text: text, alignment: alignment, fontSize: fontSize, color: color)
             .fixedSize(horizontal: false, vertical: true)
     }
 }
@@ -19,6 +20,7 @@ private struct HeadlineLabel: UIViewRepresentable {
     let text: String
     let alignment: TextAlignment
     var fontSize: CGFloat? = nil
+    var color: Color = DesignTokens.textPrimary
 
     static let defaultFontSize: CGFloat = 28
     static let defaultLineHeight: CGFloat = 32
@@ -57,7 +59,7 @@ private struct HeadlineLabel: UIViewRepresentable {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .paragraphStyle: style,
-            .foregroundColor: UIColor(DesignTokens.textPrimary),
+            .foregroundColor: UIColor(color),
             .baselineOffset: baselineOffset
         ]
 

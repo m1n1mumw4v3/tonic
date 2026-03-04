@@ -29,38 +29,70 @@ struct AIInterstitialScreen: View {
                 GradientFlowBackground(fullScreen: true)
                 GrainOverlay()
 
-                // Greeting — pinned at ~1/4 down the screen
-                HeadlineText(
-                    text: "Hang tight, \(viewModel.firstName.trimmingCharacters(in: .whitespaces).isEmpty ? "friend" : viewModel.firstName).",
-                    alignment: .center
-                )
-                .position(x: geometry.size.width / 2, y: geometry.size.height * 0.25)
+                // Braille + greeting + step copy — vertically centered group
+                VStack(spacing: DesignTokens.spacing24) {
+                    BrailleThinkingIndicator()
 
-                // Single rotating step with shimmer — vertically centered
+                    HeadlineText(
+                        text: "Hang tight, \(viewModel.firstName.trimmingCharacters(in: .whitespaces).isEmpty ? "friend" : viewModel.firstName).",
+                        alignment: .center,
+                        color: .white
+                    )
+
+                    ZStack(alignment: .top) {
+                        ForEach(Array(stages.enumerated()), id: \.offset) { index, message in
+                            Text(message)
+                                .font(DesignTokens.headlineFont)
+                                .foregroundStyle(.white)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(maxWidth: .infinity, alignment: .top)
+                                .modifier(ShimmerModifier(isActive: !reduceMotion && index == currentStage))
+                                .opacity(index == currentStage ? 1 : 0)
+                                .animation(.easeInOut(duration: 1.4), value: currentStage)
+                        }
+                    }
+                    .frame(width: geometry.size.width - DesignTokens.spacing32 * 2)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .offset(y: -DesignTokens.spacing32)
+
+                // Progress bar with embedded % — near the bottom
                 ZStack {
-                    ForEach(Array(stages.enumerated()), id: \.offset) { index, message in
-                        Text(message)
-                            .font(DesignTokens.headlineFont)
-                            .foregroundStyle(DesignTokens.textPrimary)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .modifier(ShimmerModifier(isActive: !reduceMotion && index == currentStage))
-                            .opacity(index == currentStage ? 1 : 0)
-                            .animation(.easeInOut(duration: 1.4), value: currentStage)
+                    // Background track + black text
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(DesignTokens.bgElevated)
+                    Text("\(displayPercent)%")
+                        .font(.custom("GeistMono-Medium", size: 13))
+                        .foregroundStyle(DesignTokens.textPrimary)
+
+                    // Gradient fill + white text, both masked to progress
+                    GeometryReader { barGeo in
+                        let fillWidth = barGeo.size.width * min(max(progress, 0), 1)
+
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(
+                                    LinearGradient(
+                                        colors: DesignTokens.spectrumColors,
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                            Text("\(displayPercent)%")
+                                .font(.custom("GeistMono-Medium", size: 13))
+                                .foregroundStyle(.white)
+                        }
+                        .mask(
+                            HStack(spacing: 0) {
+                                Rectangle().frame(width: fillWidth)
+                                Spacer(minLength: 0)
+                            }
+                        )
                     }
                 }
-                .frame(width: geometry.size.width - DesignTokens.spacing32 * 2, height: 80)
-                .position(x: geometry.size.width / 2, y: geometry.size.height * 0.5)
-
-                // Progress bar — near the bottom
-                VStack(spacing: DesignTokens.spacing12) {
-                    SpectrumBar(height: 4, progress: progress)
-                        .padding(.horizontal, DesignTokens.spacing48)
-
-                    Text("\(displayPercent)%")
-                        .font(.custom("GeistMono-Medium", size: 15))
-                        .foregroundStyle(DesignTokens.textPrimary)
-                }
+                .frame(height: 28)
+                .padding(.horizontal, DesignTokens.spacing48)
                 .position(x: geometry.size.width / 2, y: geometry.size.height - DesignTokens.spacing48 - 30)
             }
         }
@@ -113,6 +145,123 @@ struct AIInterstitialScreen: View {
         }
     }
 
+}
+
+// MARK: - Braille Thinking Indicator
+
+private struct BrailleThinkingIndicator: View {
+    private let cellCount = 8
+    private let dotSize: CGFloat = 7
+    private let innerSpacing: CGFloat = 5
+    private let cellGap: CGFloat = 10
+
+    // Liquid metal palette
+    private let metalBright = Color(red: 0.92, green: 0.94, blue: 0.96)
+    private let metalMid    = Color(red: 0.78, green: 0.82, blue: 0.88)
+    private let metalDark   = Color(red: 0.60, green: 0.65, blue: 0.72)
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 15, paused: reduceMotion)) { context in
+            let time = reduceMotion ? 0.0 : context.date.timeIntervalSinceReferenceDate
+
+            Canvas { ctx, size in
+                let cellWidth = 2 * dotSize + innerSpacing
+                let cellHeight = 3 * dotSize + 2 * innerSpacing
+                let totalWidth = CGFloat(cellCount) * cellWidth + CGFloat(cellCount - 1) * cellGap
+                let originX = (size.width - totalWidth) / 2
+                let originY = (size.height - cellHeight) / 2
+
+                for cell in 0..<cellCount {
+                    let cellX = originX + CGFloat(cell) * (cellWidth + cellGap)
+
+                    for row in 0..<3 {
+                        for col in 0..<2 {
+                            let cx = cellX + CGFloat(col) * (dotSize + innerSpacing) + dotSize / 2
+                            let cy = originY + CGFloat(row) * (dotSize + innerSpacing) + dotSize / 2
+
+                            let globalCol = cell * 2 + col
+                            let dotIndex = cell * 6 + row * 2 + col
+                            let opacity = Self.dotOpacity(col: globalCol, row: row, cell: cell, dotIndex: dotIndex, time: time)
+
+                            guard opacity > 0.05 else { continue }
+
+                            // Outer glow — liquid metal sheen
+                            let glowSize = dotSize * 2.5
+                            ctx.opacity = opacity * 0.18
+                            ctx.fill(
+                                Circle().path(in: CGRect(x: cx - glowSize / 2, y: cy - glowSize / 2, width: glowSize, height: glowSize)),
+                                with: .color(metalMid)
+                            )
+
+                            // Main dot — metallic base
+                            ctx.opacity = opacity
+                            ctx.fill(
+                                Circle().path(in: CGRect(x: cx - dotSize / 2, y: cy - dotSize / 2, width: dotSize, height: dotSize)),
+                                with: .color(metalDark)
+                            )
+
+                            // Mid-layer — brighter metal fill, slightly inset
+                            let innerSize = dotSize * 0.75
+                            ctx.opacity = opacity
+                            ctx.fill(
+                                Circle().path(in: CGRect(x: cx - innerSize / 2, y: cy - innerSize / 2 - 0.5, width: innerSize, height: innerSize)),
+                                with: .color(metalMid)
+                            )
+
+                            // Specular highlight — top-left hot spot
+                            let hlSize = dotSize * 0.38
+                            ctx.opacity = opacity * 0.85
+                            ctx.fill(
+                                Circle().path(in: CGRect(x: cx - dotSize * 0.18 - hlSize / 2, y: cy - dotSize * 0.22 - hlSize / 2, width: hlSize, height: hlSize)),
+                                with: .color(metalBright)
+                            )
+
+                            // Tiny peak highlight — the "mercury droplet" glint
+                            let peakSize = dotSize * 0.18
+                            ctx.opacity = opacity * 0.6
+                            ctx.fill(
+                                Circle().path(in: CGRect(x: cx - dotSize * 0.12 - peakSize / 2, y: cy - dotSize * 0.18 - peakSize / 2, width: peakSize, height: peakSize)),
+                                with: .color(.white)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        .frame(height: 3 * dotSize + 2 * innerSpacing + 20)
+        .accessibilityLabel("Processing animation")
+    }
+
+    // Chaotic opacity: mix of directional waves, counter-waves, random pulses, and flicker
+    private static func dotOpacity(col: Int, row: Int, cell: Int, dotIndex: Int, time: Double) -> Double {
+        // Wave moving right
+        let rightWave = sin(time * 2.6 + Double(col) * 0.5 + Double(row) * 1.1)
+        // Wave moving left (negative col coefficient)
+        let leftWave = sin(time * 3.1 - Double(col) * 0.7 + Double(row) * 0.6)
+        // Vertical pulse per column
+        let vertPulse = cos(time * 4.2 + Double(cell) * 2.3)
+        // Per-dot pseudo-random flicker using golden ratio hash
+        let hash = Double(dotIndex) * 1.618033988749895
+        let flicker = sin(time * 5.7 + hash * 6.283) * cos(time * 3.9 + hash * 3.7)
+        // Slow drift that changes which pattern dominates over time
+        let drift = sin(time * 0.4 + Double(cell) * 0.8)
+
+        // Blend: drift controls whether wave-based or flicker-based motion dominates
+        let wavePart = (rightWave + leftWave + vertPulse) / 3.0
+        let flickerWeight = (drift + 1.0) / 2.0 * 0.6 // 0…0.6
+        let combined = wavePart * (1.0 - flickerWeight) + flicker * flickerWeight
+
+        // Quantize with a bit of jitter at boundaries
+        let jitter = sin(hash * 11.3 + time * 7.1) * 0.08
+        let threshold = combined + jitter
+
+        if threshold > 0.3 { return 1.0 }
+        else if threshold > 0.0 { return 0.45 }
+        else if threshold > -0.3 { return 0.12 }
+        else { return 0.0 }
+    }
 }
 
 // MARK: - Shimmer Effect Modifier
