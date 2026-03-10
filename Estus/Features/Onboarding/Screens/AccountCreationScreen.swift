@@ -6,19 +6,11 @@ struct AccountCreationScreen: View {
     var viewModel: OnboardingViewModel
     let onContinue: () -> Void
 
-    @State private var showEmailForm = false
-    @State private var email = ""
-    @State private var password = ""
-    @State private var confirmPassword = ""
-    @State private var focusedField: Field?
     @State private var errorMessage: String?
+    @State private var showEmailSheet = false
     @State private var showSignInSheet = false
     @State private var showPreview = false
     @State private var isAuthenticating = false
-
-    private enum Field: Hashable {
-        case email, password, confirmPassword
-    }
 
     // MARK: - Computed Properties
 
@@ -52,23 +44,6 @@ struct AccountCreationScreen: View {
 
     private var snapshotLabel: String {
         "YOUR BASELINE"
-    }
-
-    private var isEmailValid: Bool {
-        let pattern = #"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
-        return email.range(of: pattern, options: .regularExpression) != nil
-    }
-
-    private var isPasswordValid: Bool {
-        password.count >= 8
-    }
-
-    private var doPasswordsMatch: Bool {
-        password == confirmPassword && !confirmPassword.isEmpty
-    }
-
-    private var isFormValid: Bool {
-        isEmailValid && isPasswordValid && doPasswordsMatch
     }
 
     var body: some View {
@@ -137,158 +112,69 @@ struct AccountCreationScreen: View {
                             .transition(.move(edge: .top).combined(with: .opacity))
                     }
 
-                    if !showEmailForm {
-                        // Auth buttons
-                        VStack(spacing: DesignTokens.spacing12) {
-                            // Sign in with Apple
-                            AppleSignInButton(label: "Continue with Apple") { request in
-                                request.requestedScopes = [.email, .fullName]
-                            } onCompletion: { result in
-                                handleAppleSignIn(result)
-                            }
-                            .disabled(isAuthenticating)
-
-                            // Sign in with Google
-                            Button(action: handleGoogleSignIn) {
-                                HStack(spacing: DesignTokens.spacing8) {
-                                    if isAuthenticating {
-                                        ProgressView()
-                                            .controlSize(.small)
-                                    } else {
-                                        Image("GoogleLogo")
-                                            .renderingMode(.original)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 20, height: 20)
-                                    }
-                                    Text("Continue with Google")
-                                        .font(DesignTokens.ctaFont)
-                                        .tracking(0.32)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(Color.white)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                                )
-                            }
-                            .buttonStyle(CTAPressStyle())
-                            .disabled(isAuthenticating)
-
-                            // Email option
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showEmailForm = true
-                                }
-                            }) {
-                                HStack(spacing: DesignTokens.spacing8) {
-                                    Image(systemName: "envelope")
-                                        .font(.system(size: 18))
-                                    Text("Continue with Email")
-                                        .font(DesignTokens.ctaFont)
-                                        .tracking(0.32)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(Color.white)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                                )
-                            }
-                            .buttonStyle(CTAPressStyle())
-                            .disabled(isAuthenticating)
+                    // Auth buttons
+                    VStack(spacing: DesignTokens.spacing12) {
+                        // Sign in with Apple
+                        AppleSignInButton(label: "Continue with Apple") { request in
+                            request.requestedScopes = [.email, .fullName]
+                        } onCompletion: { result in
+                            handleAppleSignIn(result)
                         }
-                        .padding(.horizontal, DesignTokens.spacing24)
-                        .transition(.opacity)
-                    } else {
-                        // Email form
-                        VStack(spacing: DesignTokens.spacing16) {
-                            // Email field
-                            TextField("", text: $email, prompt: Text("Email address").foregroundStyle(DesignTokens.textSecondary))
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .padding(DesignTokens.spacing16)
-                                .background(DesignTokens.bgSurface)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                        .stroke(
-                                            focusedField == .email ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                                            lineWidth: 1
-                                        )
-                                )
-                                .textContentType(.emailAddress)
-                                .textInputAutocapitalization(.never)
-                                .autocorrectionDisabled()
-                                .keyboardType(.emailAddress)
-                                .onTapGesture { focusedField = .email }
+                        .disabled(isAuthenticating)
 
-                            // Password field
-                            VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
-                                SecureField("", text: $password, prompt: Text("Password").foregroundStyle(DesignTokens.textSecondary))
-                                    .font(DesignTokens.bodyFont)
-                                    .foregroundStyle(DesignTokens.textPrimary)
-                                    .padding(DesignTokens.spacing16)
-                                    .background(DesignTokens.bgSurface)
-                                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                            .stroke(
-                                                focusedField == .password ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                                                lineWidth: 1
-                                            )
-                                    )
-                                    .textContentType(.newPassword)
-                                    .onTapGesture { focusedField = .password }
-
-                                Text("At least 8 characters")
-                                    .font(DesignTokens.captionFont)
-                                    .foregroundStyle(DesignTokens.textTertiary)
-                                    .padding(.leading, DesignTokens.spacing4)
-                            }
-
-                            // Confirm password field
-                            SecureField("", text: $confirmPassword, prompt: Text("Confirm password").foregroundStyle(DesignTokens.textSecondary))
-                                .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .padding(DesignTokens.spacing16)
-                                .background(DesignTokens.bgSurface)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                        .stroke(
-                                            focusedField == .confirmPassword ? DesignTokens.accentClarity : DesignTokens.borderDefault,
-                                            lineWidth: 1
-                                        )
-                                )
-                                .textContentType(.newPassword)
-                                .onTapGesture { focusedField = .confirmPassword }
-
-                            // Create account CTA
-                            CTAButton(title: isAuthenticating ? "Creating account..." : "Create account", style: .primary, action: handleEmailSignUp)
-                                .opacity(isFormValid && !isAuthenticating ? 1.0 : 0.4)
-                                .disabled(!isFormValid || isAuthenticating)
-
-                            // Back to other sign-in options
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showEmailForm = false
+                        // Sign in with Google
+                        Button(action: handleGoogleSignIn) {
+                            HStack(spacing: DesignTokens.spacing8) {
+                                if isAuthenticating {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                } else {
+                                    Image("GoogleLogo")
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 20, height: 20)
                                 }
-                            }) {
-                                Text("Other sign-in options")
-                                    .font(DesignTokens.bodyFont)
-                                    .foregroundStyle(DesignTokens.textSecondary)
+                                Text("Continue with Google")
+                                    .font(DesignTokens.ctaFont)
+                                    .tracking(0.32)
                             }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(Color.white)
+                            .foregroundStyle(DesignTokens.textPrimary)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                            )
                         }
-                        .padding(.horizontal, DesignTokens.spacing24)
-                        .transition(.opacity)
+                        .buttonStyle(CTAPressStyle())
+                        .disabled(isAuthenticating)
+
+                        // Email option
+                        Button(action: { showEmailSheet = true }) {
+                            HStack(spacing: DesignTokens.spacing8) {
+                                Image(systemName: "envelope")
+                                    .font(.system(size: 18))
+                                Text("Continue with Email")
+                                    .font(DesignTokens.ctaFont)
+                                    .tracking(0.32)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(Color.white)
+                            .foregroundStyle(DesignTokens.textPrimary)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                            )
+                        }
+                        .buttonStyle(CTAPressStyle())
+                        .disabled(isAuthenticating)
                     }
+                    .padding(.horizontal, DesignTokens.spacing24)
 
                     Spacer(minLength: DesignTokens.spacing16)
                 }
@@ -323,6 +209,12 @@ struct AccountCreationScreen: View {
                     showPreview = true
                 }
             }
+        }
+        .sheet(isPresented: $showEmailSheet) {
+            EmailSignUpSheet(appState: appState, viewModel: viewModel, onSignUp: {
+                showEmailSheet = false
+                onContinue()
+            })
         }
         .sheet(isPresented: $showSignInSheet) {
             SignInSheet(appState: appState, viewModel: viewModel, onSignIn: {
@@ -429,6 +321,155 @@ struct AccountCreationScreen: View {
         }
     }
 
+}
+
+// MARK: - Email Sign Up Sheet
+
+struct EmailSignUpSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var appState: AppState
+    var viewModel: OnboardingViewModel
+    let onSignUp: () -> Void
+
+    @State private var email = ""
+    @State private var password = ""
+    @State private var confirmPassword = ""
+    @State private var focusedField: Field?
+    @State private var errorMessage: String?
+    @State private var isAuthenticating = false
+
+    private enum Field: Hashable {
+        case email, password, confirmPassword
+    }
+
+    private var isEmailValid: Bool {
+        let pattern = #"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return email.range(of: pattern, options: .regularExpression) != nil
+    }
+
+    private var isPasswordValid: Bool {
+        password.count >= 8
+    }
+
+    private var doPasswordsMatch: Bool {
+        password == confirmPassword && !confirmPassword.isEmpty
+    }
+
+    private var isFormValid: Bool {
+        isEmailValid && isPasswordValid && doPasswordsMatch
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                DesignTokens.bgDeepest.ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: DesignTokens.spacing24) {
+                        HeadlineText(text: "Create your account")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, DesignTokens.spacing24)
+
+                        if let errorMessage {
+                            Text(errorMessage)
+                                .font(DesignTokens.captionFont)
+                                .foregroundStyle(.white)
+                                .padding(DesignTokens.spacing12)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(DesignTokens.negative)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+                                .padding(.horizontal, DesignTokens.spacing24)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        }
+
+                        VStack(spacing: DesignTokens.spacing16) {
+                            // Email field
+                            TextField("", text: $email, prompt: Text("Email address").foregroundStyle(DesignTokens.textSecondary))
+                                .font(DesignTokens.bodyFont)
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .padding(DesignTokens.spacing16)
+                                .background(DesignTokens.bgSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        .stroke(
+                                            focusedField == .email ? DesignTokens.accentClarity : DesignTokens.borderDefault,
+                                            lineWidth: 1
+                                        )
+                                )
+                                .textContentType(.emailAddress)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                                .keyboardType(.emailAddress)
+                                .onTapGesture { focusedField = .email }
+
+                            // Password field
+                            VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
+                                SecureField("", text: $password, prompt: Text("Password").foregroundStyle(DesignTokens.textSecondary))
+                                    .font(DesignTokens.bodyFont)
+                                    .foregroundStyle(DesignTokens.textPrimary)
+                                    .padding(DesignTokens.spacing16)
+                                    .background(DesignTokens.bgSurface)
+                                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                            .stroke(
+                                                focusedField == .password ? DesignTokens.accentClarity : DesignTokens.borderDefault,
+                                                lineWidth: 1
+                                            )
+                                    )
+                                    .textContentType(.newPassword)
+                                    .onTapGesture { focusedField = .password }
+
+                                Text("At least 8 characters")
+                                    .font(DesignTokens.captionFont)
+                                    .foregroundStyle(DesignTokens.textTertiary)
+                                    .padding(.leading, DesignTokens.spacing4)
+                            }
+
+                            // Confirm password field
+                            SecureField("", text: $confirmPassword, prompt: Text("Confirm password").foregroundStyle(DesignTokens.textSecondary))
+                                .font(DesignTokens.bodyFont)
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .padding(DesignTokens.spacing16)
+                                .background(DesignTokens.bgSurface)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        .stroke(
+                                            focusedField == .confirmPassword ? DesignTokens.accentClarity : DesignTokens.borderDefault,
+                                            lineWidth: 1
+                                        )
+                                )
+                                .textContentType(.newPassword)
+                                .onTapGesture { focusedField = .confirmPassword }
+
+                            // Create account CTA
+                            CTAButton(title: isAuthenticating ? "Creating account..." : "Create account", style: .primary, action: handleEmailSignUp)
+                                .opacity(isFormValid && !isAuthenticating ? 1.0 : 0.4)
+                                .disabled(!isFormValid || isAuthenticating)
+                        }
+                        .padding(.horizontal, DesignTokens.spacing24)
+                    }
+                }
+                .scrollDismissesKeyboard(.interactively)
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(DesignTokens.textTertiary)
+                    }
+                }
+            }
+            .interactiveDismissDisabled(false)
+            .presentationDetents([.medium])
+        }
+    }
+
     private func handleEmailSignUp() {
         isAuthenticating = true
         Task {
@@ -438,7 +479,7 @@ struct AccountCreationScreen: View {
                 viewModel.accountCreated = true
                 viewModel.accountEmail = email
                 viewModel.accountProvider = "email"
-                onContinue()
+                onSignUp()
             } catch {
                 withAnimation {
                     errorMessage = appState.authService.authError ?? "Sign up failed. Please try again."
@@ -450,7 +491,8 @@ struct AccountCreationScreen: View {
 
 // MARK: - Sign In Sheet
 
-private struct SignInSheet: View {
+struct SignInSheet: View {
+    @Environment(\.dismiss) private var dismiss
     var appState: AppState
     var viewModel: OnboardingViewModel
     let onSignIn: () -> Void
@@ -476,9 +518,6 @@ private struct SignInSheet: View {
 
                 ScrollView {
                     VStack(spacing: DesignTokens.spacing24) {
-                        Spacer()
-                            .frame(height: DesignTokens.spacing24)
-
                         HeadlineText(text: "Welcome back")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, DesignTokens.spacing24)
@@ -494,6 +533,43 @@ private struct SignInSheet: View {
                                 .padding(.horizontal, DesignTokens.spacing24)
                                 .transition(.move(edge: .top).combined(with: .opacity))
                         }
+
+                        VStack(spacing: DesignTokens.spacing12) {
+                            AppleSignInButton(label: "Sign in with Apple") { request in
+                                request.requestedScopes = [.email, .fullName]
+                            } onCompletion: { result in
+                                handleAppleSignIn(result)
+                            }
+                            .disabled(isAuthenticating)
+
+                            Button(action: handleGoogleSignIn) {
+                                HStack(spacing: DesignTokens.spacing8) {
+                                    Image("GoogleLogo")
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 20, height: 20)
+                                    Text("Continue with Google")
+                                        .font(DesignTokens.ctaFont)
+                                        .tracking(0.32)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                                .background(Color.white)
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(CTAPressStyle())
+                            .disabled(isAuthenticating)
+                        }
+                        .padding(.horizontal, DesignTokens.spacing24)
+
+                        dividerRow
+                            .padding(.horizontal, DesignTokens.spacing24)
 
                         VStack(spacing: DesignTokens.spacing16) {
                             // Email
@@ -541,52 +617,19 @@ private struct SignInSheet: View {
                             .disabled(!isFormValid || isAuthenticating)
                         }
                         .padding(.horizontal, DesignTokens.spacing24)
-
-                        // Alternative sign-in options
-                        VStack(spacing: DesignTokens.spacing12) {
-                            dividerRow
-
-                            AppleSignInButton(label: "Sign in with Apple") { request in
-                                request.requestedScopes = [.email, .fullName]
-                            } onCompletion: { result in
-                                handleAppleSignIn(result)
-                            }
-                            .disabled(isAuthenticating)
-
-                            Button(action: handleGoogleSignIn) {
-                                HStack(spacing: DesignTokens.spacing8) {
-                                    Image("GoogleLogo")
-                                        .renderingMode(.original)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 20, height: 20)
-                                    Text("Continue with Google")
-                                        .font(DesignTokens.ctaFont)
-                                        .tracking(0.32)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(Color.white)
-                                .foregroundStyle(DesignTokens.textPrimary)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                                )
-                            }
-                            .buttonStyle(CTAPressStyle())
-                            .disabled(isAuthenticating)
-                        }
-                        .padding(.horizontal, DesignTokens.spacing24)
                     }
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {}
-                        .font(DesignTokens.bodyFont)
-                        .foregroundStyle(DesignTokens.textSecondary)
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(DesignTokens.textTertiary)
+                    }
                 }
             }
             .interactiveDismissDisabled(false)

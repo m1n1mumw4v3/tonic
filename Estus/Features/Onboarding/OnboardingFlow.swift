@@ -5,8 +5,9 @@ struct OnboardingFlow: View {
     @State private var viewModel = OnboardingViewModel()
     @State private var currentScreen: Int = 0
     @State private var navigatingForward: Bool = true
+    @State private var showSignInSheet = false
 
-    private let totalScreens = 26
+    private let totalScreens = 27
 
     private var skippedScreens: Set<Int> {
         var skipped = Set<Int>()
@@ -47,7 +48,7 @@ struct OnboardingFlow: View {
                 Group {
                     switch currentScreen {
                     case 0:
-                        WelcomeScreen(onContinue: nextScreen)
+                        WelcomeScreen(onContinue: nextScreen, onLogin: { showSignInSheet = true })
                     case 1:
                         ValuePropProblemScreen(onContinue: nextScreen)
                     case 2:
@@ -93,10 +94,12 @@ struct OnboardingFlow: View {
                     case 22:
                         AccountCreationScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 23:
-                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
+                        MedicalDisclaimerScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 24:
-                        PaywallScreen(viewModel: viewModel, onSubscribe: nextScreen, onDismiss: dismissPaywall)
+                        AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
                     case 25:
+                        PaywallScreen(viewModel: viewModel, onSubscribe: nextScreen, onDismiss: dismissPaywall)
+                    case 26:
                         PlanRevealScreen(viewModel: viewModel, onConfirm: completeOnboarding)
                     default:
                         EmptyView()
@@ -109,6 +112,12 @@ struct OnboardingFlow: View {
             }
         }
         .animation(.easeInOut(duration: 0.35), value: currentScreen)
+        .sheet(isPresented: $showSignInSheet) {
+            SignInSheet(appState: appState, viewModel: viewModel, onSignIn: {
+                showSignInSheet = false
+                Task { await appState.restoreSessionIfNeeded() }
+            })
+        }
     }
 
     private func nextScreen() {
