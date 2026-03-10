@@ -9,6 +9,10 @@ struct InsightsScreen: View {
     // MARK: - Animation State
 
     @State private var showHeader = false
+    @State private var showTimelineCard = false
+    @State private var timelineBarProgress: CGFloat = 0
+    @State private var showTimelineMarker = false
+    @State private var showGhostTrends = false
     @State private var showTrendCard = false
     @State private var showDimensions = false
     @State private var showStats = false
@@ -29,39 +33,56 @@ struct InsightsScreen: View {
                         .opacity(showHeader ? 1 : 0)
                         .offset(y: showHeader || reduceMotion ? 0 : 12)
 
-                    // Weekly wellbeing trend
-                    if !viewModel.periodData.isEmpty {
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
-                            weeklyTrendCard
-                                .opacity(showTrendCard ? 1 : 0)
-                                .offset(y: showTrendCard || reduceMotion ? 0 : 12)
-
-                            Rectangle()
-                                .fill(DesignTokens.borderDefault)
-                                .frame(height: 1)
-                                .opacity(showDimensions ? 1 : 0)
-
-                            // Dimension breakdown
-                            dimensionBreakdown
-                                .opacity(showDimensions ? 1 : 0)
-                                .offset(y: showDimensions || reduceMotion ? 0 : 12)
-
-                            Rectangle()
-                                .fill(DesignTokens.borderDefault)
-                                .frame(height: 1)
-                                .opacity(showStats ? 1 : 0)
-
-                            // Streak & adherence
-                            statsRow
-                                .opacity(showStats ? 1 : 0)
-                                .offset(y: showStats || reduceMotion ? 0 : 12)
-                        }
-                        .lockedOverlay(
-                            title: "Your Insights",
-                            subtitle: "Subscribe to unlock wellness trends"
-                        )
+                    if !viewModel.hasActivePlan {
+                        noPlanState
                     } else {
-                        emptyState
+                        // Onset timeline (always shown when plan exists)
+                        OnsetTimelineCard(
+                            entries: viewModel.timelineEntries,
+                            daysOnPlan: viewModel.daysOnPlan,
+                            barGrowProgress: timelineBarProgress,
+                            showMarker: showTimelineMarker
+                        )
+                        .opacity(showTimelineCard ? 1 : 0)
+                        .offset(y: showTimelineCard || reduceMotion ? 0 : 12)
+
+                        if viewModel.isEarlyState {
+                            // Ghost trends teaser
+                            GhostTrendsTeaser(checkInCount: viewModel.checkInCount)
+                                .opacity(showGhostTrends ? 1 : 0)
+                                .offset(y: showGhostTrends || reduceMotion ? 0 : 12)
+                        } else {
+                            // Real trend data
+                            if !viewModel.periodData.isEmpty {
+                                VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
+                                    weeklyTrendCard
+                                        .opacity(showTrendCard ? 1 : 0)
+                                        .offset(y: showTrendCard || reduceMotion ? 0 : 12)
+
+                                    Rectangle()
+                                        .fill(DesignTokens.borderDefault)
+                                        .frame(height: 1)
+                                        .opacity(showDimensions ? 1 : 0)
+
+                                    dimensionBreakdown
+                                        .opacity(showDimensions ? 1 : 0)
+                                        .offset(y: showDimensions || reduceMotion ? 0 : 12)
+
+                                    Rectangle()
+                                        .fill(DesignTokens.borderDefault)
+                                        .frame(height: 1)
+                                        .opacity(showStats ? 1 : 0)
+
+                                    statsRow
+                                        .opacity(showStats ? 1 : 0)
+                                        .offset(y: showStats || reduceMotion ? 0 : 12)
+                                }
+                                .lockedOverlay(
+                                    title: "Your Insights",
+                                    subtitle: "Subscribe to unlock wellness trends"
+                                )
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, DesignTokens.screenMargin)
@@ -69,6 +90,7 @@ struct InsightsScreen: View {
             }
         }
         .onAppear {
+            viewModel.loadTimeline(appState: appState)
             viewModel.load(appState: appState, period: selectedPeriod)
             startEntranceAnimation()
         }
@@ -83,46 +105,83 @@ struct InsightsScreen: View {
     private func startEntranceAnimation() {
         let fadeDuration: Double = reduceMotion ? 0.15 : 0.4
 
-        let headerDelay: Double = reduceMotion ? 0.02 : 0.1
-        let trendDelay: Double = reduceMotion ? 0.04 : 0.25
-        let barGrowDelay: Double = reduceMotion ? 0.06 : 0.45
-        let dimDelay: Double = reduceMotion ? 0.06 : 0.40
-        let dimBarGrowDelay: Double = reduceMotion ? 0.08 : 0.6
-        let statsDelay: Double = reduceMotion ? 0.08 : 0.55
+        let headerDelay: Double = reduceMotion ? 0.02 : 0.10
+        let timelineDelay: Double = reduceMotion ? 0.04 : 0.25
+        let timelineBarDelay: Double = reduceMotion ? 0.06 : 0.45
+        let markerDelay: Double = reduceMotion ? 0.08 : 0.90
 
+        // Phase 1: Header
         DispatchQueue.main.asyncAfter(deadline: .now() + headerDelay) {
             withAnimation(.easeOut(duration: fadeDuration)) {
                 showHeader = true
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + trendDelay) {
+        // Phase 2: Timeline card fade
+        DispatchQueue.main.asyncAfter(deadline: .now() + timelineDelay) {
             withAnimation(.easeOut(duration: fadeDuration)) {
-                showTrendCard = true
+                showTimelineCard = true
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + barGrowDelay) {
-            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
-                barAnimationProgress = 1
+        // Phase 3: Timeline bars grow
+        DispatchQueue.main.asyncAfter(deadline: .now() + timelineBarDelay) {
+            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.6)) {
+                timelineBarProgress = 1
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + dimDelay) {
+        // Phase 4: "You are here" marker
+        DispatchQueue.main.asyncAfter(deadline: .now() + markerDelay) {
             withAnimation(.easeOut(duration: fadeDuration)) {
-                showDimensions = true
+                showTimelineMarker = true
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + dimBarGrowDelay) {
-            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
-                dimensionBarProgress = 1
+        if viewModel.isEarlyState {
+            // Phase 5a: Ghost trends
+            let ghostDelay: Double = reduceMotion ? 0.08 : 0.60
+            DispatchQueue.main.asyncAfter(deadline: .now() + ghostDelay) {
+                withAnimation(.easeOut(duration: fadeDuration)) {
+                    showGhostTrends = true
+                }
             }
-        }
+        } else {
+            // Phase 5b: Real data (existing stagger)
+            let trendDelay: Double = reduceMotion ? 0.06 : 0.55
+            let barGrowDelay: Double = reduceMotion ? 0.08 : 0.70
+            let dimDelay: Double = reduceMotion ? 0.08 : 0.65
+            let dimBarGrowDelay: Double = reduceMotion ? 0.10 : 0.85
+            let statsDelay: Double = reduceMotion ? 0.10 : 0.80
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + statsDelay) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showStats = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + trendDelay) {
+                withAnimation(.easeOut(duration: fadeDuration)) {
+                    showTrendCard = true
+                }
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + barGrowDelay) {
+                withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
+                    barAnimationProgress = 1
+                }
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + dimDelay) {
+                withAnimation(.easeOut(duration: fadeDuration)) {
+                    showDimensions = true
+                }
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + dimBarGrowDelay) {
+                withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
+                    dimensionBarProgress = 1
+                }
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + statsDelay) {
+                withAnimation(.easeOut(duration: fadeDuration)) {
+                    showStats = true
+                }
             }
         }
     }
@@ -138,7 +197,11 @@ struct InsightsScreen: View {
 
                 Spacer()
 
-                periodPicker
+                if viewModel.isEarlyState {
+                    dayBadge
+                } else {
+                    periodPicker
+                }
             }
 
             Rectangle()
@@ -147,6 +210,17 @@ struct InsightsScreen: View {
                 .padding(.top, DesignTokens.spacing4)
         }
         .padding(.top, DesignTokens.spacing8)
+    }
+
+    private var dayBadge: some View {
+        Text("DAY \(viewModel.daysOnPlan)")
+            .font(DesignTokens.labelMono)
+            .tracking(0.8)
+            .foregroundStyle(DesignTokens.info)
+            .padding(.horizontal, DesignTokens.spacing12)
+            .padding(.vertical, DesignTokens.spacing4)
+            .background(DesignTokens.info.opacity(0.12))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
     }
 
     private var periodPicker: some View {
@@ -183,6 +257,22 @@ struct InsightsScreen: View {
             RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
+    }
+
+    // MARK: - No Plan State
+
+    private var noPlanState: some View {
+        VStack(spacing: DesignTokens.spacing16) {
+            Image(systemName: "list.clipboard")
+                .font(.system(size: 48))
+                .foregroundStyle(DesignTokens.textTertiary)
+            Text("Create your plan to see your timeline")
+                .font(DesignTokens.bodyFont)
+                .foregroundStyle(DesignTokens.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, DesignTokens.spacing48)
     }
 
     // MARK: - Weekly Trend Card
@@ -505,24 +595,7 @@ struct InsightsScreen: View {
             .fill(color)
             .frame(height: 2)
         }
-    }
-
-    // MARK: - Empty State
-
-    private var emptyState: some View {
-        VStack(spacing: DesignTokens.spacing16) {
-            Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 48))
-                .foregroundStyle(DesignTokens.textTertiary)
-            Text("No data yet")
-                .font(DesignTokens.headlineFont)
-                .foregroundStyle(DesignTokens.textPrimary)
-            Text("Complete a few daily check-ins to start seeing your trends")
-                .font(DesignTokens.bodyFont)
-                .foregroundStyle(DesignTokens.textSecondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.top, DesignTokens.spacing48)
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 }
 
@@ -537,9 +610,16 @@ private struct BaselineLine: Shape {
     }
 }
 
-#Preview {
+#Preview("Data State") {
     let appState = AppState()
     appState.loadDemoData()
+
+    return InsightsScreen()
+        .environment(appState)
+}
+
+#Preview("Early State") {
+    let appState = AppState()
 
     return InsightsScreen()
         .environment(appState)

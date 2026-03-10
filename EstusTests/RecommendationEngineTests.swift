@@ -594,8 +594,8 @@ final class RecommendationEngineTests: XCTestCase {
         let plan = engine.generatePlan(for: profile)
 
         let names = plan.supplements.map(\.name)
-        XCTAssertTrue(names.contains("Vitamin B Complex") || names.contains("Magnesium Glycinate"),
-                      "Birth control user should have B Complex or Magnesium boosted")
+        XCTAssertTrue(names.contains("Vitamin B Complex"),
+                      "Birth control user should have B Complex force-added")
     }
 
     func testGutModulePPIBoostsMinerals() {
@@ -738,6 +738,144 @@ final class RecommendationEngineTests: XCTestCase {
             // The base template plus 2 signal sentences should be reasonable
             XCTAssertLessThan(lookFor.count, 600,
                               "What to look for text should be bounded (max 2 signal sentences)")
+        }
+    }
+
+    // MARK: - Pre-Launch Fix 1: Dosage Display
+
+    func testAdjustedDosageDisplaysCorrectly() {
+        // High stress should bump L-Theanine dosage above the default 200mg
+        var profile = UserProfile()
+        profile.healthGoals = [.focus, .stressAnxiety]
+        profile.stressLevel = .high
+        let plan = engine.generatePlan(for: profile)
+
+        if let lTheanine = plan.supplements.first(where: { $0.name == "L-Theanine" }) {
+            XCTAssertNotEqual(lTheanine.dosage, "200mg",
+                              "L-Theanine display dosage should reflect stress adjustment, not static 200mg")
+        }
+    }
+
+    // MARK: - Pre-Launch Fix 2: Zero Goal Overlap Filter
+
+    func testZeroGoalOverlapSupplementsFiltered() {
+        // Sleep + Stress female — Creatine has 0 goal overlap with these goals
+        var profile = UserProfile()
+        profile.healthGoals = [.sleep, .stressAnxiety]
+        profile.sex = .female
+        let plan = engine.generatePlan(for: profile)
+
+        XCTAssertFalse(
+            plan.supplements.contains { $0.name == "Creatine Monohydrate" },
+            "Creatine should be filtered out with 0 goal overlap for Sleep+Stress goals"
+        )
+    }
+
+    func testForceAddBypassesGoalOverlapFilter() {
+        // Vegan + Sleep goal: B Complex has 0 sleep-goal overlap but should be force-added
+        var profile = UserProfile()
+        profile.healthGoals = [.sleep]
+        profile.dietType = .vegan
+        let plan = engine.generatePlan(for: profile)
+
+        let names = plan.supplements.map(\.name)
+        XCTAssertTrue(names.contains("Vitamin B Complex"),
+                      "Vegan force-add should bypass zero-goal-overlap filter for B Complex")
+    }
+
+    // MARK: - Pre-Launch Fix 4: Force-Add B Complex
+
+    func testBirthControlForceAddsBComplex() {
+        let catalog = SupplementCatalog()
+        catalog.populateFromStatic()
+        let deepModules = [
+            DeepProfileModule(
+                moduleId: .hormonalMetabolic,
+                responses: ["hormonal_birth_control_hrt": .string("birth_control")]
+            )
+        ]
+        let engine = RecommendationEngine(catalog: catalog, deepProfileModules: deepModules)
+        var profile = UserProfile()
+        // Goals that don't naturally include B Complex
+        profile.healthGoals = [.sleep, .skinHairNails]
+        let plan = engine.generatePlan(for: profile)
+
+        let names = plan.supplements.map(\.name)
+        XCTAssertTrue(names.contains("Vitamin B Complex"),
+                      "Birth control should force-add B Complex even without energy/focus goals")
+    }
+
+    func testPPIForceAddsBComplex() {
+        let catalog = SupplementCatalog()
+        catalog.populateFromStatic()
+        let deepModules = [
+            DeepProfileModule(
+                moduleId: .gutHealth,
+                responses: ["gut_ppi_usage": .string("yes_currently")]
+            )
+        ]
+        let engine = RecommendationEngine(catalog: catalog, deepProfileModules: deepModules)
+        var profile = UserProfile()
+        // Goals that don't naturally include B Complex
+        profile.healthGoals = [.heartHealth, .longevity]
+        let plan = engine.generatePlan(for: profile)
+
+        let names = plan.supplements.map(\.name)
+        XCTAssertTrue(names.contains("Vitamin B Complex"),
+                      "PPI user should have B Complex force-added even without energy goals")
+    }
+
+    // MARK: - Pre-Launch Fix 3: Boost-Only Why Copy
+
+    func testBoostOnlyWhyCopyNotGeneric() {
+        let catalog = SupplementCatalog()
+        catalog.populateFromStatic()
+        let deepModules = [
+            DeepProfileModule(
+                moduleId: .hormonalMetabolic,
+                responses: ["hormonal_birth_control_hrt": .string("birth_control")]
+            )
+        ]
+        let engine = RecommendationEngine(catalog: catalog, deepProfileModules: deepModules)
+        var profile = UserProfile()
+        // Goals with no B Complex overlap so it gets force-added with boost-only why
+        profile.healthGoals = [.sleep, .skinHairNails]
+        let plan = engine.generatePlan(for: profile)
+
+        if let bComplex = plan.supplements.first(where: { $0.name == "Vitamin B Complex" }) {
+            let why = bComplex.whyInYourPlan ?? ""
+            XCTAssertTrue(why.lowercased().contains("birth control") || why.lowercased().contains("hormonal"),
+                          "Birth control B Complex why text should reference birth control, not generic fallback. Got: \(why)")
+            XCTAssertFalse(why.contains("overall health profile"),
+                           "Should not use generic fallback for birth control B Complex")
+        } else {
+            XCTFail("B Complex should be in plan for birth control user")
+        }
+    }
+
+    func testPPIWhyCopyNotGeneric() {
+        let catalog = SupplementCatalog()
+        catalog.populateFromStatic()
+        let deepModules = [
+            DeepProfileModule(
+                moduleId: .gutHealth,
+                responses: ["gut_ppi_usage": .string("yes_currently")]
+            )
+        ]
+        let engine = RecommendationEngine(catalog: catalog, deepProfileModules: deepModules)
+        var profile = UserProfile()
+        // Goals with no B Complex overlap
+        profile.healthGoals = [.heartHealth, .longevity]
+        let plan = engine.generatePlan(for: profile)
+
+        if let bComplex = plan.supplements.first(where: { $0.name == "Vitamin B Complex" }) {
+            let why = bComplex.whyInYourPlan ?? ""
+            XCTAssertTrue(why.lowercased().contains("ppi") || why.lowercased().contains("b12"),
+                          "PPI B Complex why text should reference PPI or B12, not generic fallback. Got: \(why)")
+            XCTAssertFalse(why.contains("overall health profile"),
+                           "Should not use generic fallback for PPI B Complex")
+        } else {
+            XCTFail("B Complex should be in plan for PPI user")
         }
     }
 }

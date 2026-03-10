@@ -22,6 +22,7 @@ struct CompactInsightCard: View {
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                 .stroke(insight.accentColor.opacity(0.3), lineWidth: 1)
         )
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
         .opacity(isVisible ? 1 : 0)
         .offset(y: isVisible ? 0 : 12)
         .onAppear {

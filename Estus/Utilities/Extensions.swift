@@ -93,7 +93,7 @@ extension View {
             .padding(DesignTokens.spacing16)
             .background(DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-            .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+            .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 }
 

@@ -98,6 +98,7 @@ struct RecommendationCard: View {
                         lineWidth: 1
                     )
             )
+            .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
             .opacity(isExcluded ? 0.5 : 1.0)
         }
         .buttonStyle(.plain)

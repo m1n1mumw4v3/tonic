@@ -36,6 +36,7 @@ struct DiscoveryCard: View {
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                 .stroke(tip.accentColor.opacity(0.3), lineWidth: 1)
         )
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 }
 

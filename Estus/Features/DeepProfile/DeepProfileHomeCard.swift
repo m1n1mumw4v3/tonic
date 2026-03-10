@@ -65,6 +65,7 @@ struct DeepProfileHomeCard: View {
                 RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
+            .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
         }
         .buttonStyle(CardPressStyle())
         .sheet(isPresented: $showHub) {
@@ -142,10 +143,8 @@ struct DeepProfileHomeCard: View {
     private var subtitleText: String {
         if isComplete {
             return "Your profile is fully complete."
-        } else if let next = service.nextIncompleteModule {
-            return next.benefitCopy
         }
-        return "Complete targeted health modules to fine-tune your supplement plan."
+        return "Complete deep dive surveys to strengthen the personalization of your supplement plan."
     }
 }
 

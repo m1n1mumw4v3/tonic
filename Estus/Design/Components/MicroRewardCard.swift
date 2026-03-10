@@ -85,7 +85,7 @@ struct MicroRewardCard: View {
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                 .stroke(accentColor.opacity(0.3), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 4)
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
         .opacity(isVisible ? 1 : 0)
         .offset(y: isVisible ? 0 : 12)
         .onAppear {

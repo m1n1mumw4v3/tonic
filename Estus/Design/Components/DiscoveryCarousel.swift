@@ -7,7 +7,7 @@ struct DiscoveryCarousel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
             // Section header
-            Text("DISCOVER YOUR PLAN")
+            Text("FIELD NOTES")
                 .font(DesignTokens.sectionHeader)
                 .tracking(1.5)
                 .foregroundStyle(DesignTokens.textSecondary)

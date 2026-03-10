@@ -59,26 +59,70 @@ struct AIInterstitialScreen: View {
 
                 // Progress bar with embedded % — near the bottom
                 ZStack {
-                    // Background track + black text
+                    // Background track + muted text
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(DesignTokens.bgElevated)
+                        .fill(Color.white.opacity(0.08))
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
                     Text("\(displayPercent)%")
                         .font(.custom("GeistMono-Medium", size: 13))
-                        .foregroundStyle(DesignTokens.textPrimary)
+                        .foregroundStyle(Color.white.opacity(0.3))
 
-                    // Gradient fill + white text, both masked to progress
+                    // Glass fill + white text, both masked to progress
                     GeometryReader { barGeo in
                         let fillWidth = barGeo.size.width * min(max(progress, 0), 1)
 
                         ZStack {
+                            // Glass body — saturated aqua-blue tint
                             RoundedRectangle(cornerRadius: 14)
                                 .fill(
                                     LinearGradient(
-                                        colors: DesignTokens.spectrumColors,
-                                        startPoint: .leading,
-                                        endPoint: .trailing
+                                        stops: [
+                                            .init(color: Color(red: 0.55, green: 0.78, blue: 0.98).opacity(0.55), location: 0),
+                                            .init(color: Color(red: 0.65, green: 0.85, blue: 1.0).opacity(0.45), location: 0.35),
+                                            .init(color: Color.white.opacity(0.6), location: 0.52),
+                                            .init(color: Color(red: 0.58, green: 0.80, blue: 0.98).opacity(0.5), location: 0.7),
+                                            .init(color: Color(red: 0.50, green: 0.72, blue: 0.95).opacity(0.45), location: 1.0)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
                                 )
+
+                            // Top specular highlight — bright caustic line
+                            VStack(spacing: 0) {
+                                Rectangle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [
+                                                Color.white.opacity(0.85),
+                                                Color.white.opacity(0.25)
+                                            ],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(height: 1)
+                                    .padding(.horizontal, 4)
+                                Spacer()
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                            // Bright edge border — refraction rim
+                            RoundedRectangle(cornerRadius: 14)
+                                .strokeBorder(
+                                    LinearGradient(
+                                        stops: [
+                                            .init(color: Color.white.opacity(0.9), location: 0),
+                                            .init(color: Color.white.opacity(0.25), location: 0.5),
+                                            .init(color: Color.white.opacity(0.45), location: 1.0)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 0.8
+                                )
+
                             Text("\(displayPercent)%")
                                 .font(.custom("GeistMono-Medium", size: 13))
                                 .foregroundStyle(.white)
@@ -155,10 +199,10 @@ private struct BrailleThinkingIndicator: View {
     private let innerSpacing: CGFloat = 5
     private let cellGap: CGFloat = 10
 
-    // Liquid metal palette
-    private let metalBright = Color(red: 0.92, green: 0.94, blue: 0.96)
-    private let metalMid    = Color(red: 0.78, green: 0.82, blue: 0.88)
-    private let metalDark   = Color(red: 0.60, green: 0.65, blue: 0.72)
+    // Glass palette
+    private let glassEdge    = Color.white.opacity(0.85)
+    private let glassBody    = Color(red: 0.85, green: 0.90, blue: 0.98)
+    private let glassShadow  = Color(red: 0.55, green: 0.62, blue: 0.75)
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -187,42 +231,50 @@ private struct BrailleThinkingIndicator: View {
 
                             guard opacity > 0.05 else { continue }
 
-                            // Outer glow — liquid metal sheen
-                            let glowSize = dotSize * 2.5
-                            ctx.opacity = opacity * 0.18
+                            // Soft outer glow — diffused light around the bead
+                            let glowSize = dotSize * 3.0
+                            ctx.opacity = opacity * 0.12
                             ctx.fill(
                                 Circle().path(in: CGRect(x: cx - glowSize / 2, y: cy - glowSize / 2, width: glowSize, height: glowSize)),
-                                with: .color(metalMid)
+                                with: .color(.white)
                             )
 
-                            // Main dot — metallic base
-                            ctx.opacity = opacity
+                            // Shadow rim — gives depth beneath the glass bead
+                            let rimSize = dotSize * 1.1
+                            ctx.opacity = opacity * 0.3
+                            ctx.fill(
+                                Circle().path(in: CGRect(x: cx - rimSize / 2, y: cy - rimSize / 2 + 0.5, width: rimSize, height: rimSize)),
+                                with: .color(glassShadow)
+                            )
+
+                            // Glass body — translucent cool-tinted fill
+                            ctx.opacity = opacity * 0.45
                             ctx.fill(
                                 Circle().path(in: CGRect(x: cx - dotSize / 2, y: cy - dotSize / 2, width: dotSize, height: dotSize)),
-                                with: .color(metalDark)
+                                with: .color(glassBody)
                             )
 
-                            // Mid-layer — brighter metal fill, slightly inset
-                            let innerSize = dotSize * 0.75
-                            ctx.opacity = opacity
-                            ctx.fill(
-                                Circle().path(in: CGRect(x: cx - innerSize / 2, y: cy - innerSize / 2 - 0.5, width: innerSize, height: innerSize)),
-                                with: .color(metalMid)
+                            // Edge ring — bright white border simulating refraction
+                            ctx.opacity = opacity * 0.55
+                            ctx.stroke(
+                                Circle().path(in: CGRect(x: cx - dotSize / 2, y: cy - dotSize / 2, width: dotSize, height: dotSize)),
+                                with: .color(glassEdge),
+                                lineWidth: 0.8
                             )
 
-                            // Specular highlight — top-left hot spot
-                            let hlSize = dotSize * 0.38
-                            ctx.opacity = opacity * 0.85
+                            // Primary specular highlight — top-left caustic
+                            let hlSize = dotSize * 0.32
+                            ctx.opacity = opacity * 0.9
                             ctx.fill(
-                                Circle().path(in: CGRect(x: cx - dotSize * 0.18 - hlSize / 2, y: cy - dotSize * 0.22 - hlSize / 2, width: hlSize, height: hlSize)),
-                                with: .color(metalBright)
+                                Circle().path(in: CGRect(x: cx - dotSize * 0.16 - hlSize / 2, y: cy - dotSize * 0.22 - hlSize / 2, width: hlSize, height: hlSize)),
+                                with: .color(.white)
                             )
 
-                            // Tiny peak highlight — the "mercury droplet" glint
-                            let peakSize = dotSize * 0.18
-                            ctx.opacity = opacity * 0.6
+                            // Tiny secondary highlight — bottom-right refracted glint
+                            let glintSize = dotSize * 0.18
+                            ctx.opacity = opacity * 0.35
                             ctx.fill(
-                                Circle().path(in: CGRect(x: cx - dotSize * 0.12 - peakSize / 2, y: cy - dotSize * 0.18 - peakSize / 2, width: peakSize, height: peakSize)),
+                                Circle().path(in: CGRect(x: cx + dotSize * 0.1 - glintSize / 2, y: cy + dotSize * 0.15 - glintSize / 2, width: glintSize, height: glintSize)),
                                 with: .color(.white)
                             )
                         }

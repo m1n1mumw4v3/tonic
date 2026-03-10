@@ -210,6 +210,7 @@ struct SupplementLogList: View {
                     value: progress
                 )
         )
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 }
 

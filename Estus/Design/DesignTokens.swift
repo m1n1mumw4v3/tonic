@@ -59,7 +59,7 @@ enum DesignTokens {
     static let iconFgGut    = Color(hex: "#8A9118")
 
     // MARK: - Typography
-    static let displayFont   = Font.custom("Geist-Light", size: 32)
+    static let displayFont   = Font.custom("Geist-Regular", size: 32)
     static let sectionHeader = Font.custom("Geist-SemiBold", size: 13)
     static let bodyFont      = Font.custom("Geist-Regular", size: 16)
     static let dataMono      = Font.custom("GeistMono-Medium", size: 16)
@@ -71,7 +71,7 @@ enum DesignTokens {
     static let pixelIconLarge = Font.custom("GeistPixel-Grid", size: 22)
 
     // Additional type sizes
-    static let headlineFont  = Font.custom("Geist-Light", size: 28)
+    static let headlineFont  = Font.custom("Geist-Regular", size: 28)
     static let titleFont     = Font.custom("Geist-SemiBold", size: 20)
     static let ctaFont       = Font.custom("Geist-SemiBold", size: 16)
     static let captionFont   = Font.custom("Geist-Regular", size: 13)
@@ -95,4 +95,9 @@ enum DesignTokens {
     static let radiusMedium: CGFloat = 12
     static let radiusLarge:  CGFloat = 16
     static let radiusFull:   CGFloat = 999
+
+    // MARK: - Shadows
+    static let cardShadowColor   = Color.black.opacity(0.06)
+    static let cardShadowRadius:  CGFloat = 6
+    static let cardShadowY:       CGFloat = 2
 }

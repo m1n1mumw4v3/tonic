@@ -129,6 +129,7 @@ private struct FullAppPreview: View {
         let s = AppState()
         s.loadDemoData()
         s.isOnboardingComplete = false
+        s.authService.isLoading = false
         return s
     }()
     @State private var kb = KnowledgeBaseProvider()

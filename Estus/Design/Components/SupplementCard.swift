@@ -69,6 +69,7 @@ struct SupplementCard: View {
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                     .stroke(isTaken ? DesignTokens.positive.opacity(0.2) : DesignTokens.borderDefault, lineWidth: 1)
             )
+            .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
         }
         .buttonStyle(.plain)
     }

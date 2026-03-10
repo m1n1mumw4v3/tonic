@@ -21,6 +21,43 @@ class InsightsViewModel {
     var periodAverage: Double?
     var trendDirection: TrendInfo?
 
+    // Onset timeline
+    var timelineEntries: [OnsetTimelineEntry] = []
+    var daysOnPlan: Int = 0
+    var checkInCount: Int = 0
+    var isEarlyState: Bool { checkInCount < 3 }
+    var hasActivePlan: Bool = false
+
+    func loadTimeline(appState: AppState) {
+        guard let plan = appState.activePlan else {
+            hasActivePlan = false
+            timelineEntries = []
+            return
+        }
+        hasActivePlan = true
+        checkInCount = appState.recentCheckIns.count
+
+        let calendar = Calendar.current
+        let now = Date()
+        daysOnPlan = max(0, calendar.dateComponents([.day], from: calendar.startOfDay(for: plan.createdAt), to: calendar.startOfDay(for: now)).day ?? 0)
+
+        let activeSupplements = plan.supplements.filter { !$0.isRemoved }
+        timelineEntries = activeSupplements.compactMap { supplement in
+            guard let onset = SupplementKnowledgeBase.onsetTimelines[supplement.name] else { return nil }
+            return OnsetTimelineEntry(
+                supplementName: supplement.name,
+                tier: supplement.tier,
+                minDays: onset.min,
+                maxDays: onset.max,
+                onsetDescription: onset.description
+            )
+        }
+        .sorted { a, b in
+            if a.minDays != b.minDays { return a.minDays < b.minDays }
+            return a.tier.sortOrder < b.tier.sortOrder
+        }
+    }
+
     func load(appState: AppState, period: InsightsPeriod = .week) {
         let checkIns = appState.recentCheckIns
             .sorted { $0.checkInDate < $1.checkInDate }
@@ -153,4 +190,13 @@ struct TrendInfo {
     let icon: String
     let label: String
     let color: Color
+}
+
+struct OnsetTimelineEntry: Identifiable {
+    let id = UUID()
+    let supplementName: String
+    let tier: SupplementTier
+    let minDays: Int
+    let maxDays: Int
+    let onsetDescription: String
 }

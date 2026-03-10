@@ -32,12 +32,14 @@ struct RecommendationEngine {
     func generatePlan(for profile: UserProfile) -> SupplementPlan {
         // Step 1: Goal mapping → candidate supplements scored by evidence weight
         var candidateScores: [String: Int] = [:]
+        var candidateGoalScores: [String: Int] = [:]  // Goal-only weights (no personalization/safety boosts)
         let goalKeys = profile.healthGoals.map { $0.rawValue }
 
         for goal in goalKeys {
             let entries = catalog.goalMappings(for: goal)
             for entry in entries {
                 candidateScores[entry.name, default: 0] += entry.weight
+                candidateGoalScores[entry.name, default: 0] += entry.weight
             }
         }
 
@@ -105,8 +107,12 @@ struct RecommendationEngine {
             }
         }
 
-        // Step 3: Sort by score (goal overlap), then apply diversity
-        let ranked = filteredCandidates.sorted { a, b in
+        // Step 3: Filter out supplements with zero goal overlap (boost-only filler)
+        // Force-adds (vegan, birth control, PPI) happen after selectTierAware via addIfMissing
+        let goalFiltered = filteredCandidates.filter { candidateGoalScores[$0.key, default: 0] > 0 }
+
+        // Sort by score (goal overlap), then apply diversity
+        let ranked = goalFiltered.sorted { a, b in
             if a.value != b.value { return a.value > b.value }
             return a.key < b.key
         }
@@ -118,6 +124,22 @@ struct RecommendationEngine {
         if profile.dietType == .vegan || profile.dietType == .vegetarian {
             addIfMissing("Vitamin B Complex", to: &selected, excluded: filterResult.excluded)
             addIfMissing("Vitamin D3 + K2", to: &selected, excluded: filterResult.excluded)
+        }
+
+        // Birth control / HRT → force B Complex
+        let hormonalResponse = deepProfileModules.first(where: { $0.moduleId == .hormonalMetabolic })
+            .flatMap { $0.responses["hormonal_birth_control_hrt"]?.stringValue }
+        if hormonalResponse == "birth_control" || hormonalResponse == "hrt" {
+            addIfMissing("Vitamin B Complex", to: &selected, excluded: filterResult.excluded)
+        }
+
+        // PPI → force B Complex
+        let ppiNames: Set<String> = ["omeprazole", "prilosec", "pantoprazole", "protonix", "esomeprazole", "nexium", "lansoprazole", "prevacid", "rabeprazole", "aciphex", "dexlansoprazole", "dexilant"]
+        let hasPPIMed = profile.medications.contains { ppiNames.contains($0.lowercased()) }
+        let hasPPIGut = deepProfileModules.first(where: { $0.moduleId == .gutHealth })
+            .flatMap { $0.responses["gut_ppi_usage"]?.stringValue } == "yes_currently"
+        if hasPPIMed || hasPPIGut {
+            addIfMissing("Vitamin B Complex", to: &selected, excluded: filterResult.excluded)
         }
 
         // Step 5: Build plan supplements with dosage adjustments, timing, tier data, and enriched info
@@ -132,7 +154,7 @@ struct RecommendationEngine {
 
             // Dosage adjustments
             dosage = adjustDosage(baseDosage: dosage, supplement: supplement, profile: profile)
-            dosageText = supplement.displayDose ?? formatDosage(dosage: dosage, supplement: supplement)
+            dosageText = formatDosage(dosage: dosage, supplement: supplement)
 
             // Timing — keep recommended, resolve conflicts
             let timing = resolveTiming(for: supplement, profile: profile)
@@ -167,7 +189,7 @@ struct RecommendationEngine {
             }()
 
             // Prepend upgrade note to whyInYourPlan if present
-            let baseWhy = generateWhyInYourPlan(supplement: supplement, matchedGoals: Array(matched), profile: profile)
+            let baseWhy = generateWhyInYourPlan(supplement: supplement, matchedGoals: Array(matched), profile: profile, firedSignals: firedSignals)
             let whyText = upgradeNote != nil ? "\(upgradeNote!) \(baseWhy)" : baseWhy
 
             return PlanSupplement(
@@ -259,7 +281,7 @@ struct RecommendationEngine {
 
         var dosage = supplement.recommendedDosageMg
         dosage = adjustDosage(baseDosage: dosage, supplement: supplement, profile: profile)
-        let dosageText = supplement.displayDose ?? formatDosage(dosage: dosage, supplement: supplement)
+        let dosageText = formatDosage(dosage: dosage, supplement: supplement)
         let timing = resolveTiming(for: supplement, profile: profile)
 
         let matched = userGoalKeys.filter { goalKey in
@@ -293,7 +315,7 @@ struct RecommendationEngine {
             matchedGoals: Array(matched).sorted(),
             tierScore: weightedScore,
             researchNote: supplement.notes,
-            whyInYourPlan: generateWhyInYourPlan(supplement: supplement, matchedGoals: Array(matched), profile: profile),
+            whyInYourPlan: generateWhyInYourPlan(supplement: supplement, matchedGoals: Array(matched), profile: profile, firedSignals: collectFiredSignals(profile: profile, candidateNames: Set(existingSupplements.map(\.name) + [supplement.name]))),
             dosageRationale: generateDosageRationale(supplement: supplement, profile: profile),
             expectedTimeline: supplement.expectedTimeline,
             whatToLookFor: resolveWhatToLookFor(template: supplement.whatToLookFor, profile: profile, supplementName: supplement.name, firedSignals: collectFiredSignals(profile: profile, candidateNames: Set(existingSupplements.map(\.name) + [supplement.name]))),
@@ -337,13 +359,73 @@ struct RecommendationEngine {
 
     // MARK: - Enriched Text Generation
 
-    private func generateWhyInYourPlan(supplement: Supplement, matchedGoals: [String], profile: UserProfile) -> String {
+    /// Maps signal types → supplement names → "why in your plan" sentence for boost-only supplements.
+    private static let boostWhyTemplates: [String: [String: String]] = [
+        "birth_control": [
+            "Vitamin B Complex": "Hormonal birth control can deplete B6, B12, and folate — B Complex helps replenish these essential nutrients.",
+            "Magnesium Glycinate": "Hormonal birth control increases magnesium excretion, making supplementation especially important.",
+        ],
+        "hrt": [
+            "Vitamin B Complex": "Hormone replacement therapy increases demand for B vitamins, supporting energy and cognitive clarity.",
+            "Magnesium Glycinate": "HRT can affect mineral balance — magnesium supports both sleep and cardiovascular health.",
+        ],
+        "ppi": [
+            "Magnesium Glycinate": "Long-term PPI use reduces magnesium absorption — supplementation helps prevent deficiency.",
+            "Vitamin B Complex": "PPIs impair B12 absorption over time — B Complex helps maintain healthy levels and energy.",
+            "Iron": "PPIs reduce stomach acid needed for iron absorption — supplementation supports healthy iron stores.",
+        ],
+        "high_stress": [
+            "Magnesium Glycinate": "High stress increases magnesium demand — supplementation supports calm and recovery.",
+            "Ashwagandha KSM-66": "Given your elevated stress levels, Ashwagandha helps support stress resilience and balance.",
+            "L-Theanine": "With elevated stress, L-Theanine promotes calm alertness without drowsiness.",
+        ],
+        "heavy_alcohol": [
+            "Vitamin B Complex": "Alcohol depletes B vitamins, especially B1 and folate — B Complex helps replenish stores.",
+            "NAC": "NAC supports glutathione production, which is heavily taxed by alcohol metabolism.",
+            "Magnesium Glycinate": "Alcohol increases urinary magnesium excretion — supplementation supports recovery.",
+            "Zinc": "Regular alcohol intake depletes zinc stores — supplementation supports immune function.",
+        ],
+        "vegan_diet": [
+            "Iron": "Plant-based iron is less bioavailable — supplementation helps maintain healthy iron levels on a vegan diet.",
+        ],
+        "sleep_onset": [
+            "Melatonin": "Based on your difficulty falling asleep, low-dose melatonin helps reset your sleep onset timing.",
+        ],
+        "sleep_maintenance": [
+            "Magnesium Glycinate": "Based on your nighttime waking pattern, magnesium glycinate supports sleep continuity.",
+        ],
+        "low_sleep_baseline": [
+            "Magnesium Glycinate": "With sleep being a challenge, magnesium glycinate supports better sleep onset and continuity.",
+            "Melatonin": "With sleep quality below your potential, melatonin helps regulate your circadian rhythm.",
+        ],
+        "low_energy_baseline": [
+            "Vitamin B Complex": "With your current energy levels, B vitamins support the energy metabolism your body needs.",
+            "CoQ10": "Low baseline energy suggests your cells may benefit from CoQ10's mitochondrial support.",
+        ],
+        "age_50_plus": [
+            "CoQ10": "Natural CoQ10 production declines with age — supplementation supports sustained energy.",
+            "Collagen Peptides": "Collagen production decreases significantly after 50 — supplementation supports skin and joint health.",
+        ],
+    ]
+
+    private func generateWhyInYourPlan(supplement: Supplement, matchedGoals: [String], profile: UserProfile, firedSignals: [FiredSignal] = []) -> String {
         // Diet-driven additions when no goal overlap
         if matchedGoals.isEmpty {
             if (profile.dietType == .vegan || profile.dietType == .vegetarian) &&
                 (supplement.name == "Vitamin B Complex" || supplement.name == "Vitamin D3 + K2") {
                 return "\(supplement.name) helps cover nutritional gaps common in a \(profile.dietType.label.lowercased()) diet, supporting overall energy and immune health."
             }
+
+            // Look up fired signals for boost-only supplements
+            let matching = firedSignals
+                .filter { $0.supplementName == supplement.name }
+                .sorted { $0.magnitude > $1.magnitude }
+            for signal in matching {
+                if let template = Self.boostWhyTemplates[signal.signalType]?[supplement.name] {
+                    return template
+                }
+            }
+
             return "\(supplement.name) was included based on your overall health profile."
         }
 

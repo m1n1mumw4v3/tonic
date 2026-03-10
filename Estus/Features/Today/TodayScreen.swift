@@ -290,6 +290,7 @@ struct TodayScreen: View {
             RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
     // MARK: - Supplement Section
@@ -470,7 +471,7 @@ struct TodayScreen: View {
             )
             .animation(.easeOut(duration: 0.5), value: checkInCollapsed)
         )
-        .shadow(color: .black.opacity(checkInCollapsed ? 0 : 0.06), radius: 6, x: 0, y: 2)
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
     // MARK: - Feed Section

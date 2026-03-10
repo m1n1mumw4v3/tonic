@@ -128,6 +128,7 @@ struct SupplementCardView: View {
             coreGlow
         }
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
     // MARK: - Collapsed Row
@@ -160,6 +161,7 @@ struct SupplementCardView: View {
                         .padding(.top, 4)
                 }
             }
+            .layoutPriority(1)
 
             Spacer()
 

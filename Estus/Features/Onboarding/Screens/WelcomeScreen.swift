@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WelcomeScreen: View {
     let onContinue: () -> Void
+    var onLogin: (() -> Void)? = nil
 
     @State private var showLogo = false
     @State private var showTagline = false
@@ -38,21 +39,34 @@ struct WelcomeScreen: View {
 
                 Spacer()
 
-                // CTA
-                Button(action: {
-                    HapticManager.impact(.light)
-                    onContinue()
-                }) {
-                    Text("Get Started")
-                        .font(DesignTokens.ctaFont)
-                        .tracking(0.32)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(DesignTokens.bgDeepest)
-                        .foregroundStyle(DesignTokens.textPrimary)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                // CTA + Login
+                VStack(spacing: DesignTokens.spacing16) {
+                    Button(action: {
+                        HapticManager.impact(.light)
+                        onContinue()
+                    }) {
+                        Text("Get Started")
+                            .font(DesignTokens.ctaFont)
+                            .tracking(0.32)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(DesignTokens.bgDeepest)
+                            .foregroundStyle(DesignTokens.textPrimary)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                    }
+                    .buttonStyle(ScalePressStyle())
+
+                    Button(action: {
+                        HapticManager.impact(.light)
+                        onLogin?()
+                    }) {
+                        Text("I already have an account")
+                            .font(.custom("Geist-Regular", size: 14))
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.top, DesignTokens.spacing8)
                 }
-                .buttonStyle(ScalePressStyle())
                 .padding(.horizontal, DesignTokens.spacing24)
                 .padding(.bottom, DesignTokens.spacing48)
                 .opacity(showCTA ? 1 : 0)
