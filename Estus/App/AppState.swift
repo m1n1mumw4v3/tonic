@@ -333,15 +333,15 @@ enum AppTab: Int, CaseIterable {
 
     var label: String {
         switch self {
-        case .today: return "Today"
-        case .progress: return "Progress"
+        case .today: return "Home"
+        case .progress: return "Insights"
         case .plan: return "Plan"
         }
     }
 
     var icon: String {
         switch self {
-        case .today: return "sun.max.fill"
+        case .today: return "house.fill"
         case .progress: return "chart.line.uptrend.xyaxis"
         case .plan: return "pill.fill"
         }

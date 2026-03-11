@@ -583,6 +583,324 @@ enum SupplementKnowledgeBase {
         "Plant Protein Blend": (1, 56, "Amino acids absorb within 1-2 hours; body composition improvements over 4-8 weeks"),
     ]
 
+    // MARK: - Supplement Phase Durations
+
+    static let supplementPhases: [String: (loading: Int, adaptation: Int, onset: Int)] = [
+        "Magnesium Glycinate":  (3, 8, 14),
+        "Vitamin D3 + K2":      (7, 14, 35),
+        "Omega-3 (EPA/DHA)":    (5, 16, 63),
+        "Ashwagandha KSM-66":   (3, 8, 17),
+        "L-Theanine":           (1, 4, 9),
+        "Vitamin B Complex":    (2, 7, 19),
+        "Probiotics":           (5, 14, 37),
+        "Zinc":                 (5, 14, 37),
+        "Vitamin C":            (1, 7, 48),
+        "CoQ10":                (7, 21, 56),
+        "Creatine Monohydrate": (7, 14, 7),
+        "Collagen Peptides":    (7, 14, 35),
+        "Lion's Mane":          (7, 14, 35),
+        "Rhodiola Rosea":       (3, 8, 17),
+        "Melatonin":            (0, 0, 1),
+        "Biotin":               (7, 21, 92),
+        "Iron":                 (7, 21, 152),
+        "NAC":                  (5, 14, 37),
+        "Berberine":            (5, 16, 63),
+        "Tart Cherry Extract":  (2, 4, 8),
+        "Whey Protein Isolate": (1, 7, 48),
+        "Plant Protein Blend":  (1, 7, 48),
+    ]
+
+    static func phaseDurations(for supplementName: String) -> SupplementPhaseDurations? {
+        guard let phases = supplementPhases[supplementName] else { return nil }
+        return SupplementPhaseDurations(
+            loadingDays: phases.loading,
+            adaptationDays: phases.adaptation,
+            onsetDays: phases.onset
+        )
+    }
+
+    // MARK: - Goal → Dimension Mapping
+
+    static let goalToDimension: [String: WellnessDimension] = [
+        "sleep": .sleep,
+        "energy": .energy,
+        "focus": .clarity,
+        "gut_health": .gut,
+        "stress_anxiety": .mood,
+        "immune_support": .energy,
+        "muscle_recovery": .energy,
+        "skin_hair_nails": .gut,
+        "heart_health": .energy,
+        "longevity": .clarity,
+    ]
+
+    // MARK: - Phase Content
+
+    struct SupplementPhaseContent {
+        let biologicalDescription: String
+        let watchFor: String
+        let nextMilestone: String
+    }
+
+    static let phaseContent: [String: [SupplementPhase: SupplementPhaseContent]] = [
+        "Magnesium Glycinate": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Your body is absorbing magnesium glycinate and beginning to restore intracellular magnesium stores. The glycinate chelate ensures high bioavailability with minimal GI disruption.",
+                watchFor: "A subtle calming sensation in the evenings. Some people notice relaxed muscles within the first few doses.",
+                nextMilestone: "By day 3-4, you may notice easier sleep onset as GABA receptor activity begins to normalize."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Magnesium is integrating into enzymatic pathways that regulate GABA, the neurotransmitter responsible for calming your nervous system. Muscle and nerve function are recalibrating.",
+                watchFor: "Improved sleep quality and reduced nighttime waking. Less muscle tension, especially after physical activity.",
+                nextMilestone: "By week 2, sleep architecture typically begins to shift toward deeper, more restorative patterns."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Your magnesium stores are reaching optimal levels. The full cascade of benefits — sleep, stress resilience, muscle recovery — is establishing itself as enzymatic function normalizes.",
+                watchFor: "Consistent sleep quality improvements and reduced stress reactivity. Recovery from workouts should feel noticeably faster.",
+                nextMilestone: "Steady state — your body maintains optimal levels with continued daily supplementation."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Magnesium levels are fully replenished. Your body is maintaining optimal enzymatic function for sleep, muscle recovery, and stress resilience.",
+                watchFor: "Sustained benefits across sleep, recovery, and calm. If you miss doses for several days, effects may start to diminish.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "Omega-3 (EPA/DHA)": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "EPA and DHA are being absorbed and beginning to incorporate into cell membranes. This process reshapes how your cells communicate and manage inflammation.",
+                watchFor: "No noticeable effects yet — omega-3s work at the cellular level and need time to integrate into tissues.",
+                nextMilestone: "Within 1-2 weeks, early anti-inflammatory signaling shifts should begin."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Cell membrane composition is actively shifting as omega-3s replace pro-inflammatory omega-6 fatty acids. This rebalancing affects every tissue in your body, especially the brain and cardiovascular system.",
+                watchFor: "Reduced joint stiffness and subtle improvements in mental clarity. Skin may begin to feel more hydrated.",
+                nextMilestone: "By week 6-8, cognitive benefits become measurable as brain cell membranes reach optimal DHA saturation."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Your cell membranes now have significantly improved omega-3 ratios. Neural signaling is faster, inflammation markers are lower, and cardiovascular function is optimizing.",
+                watchFor: "Clearer thinking, improved focus, and reduced brain fog. Better mood stability and cardiovascular markers if tracked.",
+                nextMilestone: "Full steady state — continued supplementation maintains your improved omega-3 index."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Your omega-3 index has reached optimal levels. Cell membranes throughout your body maintain their improved anti-inflammatory profile.",
+                watchFor: "Sustained cognitive clarity, reduced inflammation, and cardiovascular benefits. These are maintained with consistent intake.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "Ashwagandha KSM-66": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Withanolides from KSM-66 are beginning to modulate your HPA axis — the system governing cortisol and your stress response. This is the initial calibration period.",
+                watchFor: "A mild calming effect may be noticeable within the first few days, especially in the evening.",
+                nextMilestone: "By day 5-7, cortisol modulation begins to show measurable effects on baseline stress."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Your HPA axis is actively recalibrating. Cortisol rhythms are normalizing — lower spikes during stress, better recovery between stressors. Thyroid function may also be gently supported.",
+                watchFor: "Reduced anxiety and improved stress resilience. Sleep quality should improve, especially if stress was disrupting it.",
+                nextMilestone: "By week 3-4, cortisol can be reduced by up to 30% based on clinical studies."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Full adaptogenic benefits are establishing. Your stress response is significantly more regulated, with improved cortisol patterns throughout the day.",
+                watchFor: "Noticeably better stress management, improved morning energy, and a calmer baseline mood.",
+                nextMilestone: "Steady state — your adapted stress response maintains with continued use."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Your HPA axis has fully adapted. Stress resilience, sleep quality, and energy balance are optimized through consistent withanolide activity.",
+                watchFor: "Maintained calm and resilience. Effects may diminish if you stop — consider cycling 8 weeks on, 2 weeks off.",
+                nextMilestone: "You've reached steady state. Consider periodic cycling for sustained efficacy."
+            ),
+        ],
+        "L-Theanine": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "L-Theanine crosses the blood-brain barrier rapidly, boosting alpha brain wave activity within 30-60 minutes. GABA and serotonin production begin to increase.",
+                watchFor: "A calm, focused feeling without drowsiness. Reduced mental chatter, especially if paired with caffeine.",
+                nextMilestone: "Cumulative effects begin building within the first week as neurotransmitter balance stabilizes."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Daily supplementation is establishing consistent alpha wave patterns and neurotransmitter support. Your brain is adapting to sustained, calm focus.",
+                watchFor: "More consistent focus and concentration. Reduced stress reactivity throughout the day, not just at dosing time.",
+                nextMilestone: "By day 10-14, the full cumulative cognitive benefits should be apparent."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Full cognitive benefits are active. Alpha brain wave activity is consistently elevated, supporting sustained focus and mental clarity.",
+                watchFor: "Reliable calm focus, improved sleep quality, and better stress management throughout the day.",
+                nextMilestone: "Steady state — effects are maximized at this point."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "L-Theanine benefits are fully established. Your brain maintains elevated alpha wave activity and balanced neurotransmitter levels.",
+                watchFor: "Consistent focus and calm. L-Theanine has no tolerance buildup, so benefits maintain indefinitely.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "Vitamin D3 + K2": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Vitamin D3 is being converted to its active form (calcitriol) in the liver and kidneys. K2 is directing calcium metabolism toward bones and away from arteries.",
+                watchFor: "No immediate effects — D3 accumulates gradually. Absorption improves when taken with dietary fat.",
+                nextMilestone: "Blood levels begin rising measurably within the first 1-2 weeks."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Serum 25(OH)D levels are steadily climbing toward the optimal 40-60 ng/mL range. Immune cell receptors are becoming more active, and calcium metabolism is normalizing.",
+                watchFor: "Gradual improvements in energy and mood. Immune resilience may begin to improve.",
+                nextMilestone: "By week 4-6, most people reach noticeable improvements in energy and immune function."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Your vitamin D levels are approaching optimal range. Immune modulation, bone metabolism, and energy systems are all benefiting from adequate D3/K2 status.",
+                watchFor: "Consistent energy, improved mood, and better immune resilience. If you get blood work, aim for 40-60 ng/mL.",
+                nextMilestone: "Full steady state — levels stabilize with consistent daily supplementation."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Vitamin D levels have stabilized in the optimal range. K2 continues to support proper calcium distribution.",
+                watchFor: "Maintained energy, immune function, and bone health. Seasonal variation may affect needs — consider higher doses in winter.",
+                nextMilestone: "You've reached steady state. Consider seasonal dose adjustments."
+            ),
+        ],
+        "Creatine Monohydrate": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Creatine is being absorbed and beginning to saturate your muscle cells and brain tissue. At 5g/day without a loading phase, this is a gradual process.",
+                watchFor: "Slight increase in water retention as muscles begin pulling in creatine and water. This is normal and expected.",
+                nextMilestone: "By week 2, muscle creatine stores are roughly 50% saturated."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Muscle creatine phosphate stores are building toward full saturation. ATP regeneration capacity during high-intensity efforts is increasing.",
+                watchFor: "Improved performance in strength and power exercises. You may notice an extra rep or two on heavy sets.",
+                nextMilestone: "Full muscle saturation occurs around week 3-4 at 5g/day."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Muscle creatine stores are nearing full saturation. Both physical and cognitive performance benefits are becoming reliable and consistent.",
+                watchFor: "Consistent strength gains, better recovery between sets, and improved mental sharpness under fatigue.",
+                nextMilestone: "Steady state — full saturation maintained with daily 5g dose."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Creatine stores are fully saturated. Daily 5g maintains optimal levels for strength, power, and cognitive function.",
+                watchFor: "Sustained performance benefits. No need to cycle — creatine maintains efficacy with continuous use.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "Probiotics": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Live bacterial cultures are establishing in your gut, competing for attachment sites on the intestinal lining. The microbiome is beginning to shift.",
+                watchFor: "Mild gas or bloating in the first few days is normal as your gut flora adjusts. This typically resolves quickly.",
+                nextMilestone: "By day 7-10, initial colonies should be establishing and digestive comfort improving."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Beneficial bacteria are multiplying and reshaping your gut microbiome. Short-chain fatty acid production is increasing, supporting gut barrier integrity.",
+                watchFor: "Improved digestion, more regular bowel movements, and reduced bloating. Immune function begins to benefit.",
+                nextMilestone: "By week 4-6, significant microbiome rebalancing occurs with measurable changes in gut diversity."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Your microbiome has undergone significant positive shifts. Gut barrier function is improved, immune signaling is better regulated, and nutrient absorption is optimized.",
+                watchFor: "Consistent digestive comfort, improved immune resilience, and potentially better mood via the gut-brain axis.",
+                nextMilestone: "Full steady state — your rebalanced microbiome maintains with continued supplementation."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Your gut microbiome is well-supported with diverse beneficial bacteria. Ongoing supplementation maintains the improved microbial balance.",
+                watchFor: "Sustained digestive health and immune support. Probiotic benefits depend on continued use — colonies diminish if you stop.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "Lion's Mane": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Hericenones and erinacines from Lion's Mane are stimulating nerve growth factor (NGF) production in the brain. Neural pathways are beginning to respond.",
+                watchFor: "Effects are subtle at first — NGF-driven neuroplasticity takes time to manifest as noticeable cognitive changes.",
+                nextMilestone: "By week 2, early improvements in mental clarity and recall may become apparent."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "NGF production is sustained and neuroplasticity is actively increasing. New neural connections are forming and existing pathways are being strengthened.",
+                watchFor: "Improved recall, clearer thinking, and better sustained concentration during complex tasks.",
+                nextMilestone: "By week 6-8, significant cognitive improvements are typically established."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Sustained NGF stimulation has produced meaningful neuroplastic changes. Cognitive function, memory, and focus are operating at an elevated baseline.",
+                watchFor: "Reliable improvements in focus, memory, and mental clarity. Some users report improved creativity.",
+                nextMilestone: "Steady state — continued supplementation maintains neuroplastic benefits."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Your brain is maintaining elevated NGF levels and the neuroplastic benefits that come with them. Continued supplementation sustains these gains.",
+                watchFor: "Sustained cognitive enhancement. Benefits may slowly diminish if supplementation stops, as NGF levels normalize.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "CoQ10": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Ubiquinol is being absorbed and beginning to accumulate in your mitochondria — the energy factories in every cell. Heart and muscle cells, which have the highest mitochondrial density, benefit first.",
+                watchFor: "No immediate effects. CoQ10 accumulates gradually in tissue stores over the first few weeks.",
+                nextMilestone: "By week 2-3, mitochondrial CoQ10 levels are measurably increasing."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "Mitochondrial energy production is increasing as CoQ10 levels rise. The electron transport chain operates more efficiently, generating more ATP per cycle.",
+                watchFor: "Improved energy levels, especially during physical activity. Less post-exercise fatigue and faster recovery.",
+                nextMilestone: "By week 6-8, full mitochondrial benefits are establishing."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "Tissue CoQ10 levels are approaching optimal saturation. Cardiovascular function, energy metabolism, and antioxidant protection are all benefiting.",
+                watchFor: "Sustained energy throughout the day. Improved exercise capacity. Better cardiovascular markers if tracked.",
+                nextMilestone: "Full steady state — tissue levels are optimized with continued daily supplementation."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "CoQ10 levels are fully optimized across all tissues. Mitochondrial function, cardiovascular health, and antioxidant defense are at their best.",
+                watchFor: "Maintained energy and cardiovascular support. Especially important if you're over 40 or taking statins.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+        "Vitamin B Complex": [
+            .loading: SupplementPhaseContent(
+                biologicalDescription: "Methylated B vitamins are being rapidly absorbed and entering metabolic pathways. As water-soluble vitamins, they begin working quickly but need daily replenishment.",
+                watchFor: "Subtle energy boost, especially in the morning. Bright yellow urine is normal — it's excess riboflavin (B2) being excreted.",
+                nextMilestone: "By day 4-5, energy metabolism should be noticeably more consistent."
+            ),
+            .adaptation: SupplementPhaseContent(
+                biologicalDescription: "All eight B vitamins are supporting energy metabolism, nervous system function, and red blood cell production. Homocysteine levels may begin to normalize.",
+                watchFor: "More consistent energy throughout the day. Improved mental clarity and reduced afternoon fatigue.",
+                nextMilestone: "By week 3-4, full neurological and metabolic benefits are established."
+            ),
+            .onset: SupplementPhaseContent(
+                biologicalDescription: "B vitamin status is fully optimized. Energy metabolism, neurotransmitter synthesis, and methylation pathways are all running at peak efficiency.",
+                watchFor: "Reliable daily energy, improved mood stability, and sharper cognitive function.",
+                nextMilestone: "Steady state — continued daily supplementation maintains optimal B vitamin levels."
+            ),
+            .steadyState: SupplementPhaseContent(
+                biologicalDescription: "Your B vitamin levels are fully maintained. As water-soluble vitamins, daily intake is essential — your body doesn't store significant reserves.",
+                watchFor: "Sustained energy and cognitive benefits. Missing several days may lead to noticeable dips in energy.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            ),
+        ],
+    ]
+
+    static func phaseContentFor(supplement: String, phase: SupplementPhase) -> SupplementPhaseContent {
+        if let specific = phaseContent[supplement]?[phase] {
+            return specific
+        }
+        return genericPhaseContent(for: phase, supplementName: supplement)
+    }
+
+    private static func genericPhaseContent(for phase: SupplementPhase, supplementName: String) -> SupplementPhaseContent {
+        switch phase {
+        case .loading:
+            return SupplementPhaseContent(
+                biologicalDescription: "Your body is absorbing \(supplementName) and beginning to build tissue levels. This initial phase establishes the foundation for benefits to come.",
+                watchFor: "Effects may be subtle or not yet noticeable. Consistent daily intake is key during this phase.",
+                nextMilestone: "As tissue levels build, your body will begin adapting to the supplement's active compounds."
+            )
+        case .adaptation:
+            return SupplementPhaseContent(
+                biologicalDescription: "\(supplementName) is actively integrating into your biological systems. Key pathways are adapting and beginning to show functional improvements.",
+                watchFor: "Early signs of benefit may start to appear. Pay attention to the wellness dimensions this supplement targets.",
+                nextMilestone: "Full onset of benefits is approaching as your body reaches optimal levels."
+            )
+        case .onset:
+            return SupplementPhaseContent(
+                biologicalDescription: "The primary benefits of \(supplementName) are now actively establishing. Your body has built sufficient levels for consistent, noticeable effects.",
+                watchFor: "Clear improvements in the targeted wellness areas. Your check-in scores should begin reflecting these changes.",
+                nextMilestone: "Steady state is approaching — benefits will be maintained with continued daily supplementation."
+            )
+        case .steadyState:
+            return SupplementPhaseContent(
+                biologicalDescription: "\(supplementName) has reached full efficacy. Your body is maintaining optimal levels with continued supplementation.",
+                watchFor: "Sustained benefits across your targeted wellness areas. Continue consistent daily intake to maintain these levels.",
+                nextMilestone: "You've reached steady state. Continue daily for maintained benefits."
+            )
+        }
+    }
+
     // MARK: - Daily Tips
 
     static let dailyTips: [String] = [

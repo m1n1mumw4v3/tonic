@@ -31,6 +31,8 @@
 		1CD4DF265C137DD9D6ED745A /* PillboxLid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D073CB7295861DCE06C104D8 /* PillboxLid.swift */; };
 		1CF0F250559CFCA738B32A90 /* InsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE15B284D437AD658B557801 /* InsightCard.swift */; };
 		1EB6AE01BA202AF81AFA4825 /* TodayScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54F779091C21BED86E3043F /* TodayScreen.swift */; };
+		2018FC5D43187B35D7A916BD /* SupplementTimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330AEA7795FA4D611E0EEC0D /* SupplementTimelineCard.swift */; };
+		20C92917CB8A5C06F138CB80 /* SupplementPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70628058A4602D76A3D203FE /* SupplementPhase.swift */; };
 		211AF9208C4540D81CD70887 /* SupplementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E01ED5E4A1E1C4EE6D5288 /* SupplementService.swift */; };
 		2225111A102CB9007825908D /* AIInterstitialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3634C05ED4AE0F667389D88B /* AIInterstitialScreen.swift */; };
 		2281A8C31277B78EB5567784 /* HormonalMetabolicModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA11E32756DE1AF7D0CB5CD9 /* HormonalMetabolicModule.swift */; };
@@ -38,6 +40,7 @@
 		24B96BFF3E08954EDAE497BF /* EmberGlowModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D3F757E819046A89ECB9D7 /* EmberGlowModifier.swift */; };
 		24D29ADB77B496011DCD07FB /* SupplementCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B06802CA3E6B84CC9815B /* SupplementCardView.swift */; };
 		24FAFDFCB28DE0345E97A92C /* KnowledgeBaseMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76CFC2342772AA17E77FEBC /* KnowledgeBaseMapper.swift */; };
+		282DD2CA6EB316947F9EAB1C /* ProductDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3A5D804CE8EEC6238963E /* ProductDetailScreen.swift */; };
 		292D4CA2865A45E4C8FE740F /* MedicalDisclaimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0DC9BEAA7FBE5AE3DBEAA6 /* MedicalDisclaimerScreen.swift */; };
 		2A4AF3A4274A8529B3FB6F5F /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26D3AE3CFB18D77C6AEE82 /* AppState.swift */; };
 		2B37BE74C41E0C4067FE7520 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E7C886EE403ADEC13AE622 /* TodayViewModel.swift */; };
@@ -81,7 +84,6 @@
 		61DD63CEE30246B9FDCBD370 /* PlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FDCC9CA8A08541F1DAF6BC /* PlanViewModel.swift */; };
 		61DE009537913CB242B9F3A7 /* WellbeingScoreRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94D7DC9B3A16AD14B7A63E7 /* WellbeingScoreRing.swift */; };
 		626E6FAE4C149B90DE5FFABD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 934E3161AE486E4141621D1F /* Supabase */; };
-		6338F19E1A8E92EB30330EE2 /* OnsetTimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A44F5CDEACDD62CAEE4AE3E /* OnsetTimelineCard.swift */; };
 		6362E83137F21938ADC7B66A /* AddSupplementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF89DD3F3BCB3591AF5BC233 /* AddSupplementSheet.swift */; };
 		65820F94A393E31578924819 /* SupplementCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756083B3241C10D7C8303732 /* SupplementCard.swift */; };
 		66A3924285AF571384C13EE2 /* MicroRewardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4A8E1FD766544D824B33A7 /* MicroRewardCard.swift */; };
@@ -112,6 +114,7 @@
 		896BC39D45FB96AE465E4A2C /* MedicationPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F06B776853271D71AEDEB6 /* MedicationPickerSheet.swift */; };
 		89D34D3053E79F1F86D74BAE /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1129A9438CFE388C082DAD18 /* DataStore.swift */; };
 		8CE55A3F00EB6BECA349ACB3 /* SupplementCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6474B8695321D223E8BAA9 /* SupplementCloudView.swift */; };
+		903CE24BC842CCFF1202A0DD /* ProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C403894F6050BE4EF0C3A2 /* ProductCardView.swift */; };
 		91270F4587408BDDD83A03E2 /* CompactInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA887732284D78F3ED45B1C /* CompactInsightCard.swift */; };
 		943981616E6268FE1359A0B1 /* GhostTrendsTeaser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26F0C4C327364CA43DD0F35 /* GhostTrendsTeaser.swift */; };
 		953B23B48DE73C066E41EF39 /* RecommendationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F12306891707C3CBF0DE1F3 /* RecommendationCard.swift */; };
@@ -121,10 +124,12 @@
 		9C4681D231517B180921919A /* DeepProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31430DB0E2FFFE5A385C670 /* DeepProfile.swift */; };
 		9C5D3E27F7ED0DB591427966 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 79A5974ED8DE0D0A0D1E8FB1 /* GeistMono-Regular.ttf */; };
 		9C8732C8126518D0BAB9B30C /* WeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001FA343772A4C791183F821 /* WeightScreen.swift */; };
+		9FDEEC77B8A1D86FCBA3FC61 /* PhaseProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5AE5ED3E6859C78692D7D0 /* PhaseProgressBar.swift */; };
 		A0A5E6D691B1E89A83C0A277 /* SleepCircadianModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFE6A0BA40F20A7F2AE11C9 /* SleepCircadianModule.swift */; };
 		A4ABE68AFB52E8DF5B3F61DC /* PlanScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E01CA365CC744519DA3BF0 /* PlanScreen.swift */; };
 		A647B62C61D561753055B885 /* SupplementKnowledgeBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FD28DD2686D4AD6592DDE5 /* SupplementKnowledgeBase.swift */; };
 		A94A412D95962625776135CB /* DeepProfileModuleRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2ABEDAEDBF3D84089C484D /* DeepProfileModuleRegistry.swift */; };
+		A9DEEE50E5A4C70E4DCC36DF /* TimelineSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D606C24A4B93937160BAB2 /* TimelineSummaryCard.swift */; };
 		AB257D4A587A0778C60A31A8 /* SupplementCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2B8FC437DF25B0B900A7EE /* SupplementCatalog.swift */; };
 		AB38670BA02FE4EC65205B87 /* HapticModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC9FB93065857637259F95D /* HapticModifiers.swift */; };
 		AF06297F39604994CCD81B81 /* CaffeineScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A3B4C3224ADDDEE82AA2C /* CaffeineScreen.swift */; };
@@ -144,12 +149,16 @@
 		C024438EDBF62BE930C774A5 /* StressNervousSystemModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC8BB937E1055245DAF02A6 /* StressNervousSystemModule.swift */; };
 		C077A931A3BA03794FB975FA /* DeepProfileIntroScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8267E80CC9E23EC7F54A572A /* DeepProfileIntroScreen.swift */; };
 		C127FA800413A1D7D01A8019 /* SupplementDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06450FE6EC11B18C2289A983 /* SupplementDatabase.swift */; };
+		C2032C064453061A715E8D23 /* ProductListCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20841A2E761CE4BAEC3654BC /* ProductListCard.swift */; };
 		C37729165FF48DCA69D59487 /* SupabaseDrugInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4BF3FF297EDE4E358F1358 /* SupabaseDrugInteraction.swift */; };
 		C4763C4F46D9B43F81A1A357 /* CheckInInsightGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D34B83103DEA6C9E6C1B4A25 /* CheckInInsightGenerator.swift */; };
+		C5FF75F52EC9187D7C6C664E /* ProductListSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B324AF5E2420DA248C6B11D /* ProductListSheet.swift */; };
+		C821396CEE5BAA0AA67ACB2B /* PhaseCalloutRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2390903AB28340F351E06E77 /* PhaseCalloutRow.swift */; };
 		C8EF4CD26DD87D5AAAB93BFB /* PregnancyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE194813456A3128253D258E /* PregnancyScreen.swift */; };
 		CAC02CFE4138C6F75E8A876B /* HeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A447F972B20892D640ED4496 /* HeightScreen.swift */; };
 		CBB8F93086B4C23C8E19AE99 /* AllergiesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3333BB6B08C50762281867B /* AllergiesScreen.swift */; };
 		CDE56E62AE39A2BE9E87332A /* AnimatedCheckmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D32DF02F6E06DD02F956C0F /* AnimatedCheckmark.swift */; };
+		CE76CF27E0895C3259E396FF /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C5B0DA41067463858C5DD /* Product.swift */; };
 		CEDFFAA407AE89793BA771F8 /* BaselineScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BA715031328F37C28BFF31 /* BaselineScreen.swift */; };
 		D154EC89EB981BED901554F6 /* WellnessSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A303D04125D6C5960345CB1 /* WellnessSlider.swift */; };
 		D5173043D91B2A43C3E7238E /* NotificationSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F705B4F0126A041EBDB4AF /* NotificationSettingsSheet.swift */; };
@@ -167,12 +176,15 @@
 		E6BC41D4F5264A79643C1501 /* MedicationsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C02CBA2E4E7B7134BD577EA /* MedicationsScreen.swift */; };
 		E8C496DA54F04D7D1CB9B64A /* AnimatedGrainModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ED0D370E411E082CC5335A /* AnimatedGrainModifier.swift */; };
 		EACFF47A168EE34CF49418EE /* KnowledgeBaseCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EB35E2A0EE225283F445F2 /* KnowledgeBaseCacheService.swift */; };
+		EAF15FF43041FFDE9C94E87D /* ShopLinksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0818431DA8E10DACBE85F93 /* ShopLinksSheet.swift */; };
 		EC99C87DA148AF301DC4BBA1 /* DeepProfileModuleFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD86AD132D3CA6A0673A34D /* DeepProfileModuleFlow.swift */; };
 		ED8F3989D17AF0AF2C8E45CB /* AgeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20333F6423EF135982DE37C /* AgeScreen.swift */; };
 		EE01E1BA73F9570B6E18DC99 /* SupabaseSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2989B2E305C36226118AD3DF /* SupabaseSource.swift */; };
 		EE5DE48FE54C1F40E0955670 /* BaselineProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31265096D48726E12B13D42A /* BaselineProfileViewModel.swift */; };
+		EE8BDCEA5B43D02C2D7C69D9 /* ProductListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79649082B11EF9420560D590 /* ProductListScreen.swift */; };
 		F0C9FE36731B04472F840583 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6C09569F8501D3051169AB3C /* Geist-Regular.ttf */; };
 		F14B35E97B70E53C1D77E839 /* EnvironmentExposuresModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D67467EC10CB586CFE12AE /* EnvironmentExposuresModule.swift */; };
+		F482258630B5F9E1084914E4 /* InlineProductCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9930B6892445D3428F49A1 /* InlineProductCardView.swift */; };
 		F6E3A3501119A51D4BBC1F40 /* DiscoveryTipProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF298D231580508CB651544C /* DiscoveryTipProvider.swift */; };
 		F9732D3D45014CBE006D8BAE /* HealthMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A37BFD7B50A02B295A692E /* HealthMetrics.swift */; };
 		FBFAC2AF1547FD8D630B6D77 /* HeadlineText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC792D0CE2296BB3DD9B193 /* HeadlineText.swift */; };
@@ -210,22 +222,27 @@
 		1129A9438CFE388C082DAD18 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		113A3B4C3224ADDDEE82AA2C /* CaffeineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaffeineScreen.swift; sourceTree = "<group>"; };
 		13E069482DD9F5D553E96885 /* UnitPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitPicker.swift; sourceTree = "<group>"; };
+		16D606C24A4B93937160BAB2 /* TimelineSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSummaryCard.swift; sourceTree = "<group>"; };
 		17EE453BE0D9BE57C81387B4 /* BaselineProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineProfileSheet.swift; sourceTree = "<group>"; };
 		1931202A037BA275D71720D9 /* SupplementIconography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementIconography.swift; sourceTree = "<group>"; };
 		1A3DB18A2706C2C98734CD09 /* PillboxCompartment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxCompartment.swift; sourceTree = "<group>"; };
-		1A44F5CDEACDD62CAEE4AE3E /* OnsetTimelineCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnsetTimelineCard.swift; sourceTree = "<group>"; };
+		1B324AF5E2420DA248C6B11D /* ProductListSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListSheet.swift; sourceTree = "<group>"; };
 		1BF33903528DB9ABA133F70C /* DeepProfileQuestionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileQuestionScreen.swift; sourceTree = "<group>"; };
 		1F87ADFCA91E25F336A88EAD /* KnowledgeBaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeBaseProvider.swift; sourceTree = "<group>"; };
+		20841A2E761CE4BAEC3654BC /* ProductListCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListCard.swift; sourceTree = "<group>"; };
+		2390903AB28340F351E06E77 /* PhaseCalloutRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalloutRow.swift; sourceTree = "<group>"; };
 		285F1945684DFD661CA6DC57 /* SupplementLogList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementLogList.swift; sourceTree = "<group>"; };
 		2989B2E305C36226118AD3DF /* SupabaseSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseSource.swift; sourceTree = "<group>"; };
 		2B30DA10B0222F9DBC992920 /* KnowledgeBaseSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeBaseSnapshot.swift; sourceTree = "<group>"; };
 		2B423964FBC3979FB5C4A1CC /* EstusApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstusApp.swift; sourceTree = "<group>"; };
 		2CE5D8825A68AE939550B628 /* MedicationKnowledgeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationKnowledgeBase.swift; sourceTree = "<group>"; };
+		2E2C5B0DA41067463858C5DD /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		2EAB099D9E2DC6877C81A639 /* DeepProfileFlowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileFlowViewModel.swift; sourceTree = "<group>"; };
 		2F12306891707C3CBF0DE1F3 /* RecommendationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCard.swift; sourceTree = "<group>"; };
 		31265096D48726E12B13D42A /* BaselineProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineProfileViewModel.swift; sourceTree = "<group>"; };
 		316451E6034E84D95FAD8E55 /* HealthKitScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitScreen.swift; sourceTree = "<group>"; };
 		32456861878A8F2CD508E897 /* AccountCreationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationScreen.swift; sourceTree = "<group>"; };
+		330AEA7795FA4D611E0EEC0D /* SupplementTimelineCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementTimelineCard.swift; sourceTree = "<group>"; };
 		3634C05ED4AE0F667389D88B /* AIInterstitialScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInterstitialScreen.swift; sourceTree = "<group>"; };
 		36B0D8779C4B8F2A1F1E8157 /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		39A16D62DCE658E29D2198E1 /* CompletionShimmerModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionShimmerModifier.swift; sourceTree = "<group>"; };
@@ -256,6 +273,7 @@
 		5C02CBA2E4E7B7134BD577EA /* MedicationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicationsScreen.swift; sourceTree = "<group>"; };
 		5E6474B8695321D223E8BAA9 /* SupplementCloudView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCloudView.swift; sourceTree = "<group>"; };
 		5E758413EC7F6CAE273F7817 /* ValuePropComplexityScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuePropComplexityScreen.swift; sourceTree = "<group>"; };
+		5E9930B6892445D3428F49A1 /* InlineProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineProductCardView.swift; sourceTree = "<group>"; };
 		5E9CD2DA4AB8C5BBFA0C2EA8 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		60E01CA365CC744519DA3BF0 /* PlanScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanScreen.swift; sourceTree = "<group>"; };
 		633033AB209D0CE7DC58AF3E /* EstusTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = EstusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -269,12 +287,14 @@
 		6C09569F8501D3051169AB3C /* Geist-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Regular.ttf"; sourceTree = "<group>"; };
 		6CC4FB69681AD9618FEFA00A /* GutHealthModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GutHealthModule.swift; sourceTree = "<group>"; };
 		6D32DF02F6E06DD02F956C0F /* AnimatedCheckmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedCheckmark.swift; sourceTree = "<group>"; };
+		70628058A4602D76A3D203FE /* SupplementPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPhase.swift; sourceTree = "<group>"; };
 		72653A13F5AB9686CD6CD008 /* AnimatedGrainShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = AnimatedGrainShader.metal; sourceTree = "<group>"; };
 		742931DEF3289D2B53D4CC0A /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		756083B3241C10D7C8303732 /* SupplementCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCard.swift; sourceTree = "<group>"; };
 		75ED0D370E411E082CC5335A /* AnimatedGrainModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedGrainModifier.swift; sourceTree = "<group>"; };
 		773B06802CA3E6B84CC9815B /* SupplementCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCardView.swift; sourceTree = "<group>"; };
 		77E94E0469F9CDF372FCCA73 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		79649082B11EF9420560D590 /* ProductListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListScreen.swift; sourceTree = "<group>"; };
 		79A5974ED8DE0D0A0D1E8FB1 /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Regular.ttf"; sourceTree = "<group>"; };
 		7DF346DE3D509316635A640D /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		8186C845CFB5E02F645F7B47 /* GrainOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrainOverlay.swift; sourceTree = "<group>"; };
@@ -324,6 +344,8 @@
 		C54F779091C21BED86E3043F /* TodayScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayScreen.swift; sourceTree = "<group>"; };
 		C914EC995E1AD72AA47CA170 /* LocalStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageService.swift; sourceTree = "<group>"; };
 		CB26D3AE3CFB18D77C6AEE82 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		CD5AE5ED3E6859C78692D7D0 /* PhaseProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseProgressBar.swift; sourceTree = "<group>"; };
+		CDE3A5D804CE8EEC6238963E /* ProductDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailScreen.swift; sourceTree = "<group>"; };
 		CE194813456A3128253D258E /* PregnancyScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PregnancyScreen.swift; sourceTree = "<group>"; };
 		CE50DF88C09E1A23BD972846 /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
 		D073CB7295861DCE06C104D8 /* PillboxLid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillboxLid.swift; sourceTree = "<group>"; };
@@ -339,6 +361,7 @@
 		DCC9FB93065857637259F95D /* HapticModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticModifiers.swift; sourceTree = "<group>"; };
 		DF53F9CA46480F5D1F40977B /* SupabaseMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseMechanism.swift; sourceTree = "<group>"; };
 		DF89DD3F3BCB3591AF5BC233 /* AddSupplementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSupplementSheet.swift; sourceTree = "<group>"; };
+		E0818431DA8E10DACBE85F93 /* ShopLinksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopLinksSheet.swift; sourceTree = "<group>"; };
 		E26F0C4C327364CA43DD0F35 /* GhostTrendsTeaser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GhostTrendsTeaser.swift; sourceTree = "<group>"; };
 		E31430DB0E2FFFE5A385C670 /* DeepProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfile.swift; sourceTree = "<group>"; };
 		E534854550F633771ABFAE17 /* DailyCheckIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCheckIn.swift; sourceTree = "<group>"; };
@@ -353,6 +376,7 @@
 		EDFE6A0BA40F20A7F2AE11C9 /* SleepCircadianModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepCircadianModule.swift; sourceTree = "<group>"; };
 		F2D27B3DDD7D508F2BB368F7 /* UndoToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToast.swift; sourceTree = "<group>"; };
 		F4E01ED5E4A1E1C4EE6D5288 /* SupplementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementService.swift; sourceTree = "<group>"; };
+		F5C403894F6050BE4EF0C3A2 /* ProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCardView.swift; sourceTree = "<group>"; };
 		F60DA98304A991E746D52E0E /* SupabaseGoalMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseGoalMap.swift; sourceTree = "<group>"; };
 		F619D41F77E4ECE788E07FE5 /* LabWorkBiomarkersModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabWorkBiomarkersModule.swift; sourceTree = "<group>"; };
 		F6667328BBCC51B634498C2D /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
@@ -520,6 +544,9 @@
 				DF89DD3F3BCB3591AF5BC233 /* AddSupplementSheet.swift */,
 				60E01CA365CC744519DA3BF0 /* PlanScreen.swift */,
 				C4FDCC9CA8A08541F1DAF6BC /* PlanViewModel.swift */,
+				CDE3A5D804CE8EEC6238963E /* ProductDetailScreen.swift */,
+				79649082B11EF9420560D590 /* ProductListScreen.swift */,
+				1B324AF5E2420DA248C6B11D /* ProductListSheet.swift */,
 			);
 			path = Plan;
 			sourceTree = "<group>";
@@ -630,7 +657,9 @@
 				46A37BFD7B50A02B295A692E /* HealthMetrics.swift */,
 				E853795621B97D5B6ED35C5A /* Insight.swift */,
 				3E9C8D091E5F7F5D6F878A69 /* MicroReward.swift */,
+				2E2C5B0DA41067463858C5DD /* Product.swift */,
 				06450FE6EC11B18C2289A983 /* SupplementDatabase.swift */,
+				70628058A4602D76A3D203FE /* SupplementPhase.swift */,
 				D71D29213B72F0E500A3D54A /* SupplementPlan.swift */,
 				F6667328BBCC51B634498C2D /* UserProfile.swift */,
 				F9A7C51FEAE0DF61CA97EEDC /* WellbeingScore.swift */,
@@ -736,15 +765,20 @@
 				B0389FA0DAB6FD008E8F5C72 /* GradientFlowBackground.swift */,
 				8186C845CFB5E02F645F7B47 /* GrainOverlay.swift */,
 				BAC792D0CE2296BB3DD9B193 /* HeadlineText.swift */,
+				5E9930B6892445D3428F49A1 /* InlineProductCardView.swift */,
 				BE15B284D437AD658B557801 /* InsightCard.swift */,
 				D29BCAC92B72D848C0175666 /* LockedOverlay.swift */,
 				AD4A8E1FD766544D824B33A7 /* MicroRewardCard.swift */,
-				1A44F5CDEACDD62CAEE4AE3E /* OnsetTimelineCard.swift */,
+				2390903AB28340F351E06E77 /* PhaseCalloutRow.swift */,
+				CD5AE5ED3E6859C78692D7D0 /* PhaseProgressBar.swift */,
 				1A3DB18A2706C2C98734CD09 /* PillboxCompartment.swift */,
 				D073CB7295861DCE06C104D8 /* PillboxLid.swift */,
+				F5C403894F6050BE4EF0C3A2 /* ProductCardView.swift */,
+				20841A2E761CE4BAEC3654BC /* ProductListCard.swift */,
 				2F12306891707C3CBF0DE1F3 /* RecommendationCard.swift */,
 				BE36872D32AB82D7E0C97A4D /* RemovableChip.swift */,
 				5106F507DC78CA04E83DA71C /* ScrollWheelPicker.swift */,
+				E0818431DA8E10DACBE85F93 /* ShopLinksSheet.swift */,
 				B93BE181FD7E18643EE37A2D /* SpectrumBar.swift */,
 				756083B3241C10D7C8303732 /* SupplementCard.swift */,
 				773B06802CA3E6B84CC9815B /* SupplementCardView.swift */,
@@ -752,7 +786,9 @@
 				EA9B0F191BEBE0732C16F50A /* SupplementIconView.swift */,
 				285F1945684DFD661CA6DC57 /* SupplementLogList.swift */,
 				EDC377EB034C62B0BB143CC1 /* SupplementLogRow.swift */,
+				330AEA7795FA4D611E0EEC0D /* SupplementTimelineCard.swift */,
 				852D404219CFD62CA77C145F /* SupplementToggle.swift */,
+				16D606C24A4B93937160BAB2 /* TimelineSummaryCard.swift */,
 				F2D27B3DDD7D508F2BB368F7 /* UndoToast.swift */,
 				13E069482DD9F5D553E96885 /* UnitPicker.swift */,
 				B94D7DC9B3A16AD14B7A63E7 /* WellbeingScoreRing.swift */,
@@ -946,6 +982,7 @@
 				F9732D3D45014CBE006D8BAE /* HealthMetrics.swift in Sources */,
 				CAC02CFE4138C6F75E8A876B /* HeightScreen.swift in Sources */,
 				2281A8C31277B78EB5567784 /* HormonalMetabolicModule.swift in Sources */,
+				F482258630B5F9E1084914E4 /* InlineProductCardView.swift in Sources */,
 				B175519A23A234AD234981C4 /* Insight.swift in Sources */,
 				1CF0F250559CFCA738B32A90 /* InsightCard.swift in Sources */,
 				98E5100F8460E1F931F7F58C /* InsightsScreen.swift in Sources */,
@@ -970,15 +1007,22 @@
 				D5173043D91B2A43C3E7238E /* NotificationSettingsSheet.swift in Sources */,
 				86DD928CB2AE4C427EEB6643 /* OnboardingFlow.swift in Sources */,
 				D985C3457074B5CCC6D7FF8F /* OnboardingViewModel.swift in Sources */,
-				6338F19E1A8E92EB30330EE2 /* OnsetTimelineCard.swift in Sources */,
 				BEC531CB1F6867E59320F1A6 /* PaywallScreen.swift in Sources */,
 				B93598867FA2DAB0B9131ACE /* PersonalizationScorer.swift in Sources */,
+				C821396CEE5BAA0AA67ACB2B /* PhaseCalloutRow.swift in Sources */,
+				9FDEEC77B8A1D86FCBA3FC61 /* PhaseProgressBar.swift in Sources */,
 				55052D77443442A98F366777 /* PillboxCompartment.swift in Sources */,
 				1CD4DF265C137DD9D6ED745A /* PillboxLid.swift in Sources */,
 				4F7CB0410206BEE6FA313B61 /* PlanRevealScreen.swift in Sources */,
 				A4ABE68AFB52E8DF5B3F61DC /* PlanScreen.swift in Sources */,
 				61DD63CEE30246B9FDCBD370 /* PlanViewModel.swift in Sources */,
 				C8EF4CD26DD87D5AAAB93BFB /* PregnancyScreen.swift in Sources */,
+				CE76CF27E0895C3259E396FF /* Product.swift in Sources */,
+				903CE24BC842CCFF1202A0DD /* ProductCardView.swift in Sources */,
+				282DD2CA6EB316947F9EAB1C /* ProductDetailScreen.swift in Sources */,
+				C2032C064453061A715E8D23 /* ProductListCard.swift in Sources */,
+				EE8BDCEA5B43D02C2D7C69D9 /* ProductListScreen.swift in Sources */,
+				C5FF75F52EC9187D7C6C664E /* ProductListSheet.swift in Sources */,
 				14C02566C609963536DD1119 /* RadialRevealModifier.swift in Sources */,
 				18B188112E55EAE388045F97 /* RadialRevealShader.metal in Sources */,
 				953B23B48DE73C066E41EF39 /* RecommendationCard.swift in Sources */,
@@ -988,6 +1032,7 @@
 				74F272CF920D1AD0EFF338F0 /* ScrollWheelPicker.swift in Sources */,
 				09012A6D14AA52854FB48AB5 /* SettingsScreen.swift in Sources */,
 				6BF53C9AA1D0127265F521DB /* SexScreen.swift in Sources */,
+				EAF15FF43041FFDE9C94E87D /* ShopLinksSheet.swift in Sources */,
 				23A140AF0EB4A0A175745E45 /* SkinHairNailsModule.swift in Sources */,
 				A0A5E6D691B1E89A83C0A277 /* SleepCircadianModule.swift in Sources */,
 				76EFD2ED7CEBCA4B6C326272 /* SpectrumBar.swift in Sources */,
@@ -1016,10 +1061,13 @@
 				44B01B2239F06357DFD57363 /* SupplementLogList.swift in Sources */,
 				B83FDDDE3674D49C285788C7 /* SupplementLogRow.swift in Sources */,
 				82672D6F45135A4EDE7F946A /* SupplementNameMatcher.swift in Sources */,
+				20C92917CB8A5C06F138CB80 /* SupplementPhase.swift in Sources */,
 				016F706B8D1D1A2DD15A85E3 /* SupplementPickerSheet.swift in Sources */,
 				48FEFB2AFE8DDC3565251C43 /* SupplementPlan.swift in Sources */,
 				211AF9208C4540D81CD70887 /* SupplementService.swift in Sources */,
+				2018FC5D43187B35D7A916BD /* SupplementTimelineCard.swift in Sources */,
 				442444ECB4D58B83E7E66D6B /* SupplementToggle.swift in Sources */,
+				A9DEEE50E5A4C70E4DCC36DF /* TimelineSummaryCard.swift in Sources */,
 				1EB6AE01BA202AF81AFA4825 /* TodayScreen.swift in Sources */,
 				2B37BE74C41E0C4067FE7520 /* TodayViewModel.swift in Sources */,
 				9791143076605394E9A9E515 /* UndoToast.swift in Sources */,

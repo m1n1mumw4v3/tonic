@@ -43,7 +43,12 @@ struct SupplementCardView: View {
     var isIncluded: Bool = true
     var isExpanded: Bool = false
     var showBottomLearnMore: Bool = false
+    var products: [RankedProduct]? = nil
+    var productsLoading: Bool = false
     var onEvidenceInfoTapped: ((EvidenceLevel) -> Void)? = nil
+    var onShopTapped: (() -> Void)? = nil
+    var onProductTapped: ((RankedProduct) -> Void)? = nil
+    var onSeeAllProductsTapped: (() -> Void)? = nil
     var onTap: (() -> Void)? = nil
 
     private var matchedHealthGoals: [HealthGoal] {
@@ -134,45 +139,47 @@ struct SupplementCardView: View {
     // MARK: - Collapsed Row
 
     private var collapsedRow: some View {
-        HStack(alignment: .center, spacing: DesignTokens.spacing8) {
-            VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 2) {
+            // Top row: name + trailing accessories
+            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
                 Text(supplement.name)
                     .font(DesignTokens.bodyFont)
                     .fontWeight(.semibold)
                     .foregroundStyle(DesignTokens.textPrimary)
                     .strikethrough(!isIncluded, color: DesignTokens.textTertiary)
                     .lineLimit(1)
+                    .layoutPriority(1)
 
-                HStack(spacing: DesignTokens.spacing8) {
-                    Text(supplement.dosage)
-                        .font(DesignTokens.labelMono)
-                        .foregroundStyle(DesignTokens.info)
+                Spacer()
 
-                    Text("\u{00B7}")
-                        .foregroundStyle(DesignTokens.textTertiary)
+                trailingAccessoryView
 
-                    Text(supplement.timing.label)
-                        .font(DesignTokens.labelMono)
-                        .foregroundStyle(DesignTokens.textSecondary)
+                if !menuActions.isEmpty {
+                    kebabMenu
                 }
 
-                if !inlineGoals.isEmpty {
-                    inlineGoalChips
-                        .padding(.top, 4)
+                if expansionMode == .inline && !showBottomLearnMore {
+                    chevronHint
                 }
             }
-            .layoutPriority(1)
 
-            Spacer()
+            // Dosage + timing
+            HStack(spacing: DesignTokens.spacing8) {
+                Text(supplement.dosage)
+                    .font(DesignTokens.labelMono)
+                    .foregroundStyle(DesignTokens.info)
 
-            trailingAccessoryView
+                Text("\u{00B7}")
+                    .foregroundStyle(DesignTokens.textTertiary)
 
-            if !menuActions.isEmpty {
-                kebabMenu
+                Text(supplement.timing.label)
+                    .font(DesignTokens.labelMono)
+                    .foregroundStyle(DesignTokens.textSecondary)
             }
 
-            if expansionMode == .inline && !showBottomLearnMore {
-                chevronHint
+            if !inlineGoals.isEmpty {
+                inlineGoalChips
+                    .padding(.top, 4)
             }
         }
     }
@@ -243,7 +250,7 @@ struct SupplementCardView: View {
             evidenceChip
 
             // Why it's in your plan
-            infoSection(icon: "person.fill", label: "Why it's in your plan", text: supplement.whyInYourPlan)
+            infoSection(icon: "person", label: "Why it's in your plan", text: supplement.whyInYourPlan)
 
             // Dosage rationale (full detail only)
             if detailLevel == .full {
@@ -266,6 +273,9 @@ struct SupplementCardView: View {
 
             // Category badge
             categoryBadge
+
+            // Product carousel or shop button
+            productSection
         }
     }
 
@@ -355,6 +365,99 @@ struct SupplementCardView: View {
                         .stroke(DesignTokens.borderDefault, lineWidth: 1)
                 )
         }
+    }
+
+    // MARK: - Product Section
+
+    @ViewBuilder
+    private var productSection: some View {
+        if let products, !products.isEmpty {
+            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+                HStack(spacing: DesignTokens.spacing8) {
+                    Image(systemName: "bag")
+                        .font(.system(size: 14))
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .frame(width: 18, height: 18, alignment: .center)
+                    Text("Top products")
+                        .font(DesignTokens.captionFont)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                }
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: DesignTokens.spacing12) {
+                        ForEach(products.prefix(3)) { rankedProduct in
+                            InlineProductCardView(
+                                rankedProduct: rankedProduct,
+                                onTap: {
+                                    onProductTapped?(rankedProduct)
+                                }
+                            )
+                        }
+
+                        if products.count > 3 || onSeeAllProductsTapped != nil {
+                            SeeAllProductCard(
+                                supplementName: supplement.name,
+                                onTap: onSeeAllProductsTapped
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 1)
+                    .padding(.trailing, DesignTokens.spacing16)
+                    .padding(.vertical, 2)
+                }
+                .padding(.horizontal, -DesignTokens.spacing16)
+                .padding(.leading, DesignTokens.spacing16)
+            }
+        } else if productsLoading {
+            HStack(spacing: DesignTokens.spacing8) {
+                ProgressView()
+                    .controlSize(.small)
+                    .tint(DesignTokens.textTertiary)
+                Text("Loading products...")
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textTertiary)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.vertical, DesignTokens.spacing8)
+        } else if let onShopTapped {
+            shopProductsButton(action: onShopTapped)
+        }
+    }
+
+    // MARK: - Shop Products Button
+
+    private func shopProductsButton(action: @escaping () -> Void) -> some View {
+        Button {
+            HapticManager.selection()
+            action()
+        } label: {
+            HStack(spacing: DesignTokens.spacing8) {
+                Image(systemName: "bag")
+                    .font(.system(size: 14))
+                    .foregroundStyle(DesignTokens.positive)
+                    .frame(width: 18, alignment: .center)
+
+                Text("SHOP PRODUCTS")
+                    .font(DesignTokens.sectionHeader)
+                    .tracking(1.2)
+                    .foregroundStyle(DesignTokens.positive)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(DesignTokens.positive)
+            }
+            .padding(DesignTokens.spacing12)
+            .background(DesignTokens.positive.opacity(0.06))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+                    .stroke(DesignTokens.positive.opacity(0.2), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Kebab Menu

@@ -9,9 +9,11 @@ struct InsightsScreen: View {
     // MARK: - Animation State
 
     @State private var showHeader = false
-    @State private var showTimelineCard = false
-    @State private var timelineBarProgress: CGFloat = 0
-    @State private var showTimelineMarker = false
+    @State private var showTimelineHeader = false
+    @State private var showSummaryCard = false
+    @State private var expandedCardId: UUID? = nil
+    @State private var cardAppearStates: [UUID: Bool] = [:]
+    @State private var phaseBarProgress: CGFloat = 0
     @State private var showGhostTrends = false
     @State private var showTrendCard = false
     @State private var showDimensions = false
@@ -36,15 +38,33 @@ struct InsightsScreen: View {
                     if !viewModel.hasActivePlan {
                         noPlanState
                     } else {
-                        // Onset timeline (always shown when plan exists)
-                        OnsetTimelineCard(
-                            entries: viewModel.timelineEntries,
-                            daysOnPlan: viewModel.daysOnPlan,
-                            barGrowProgress: timelineBarProgress,
-                            showMarker: showTimelineMarker
-                        )
-                        .opacity(showTimelineCard ? 1 : 0)
-                        .offset(y: showTimelineCard || reduceMotion ? 0 : 12)
+                        // Timeline header
+                        timelineHeader
+                            .opacity(showTimelineHeader ? 1 : 0)
+                            .offset(y: showTimelineHeader || reduceMotion ? 0 : 12)
+
+                        // Summary card
+                        if let summary = viewModel.timelineSummary {
+                            TimelineSummaryCard(summary: summary)
+                                .opacity(showSummaryCard ? 1 : 0)
+                                .offset(y: showSummaryCard || reduceMotion ? 0 : 12)
+                        }
+
+                        // Per-supplement cards
+                        ForEach(viewModel.timelineCards) { card in
+                            SupplementTimelineCard(
+                                card: card,
+                                isExpanded: expandedCardId == card.id,
+                                phaseBarProgress: phaseBarProgress,
+                                onTap: {
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                        expandedCardId = expandedCardId == card.id ? nil : card.id
+                                    }
+                                }
+                            )
+                            .opacity(cardAppearStates[card.id] == true ? 1 : 0)
+                            .offset(y: cardAppearStates[card.id] == true || reduceMotion ? 0 : 12)
+                        }
 
                         if viewModel.isEarlyState {
                             // Ghost trends teaser
@@ -78,7 +98,7 @@ struct InsightsScreen: View {
                                         .offset(y: showStats || reduceMotion ? 0 : 12)
                                 }
                                 .lockedOverlay(
-                                    title: "Your Insights",
+                                    title: "Insights",
                                     subtitle: "Subscribe to unlock wellness trends"
                                 )
                             }
@@ -106,53 +126,66 @@ struct InsightsScreen: View {
         let fadeDuration: Double = reduceMotion ? 0.15 : 0.4
 
         let headerDelay: Double = reduceMotion ? 0.02 : 0.10
-        let timelineDelay: Double = reduceMotion ? 0.04 : 0.25
-        let timelineBarDelay: Double = reduceMotion ? 0.06 : 0.45
-        let markerDelay: Double = reduceMotion ? 0.08 : 0.90
+        let timelineHeaderDelay: Double = reduceMotion ? 0.04 : 0.20
+        let summaryDelay: Double = reduceMotion ? 0.06 : 0.35
+        let cardBaseDelay: Double = reduceMotion ? 0.08 : 0.50
+        let cardStagger: Double = reduceMotion ? 0.02 : 0.08
 
-        // Phase 1: Header
+        // Phase 1: Screen header
         DispatchQueue.main.asyncAfter(deadline: .now() + headerDelay) {
             withAnimation(.easeOut(duration: fadeDuration)) {
                 showHeader = true
             }
         }
 
-        // Phase 2: Timeline card fade
-        DispatchQueue.main.asyncAfter(deadline: .now() + timelineDelay) {
+        // Phase 2: Timeline header
+        DispatchQueue.main.asyncAfter(deadline: .now() + timelineHeaderDelay) {
             withAnimation(.easeOut(duration: fadeDuration)) {
-                showTimelineCard = true
+                showTimelineHeader = true
             }
         }
 
-        // Phase 3: Timeline bars grow
-        DispatchQueue.main.asyncAfter(deadline: .now() + timelineBarDelay) {
+        // Phase 3: Summary card
+        DispatchQueue.main.asyncAfter(deadline: .now() + summaryDelay) {
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showSummaryCard = true
+            }
+        }
+
+        // Phase 4: Staggered card reveals
+        for (index, card) in viewModel.timelineCards.enumerated() {
+            let delay = cardBaseDelay + cardStagger * Double(index)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                withAnimation(.easeOut(duration: fadeDuration)) {
+                    cardAppearStates[card.id] = true
+                }
+            }
+        }
+
+        // Phase 5: Phase bars fill (after last card + 0.1s)
+        let phaseBarDelay = cardBaseDelay + cardStagger * Double(viewModel.timelineCards.count) + 0.1
+        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.10 : phaseBarDelay)) {
             withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.6)) {
-                timelineBarProgress = 1
-            }
-        }
-
-        // Phase 4: "You are here" marker
-        DispatchQueue.main.asyncAfter(deadline: .now() + markerDelay) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showTimelineMarker = true
+                phaseBarProgress = 1
             }
         }
 
         if viewModel.isEarlyState {
-            // Phase 5a: Ghost trends
-            let ghostDelay: Double = reduceMotion ? 0.08 : 0.60
-            DispatchQueue.main.asyncAfter(deadline: .now() + ghostDelay) {
+            // Ghost trends
+            let ghostDelay = phaseBarDelay + 0.15
+            DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.10 : ghostDelay)) {
                 withAnimation(.easeOut(duration: fadeDuration)) {
                     showGhostTrends = true
                 }
             }
         } else {
-            // Phase 5b: Real data (existing stagger)
-            let trendDelay: Double = reduceMotion ? 0.06 : 0.55
-            let barGrowDelay: Double = reduceMotion ? 0.08 : 0.70
-            let dimDelay: Double = reduceMotion ? 0.08 : 0.65
-            let dimBarGrowDelay: Double = reduceMotion ? 0.10 : 0.85
-            let statsDelay: Double = reduceMotion ? 0.10 : 0.80
+            // Real data (existing stagger)
+            let dataBaseDelay = phaseBarDelay + 0.15
+            let trendDelay: Double = reduceMotion ? 0.06 : dataBaseDelay
+            let barGrowDelay: Double = reduceMotion ? 0.08 : dataBaseDelay + 0.15
+            let dimDelay: Double = reduceMotion ? 0.08 : dataBaseDelay + 0.10
+            let dimBarGrowDelay: Double = reduceMotion ? 0.10 : dataBaseDelay + 0.30
+            let statsDelay: Double = reduceMotion ? 0.10 : dataBaseDelay + 0.25
 
             DispatchQueue.main.asyncAfter(deadline: .now() + trendDelay) {
                 withAnimation(.easeOut(duration: fadeDuration)) {
@@ -191,15 +224,13 @@ struct InsightsScreen: View {
     private var insightsHeader: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
             HStack(alignment: .bottom) {
-                Text("Your Insights")
+                Text("Insights")
                     .font(DesignTokens.headlineFont)
                     .foregroundStyle(DesignTokens.textPrimary)
 
                 Spacer()
 
-                if viewModel.isEarlyState {
-                    dayBadge
-                } else {
+                if !viewModel.isEarlyState {
                     periodPicker
                 }
             }
@@ -212,15 +243,17 @@ struct InsightsScreen: View {
         .padding(.top, DesignTokens.spacing8)
     }
 
-    private var dayBadge: some View {
-        Text("DAY \(viewModel.daysOnPlan)")
-            .font(DesignTokens.labelMono)
-            .tracking(0.8)
-            .foregroundStyle(DesignTokens.info)
-            .padding(.horizontal, DesignTokens.spacing12)
-            .padding(.vertical, DesignTokens.spacing4)
-            .background(DesignTokens.info.opacity(0.12))
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
+    // MARK: - Timeline Header
+
+    private var timelineHeader: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing2) {
+            Text("Your Timeline")
+                .font(DesignTokens.titleFont)
+                .foregroundStyle(DesignTokens.textPrimary)
+            Text("Where each supplement is in its biological journey")
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(DesignTokens.textSecondary)
+        }
     }
 
     private var periodPicker: some View {

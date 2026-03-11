@@ -109,6 +109,77 @@ actor SupplementService {
         return try await (interactions: interactions, contraindications: contraindications)
     }
 
+    // MARK: - Product Shopping
+
+    func fetchProducts(forSupplementId id: UUID) async throws -> [RankedProduct] {
+        let idString = id.uuidString
+
+        // Step 1: Get product IDs from join table (only primary mappings to avoid combo dupes)
+        let mappings: [DBProductSupplementMap] = try await client
+            .from("product_supplement_map")
+            .select()
+            .eq("supplement_id", value: idString)
+            .eq("is_primary", value: true)
+            .execute()
+            .value
+
+        let mappedProductIds = mappings.map(\.productId.uuidString)
+        guard !mappedProductIds.isEmpty else { return [] }
+
+        // Step 2: Fetch products + related data in parallel
+        async let products: [DBProduct] = client
+            .from("products")
+            .select()
+            .in("id", values: mappedProductIds)
+            .eq("is_active", value: true)
+            .execute()
+            .value
+
+        async let scores: [DBProductScore] = client
+            .from("product_scores")
+            .select()
+            .in("product_id", values: mappedProductIds)
+            .execute()
+            .value
+
+        async let pricings: [DBProductPricing] = client
+            .from("product_pricing")
+            .select()
+            .in("product_id", values: mappedProductIds)
+            .eq("is_active", value: true)
+            .execute()
+            .value
+
+        async let certifications: [DBProductCertification] = client
+            .from("product_certifications")
+            .select()
+            .in("product_id", values: mappedProductIds)
+            .execute()
+            .value
+
+        let (fetchedProducts, fetchedScores, fetchedPricings, fetchedCerts) = try await (products, scores, pricings, certifications)
+
+        let scoreMap = Dictionary(fetchedScores.map { ($0.productId, $0) }, uniquingKeysWith: { first, _ in first })
+        let pricingMap = Dictionary(fetchedPricings.map { ($0.productId, $0) }, uniquingKeysWith: { first, _ in first })
+        let certMap = Dictionary(grouping: fetchedCerts, by: \.productId)
+
+        return fetchedProducts.compactMap { product in
+            guard let score = scoreMap[product.id] else { return nil }
+            return RankedProduct(
+                product: product,
+                score: score,
+                pricing: pricingMap[product.id],
+                certifications: certMap[product.id] ?? []
+            )
+        }
+        .sorted {
+            let rank0 = $0.score.pickRank ?? Int.max
+            let rank1 = $1.score.pickRank ?? Int.max
+            if rank0 != rank1 { return rank0 < rank1 }
+            return $0.score.estusScore > $1.score.estusScore
+        }
+    }
+
     // MARK: - Supplement Detail (full record with all related data)
 
     struct SupplementDetail {

@@ -1,5 +1,10 @@
 import SwiftUI
 
+private enum PlanRoute: Hashable {
+    case productList(supplementId: UUID, supplementName: String)
+    case productDetail(productId: UUID)
+}
+
 struct PlanScreen: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = PlanViewModel()
@@ -10,118 +15,145 @@ struct PlanScreen: View {
     @State private var expandedCardId: UUID?
     @State private var isRemovedExpanded = false
     @State private var evidenceInfoLevel: EvidenceLevel?
+    @State private var shopProduct: RankedProduct?
+    @State private var navigationPath = NavigationPath()
 
     private var userGoals: [HealthGoal] {
         appState.currentUser?.healthGoals.sorted { $0.rawValue < $1.rawValue } ?? []
     }
 
     var body: some View {
-        ZStack {
-            DesignTokens.bgDeepest.ignoresSafeArea()
+        NavigationStack(path: $navigationPath) {
+            ZStack {
+                DesignTokens.bgDeepest.ignoresSafeArea()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
-                    // Header
-                    planHeader
+                ScrollView {
+                    VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
+                        // Header
+                        planHeader
 
-                    if viewModel.activePlan != nil {
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
-                            // Plan overview (collapsible)
-                            if let reasoning = viewModel.activePlan?.aiReasoning {
-                                planReasoningCard(reasoning: reasoning)
-                            }
-
-                            // Morning section
-                            if !viewModel.morningSupplements.isEmpty {
-                                supplementSection(title: "MORNING", icon: "sun.max.fill", tint: DesignTokens.accentEnergy, supplements: viewModel.morningSupplements)
-                            }
-
-                            // Evening section
-                            if !viewModel.eveningSupplements.isEmpty {
-                                supplementSection(title: "EVENING", icon: "moon.fill", tint: DesignTokens.accentSleep, supplements: viewModel.eveningSupplements)
-                            }
-
-                            // Removed section
-                            if !viewModel.removedSupplements.isEmpty {
-                                removedSection
-                            }
-
-                            // Explore / add supplements CTA
-                            Button {
-                                HapticManager.selection()
-                                showAddSheet = true
-                            } label: {
-                                HStack(spacing: DesignTokens.spacing8) {
-                                    Image(systemName: "plus.circle")
-                                        .font(.system(size: 15))
-                                    Text("Add Supplements to Your Plan")
-                                        .font(DesignTokens.bodyFont)
+                        if viewModel.activePlan != nil {
+                            VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
+                                // Plan overview (collapsible)
+                                if let reasoning = viewModel.activePlan?.aiReasoning {
+                                    planReasoningCard(reasoning: reasoning)
                                 }
-                                .foregroundStyle(DesignTokens.positive)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 48)
-                                .background(DesignTokens.positive.opacity(0.08))
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                        .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
-                                )
-                            }
 
-                            // Disclaimer
-                            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
-                                Image(systemName: "info.circle")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(DesignTokens.textSecondary)
-                                    .padding(.top, 2)
+                                // Morning section
+                                if !viewModel.morningSupplements.isEmpty {
+                                    supplementSection(title: "MORNING", icon: "sun.max.fill", tint: DesignTokens.accentEnergy, supplements: viewModel.morningSupplements)
+                                }
 
-                                Text("This plan is informational, not medical advice. Always consult your doctor before taking anything new.")
-                                    .font(DesignTokens.captionFont)
-                                    .foregroundStyle(DesignTokens.textSecondary)
-                                    .lineSpacing(2)
+                                // Evening section
+                                if !viewModel.eveningSupplements.isEmpty {
+                                    supplementSection(title: "EVENING", icon: "moon.fill", tint: DesignTokens.accentSleep, supplements: viewModel.eveningSupplements)
+                                }
+
+                                // Removed section
+                                if !viewModel.removedSupplements.isEmpty {
+                                    removedSection
+                                }
+
+                                // Explore / add supplements CTA
+                                Button {
+                                    HapticManager.selection()
+                                    showAddSheet = true
+                                } label: {
+                                    HStack(spacing: DesignTokens.spacing8) {
+                                        Image(systemName: "plus.circle")
+                                            .font(.system(size: 15))
+                                        Text("Add Supplements to Your Plan")
+                                            .font(DesignTokens.bodyFont)
+                                    }
+                                    .foregroundStyle(DesignTokens.positive)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 48)
+                                    .background(DesignTokens.positive.opacity(0.08))
+                                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                            .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
+                                    )
+                                }
+
+                                // Disclaimer
+                                HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+                                    Image(systemName: "info.circle")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(DesignTokens.textSecondary)
+                                        .padding(.top, 2)
+
+                                    Text("This plan is informational, not medical advice. Always consult your doctor before taking anything new.")
+                                        .font(DesignTokens.captionFont)
+                                        .foregroundStyle(DesignTokens.textSecondary)
+                                        .lineSpacing(2)
+                                }
+                                .padding(.top, DesignTokens.spacing4)
                             }
-                            .padding(.top, DesignTokens.spacing4)
+                            .lockedOverlay(
+                                title: "Your Plan",
+                                subtitle: "Subscribe to see your full supplement plan"
+                            )
+                        } else {
+                            emptyState
                         }
-                        .lockedOverlay(
-                            title: "Your Plan",
-                            subtitle: "Subscribe to see your full supplement plan"
+                    }
+                    .padding(.horizontal, DesignTokens.screenMargin)
+                    .padding(.bottom, DesignTokens.spacing32)
+                }
+
+                // Undo toast overlay
+                if showUndoToast {
+                    VStack {
+                        Spacer()
+                        UndoToast(
+                            message: undoMessage,
+                            onUndo: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    viewModel.undoRemoval()
+                                }
+                                HapticManager.notification(.success)
+                            },
+                            isPresented: $showUndoToast
                         )
-                    } else {
-                        emptyState
+                        .padding(.bottom, DesignTokens.spacing48)
                     }
+                    .animation(.easeInOut(duration: 0.3), value: showUndoToast)
                 }
-                .padding(.horizontal, DesignTokens.screenMargin)
-                .padding(.bottom, DesignTokens.spacing32)
-            }
 
-            // Undo toast overlay
-            if showUndoToast {
-                VStack {
-                    Spacer()
-                    UndoToast(
-                        message: undoMessage,
-                        onUndo: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                viewModel.undoRemoval()
-                            }
-                            HapticManager.notification(.success)
+                // Evidence info modal overlay
+                if let level = evidenceInfoLevel {
+                    EvidenceInfoModal(level: level) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            evidenceInfoLevel = nil
+                        }
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .center)))
+                    .zIndex(2)
+                }
+            }
+            .navigationBarHidden(true)
+            .navigationDestination(for: PlanRoute.self) { route in
+                switch route {
+                case .productList(let supplementId, let supplementName):
+                    ProductListScreen(
+                        supplementId: supplementId,
+                        supplementName: supplementName,
+                        cachedProducts: viewModel.productsBySupplementId[supplementId],
+                        onProductTapped: { rankedProduct in
+                            viewModel.cacheProduct(rankedProduct)
+                            navigationPath.append(PlanRoute.productDetail(productId: rankedProduct.id))
                         },
-                        isPresented: $showUndoToast
+                        onShopTapped: { rankedProduct in
+                            shopProduct = rankedProduct
+                        }
                     )
-                    .padding(.bottom, DesignTokens.spacing48)
+                case .productDetail(let productId):
+                    ProductDetailScreen(
+                        productId: productId,
+                        resolveProduct: { viewModel.findProduct(by: $0) }
+                    )
                 }
-                .animation(.easeInOut(duration: 0.3), value: showUndoToast)
-            }
-
-            // Evidence info modal overlay
-            if let level = evidenceInfoLevel {
-                EvidenceInfoModal(level: level) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                        evidenceInfoLevel = nil
-                    }
-                }
-                .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .center)))
-                .zIndex(2)
             }
         }
         .onAppear {
@@ -139,6 +171,23 @@ struct PlanScreen: View {
                 }
             }
         }
+        .sheet(item: $shopProduct) { rankedProduct in
+            ShopLinksSheet(
+                product: rankedProduct.product,
+                pricing: rankedProduct.pricing
+            )
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func sortedGoals(for supplement: PlanSupplement) -> [HealthGoal] {
+        supplement.matchedGoals
+            .compactMap { HealthGoal(rawValue: $0) }
+            .sorted {
+                appState.supplementCatalog.weight(for: supplement.name, goal: $0.rawValue) >
+                appState.supplementCatalog.weight(for: supplement.name, goal: $1.rawValue)
+            }
     }
 
     // MARK: - Header
@@ -195,16 +244,40 @@ struct PlanScreen: View {
                             }
                         }
                     ],
+                    inlineGoals: sortedGoals(for: supplement),
                     isExpanded: expandedCardId == supplement.id,
+                    showBottomLearnMore: true,
+                    products: viewModel.products(for: supplement),
+                    productsLoading: viewModel.isLoadingProducts(for: supplement),
                     onEvidenceInfoTapped: { level in
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                             evidenceInfoLevel = level
                         }
                     },
+                    onShopTapped: supplement.supplementId != nil ? {
+                        navigationPath.append(PlanRoute.productList(
+                            supplementId: supplement.supplementId!,
+                            supplementName: supplement.name
+                        ))
+                    } : nil,
+                    onProductTapped: { rankedProduct in
+                        viewModel.cacheProduct(rankedProduct)
+                        navigationPath.append(PlanRoute.productDetail(productId: rankedProduct.id))
+                    },
+                    onSeeAllProductsTapped: supplement.supplementId != nil ? {
+                        navigationPath.append(PlanRoute.productList(
+                            supplementId: supplement.supplementId!,
+                            supplementName: supplement.name
+                        ))
+                    } : nil,
                     onTap: {
                         HapticManager.selection()
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                            expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
+                            let isExpanding = expandedCardId != supplement.id
+                            expandedCardId = isExpanding ? supplement.id : nil
+                            if isExpanding {
+                                viewModel.loadProducts(for: supplement)
+                            }
                         }
                     }
                 )
@@ -264,8 +337,10 @@ struct PlanScreen: View {
                                 HapticManager.notification(.success)
                             }
                         ],
+                        inlineGoals: sortedGoals(for: supplement),
                         isIncluded: false,
                         isExpanded: expandedCardId == supplement.id,
+                        showBottomLearnMore: true,
                         onEvidenceInfoTapped: { level in
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                 evidenceInfoLevel = level
@@ -320,8 +395,8 @@ struct PlanScreen: View {
 
             if isOverviewExpanded {
                 Text(reasoning)
-                    .font(DesignTokens.bodyFont)
-                    .foregroundStyle(DesignTokens.textPrimary)
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textSecondary)
                     .lineSpacing(4)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }

@@ -21,8 +21,9 @@ class InsightsViewModel {
     var periodAverage: Double?
     var trendDirection: TrendInfo?
 
-    // Onset timeline
-    var timelineEntries: [OnsetTimelineEntry] = []
+    // Timeline
+    var timelineCards: [TimelineCardData] = []
+    var timelineSummary: TimelineSummaryData?
     var daysOnPlan: Int = 0
     var checkInCount: Int = 0
     var isEarlyState: Bool { checkInCount < 3 }
@@ -31,7 +32,8 @@ class InsightsViewModel {
     func loadTimeline(appState: AppState) {
         guard let plan = appState.activePlan else {
             hasActivePlan = false
-            timelineEntries = []
+            timelineCards = []
+            timelineSummary = nil
             return
         }
         hasActivePlan = true
@@ -41,21 +43,90 @@ class InsightsViewModel {
         let now = Date()
         daysOnPlan = max(0, calendar.dateComponents([.day], from: calendar.startOfDay(for: plan.createdAt), to: calendar.startOfDay(for: now)).day ?? 0)
 
+        let checkIns = appState.recentCheckIns.sorted { $0.checkInDate < $1.checkInDate }
         let activeSupplements = plan.supplements.filter { !$0.isRemoved }
-        timelineEntries = activeSupplements.compactMap { supplement in
-            guard let onset = SupplementKnowledgeBase.onsetTimelines[supplement.name] else { return nil }
-            return OnsetTimelineEntry(
+
+        timelineCards = activeSupplements.compactMap { supplement in
+            guard let durations = SupplementKnowledgeBase.phaseDurations(for: supplement.name) else { return nil }
+
+            let phaseState = SupplementPhaseState.compute(daysOnPlan: daysOnPlan, durations: durations)
+            let phaseContent = SupplementKnowledgeBase.phaseContentFor(supplement: supplement.name, phase: phaseState.currentPhase)
+
+            // Determine primary dimension from matched goals
+            let primaryDimension = supplement.matchedGoals
+                .compactMap { SupplementKnowledgeBase.goalToDimension[$0] }
+                .first ?? .energy
+
+            let accentColor = primaryDimension.color
+
+            // Baseline score for this dimension
+            let baselineScore: Double = {
+                guard let user = appState.currentUser else { return 5.0 }
+                switch primaryDimension {
+                case .sleep:   return Double(user.baselineSleep)
+                case .energy:  return Double(user.baselineEnergy)
+                case .clarity: return Double(user.baselineClarity)
+                case .mood:    return Double(user.baselineMood)
+                case .gut:     return Double(user.baselineGut)
+                }
+            }()
+
+            // 7-day average for primary dimension (need >= 3 check-ins)
+            var currentAverage: Double? = nil
+            var deltaVsBaseline: Double? = nil
+            let recentCheckIns = Array(checkIns.suffix(7))
+            if recentCheckIns.count >= 3 {
+                let scores = recentCheckIns.map { Double($0.score(for: primaryDimension)) }
+                let avg = scores.reduce(0, +) / Double(scores.count)
+                currentAverage = avg
+                deltaVsBaseline = avg - baselineScore
+            }
+
+            return TimelineCardData(
+                id: UUID(),
                 supplementName: supplement.name,
+                dosage: supplement.dosage,
+                timing: supplement.timing,
                 tier: supplement.tier,
-                minDays: onset.min,
-                maxDays: onset.max,
-                onsetDescription: onset.description
+                primaryDimension: primaryDimension,
+                accentColor: accentColor,
+                phaseState: phaseState,
+                phaseContent: phaseContent,
+                baselineScore: baselineScore,
+                currentAverage: currentAverage,
+                deltaVsBaseline: deltaVsBaseline
             )
         }
         .sorted { a, b in
-            if a.minDays != b.minDays { return a.minDays < b.minDays }
+            if a.phaseState.currentPhase != b.phaseState.currentPhase {
+                return a.phaseState.currentPhase < b.phaseState.currentPhase
+            }
             return a.tier.sortOrder < b.tier.sortOrder
         }
+
+        // Build summary
+        let inOnsetOrLater = timelineCards.filter(\.phaseState.hasReachedOnset).count
+        let total = timelineCards.count
+
+        let summaryText: String
+        if inOnsetOrLater == 0 {
+            summaryText = "All supplements are in their early phases. Consistency is key right now."
+        } else if inOnsetOrLater == total {
+            summaryText = "All supplements have reached onset or steady state."
+        } else {
+            let slowest = timelineCards.last(where: { !$0.phaseState.hasReachedOnset })
+            if let slowest {
+                summaryText = "\(slowest.supplementName) has the longest road ahead at \(slowest.phaseState.currentPhase.label) phase."
+            } else {
+                summaryText = "Your supplements are progressing well."
+            }
+        }
+
+        timelineSummary = TimelineSummaryData(
+            supplementsInOnsetOrLater: inOnsetOrLater,
+            totalSupplements: total,
+            summaryText: summaryText
+        )
     }
 
     func load(appState: AppState, period: InsightsPeriod = .week) {
@@ -192,11 +263,23 @@ struct TrendInfo {
     let color: Color
 }
 
-struct OnsetTimelineEntry: Identifiable {
-    let id = UUID()
+struct TimelineCardData: Identifiable {
+    let id: UUID
     let supplementName: String
+    let dosage: String
+    let timing: SupplementTiming
     let tier: SupplementTier
-    let minDays: Int
-    let maxDays: Int
-    let onsetDescription: String
+    let primaryDimension: WellnessDimension
+    let accentColor: Color
+    let phaseState: SupplementPhaseState
+    let phaseContent: SupplementKnowledgeBase.SupplementPhaseContent
+    let baselineScore: Double
+    let currentAverage: Double?   // 7-day avg for primary dimension, nil if < 3 check-ins
+    let deltaVsBaseline: Double?  // currentAverage - baselineScore
+}
+
+struct TimelineSummaryData {
+    let supplementsInOnsetOrLater: Int
+    let totalSupplements: Int
+    let summaryText: String
 }

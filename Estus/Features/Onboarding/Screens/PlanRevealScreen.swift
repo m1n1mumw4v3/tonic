@@ -1,6 +1,11 @@
 import SwiftUI
 import UIKit
 
+private struct PlanRevealShopItem: Identifiable {
+    let id: UUID
+    let name: String
+}
+
 struct PlanRevealScreen: View {
     var viewModel: OnboardingViewModel
     let onConfirm: () -> Void
@@ -27,6 +32,10 @@ struct PlanRevealScreen: View {
     @State private var showEvidenceInfo: EvidenceLevel? = nil
     @State private var isSummaryExpanded: Bool = false
     @State private var showShimmer: Bool = true
+    @State private var shopSupplement: PlanRevealShopItem?
+    @State private var shopProduct: RankedProduct?
+    @State private var productsBySupplementId: [UUID: [RankedProduct]] = [:]
+    @State private var loadingProductIds: Set<UUID> = []
 
     private let reduceMotion = UIAccessibility.isReduceMotionEnabled
 
@@ -111,6 +120,18 @@ struct PlanRevealScreen: View {
         .onAppear {
             generateParticles()
             startEntranceAnimation()
+        }
+        .sheet(item: $shopSupplement) { item in
+            ProductListSheet(
+                supplementId: item.id,
+                supplementName: item.name
+            )
+        }
+        .sheet(item: $shopProduct) { rankedProduct in
+            ShopLinksSheet(
+                product: rankedProduct.product,
+                pricing: rankedProduct.pricing
+            )
         }
     }
 
@@ -316,13 +337,34 @@ struct PlanRevealScreen: View {
                                 isIncluded: supplement.isIncluded,
                                 isExpanded: expandedCardId == supplement.id,
                                 showBottomLearnMore: true,
+                                products: supplement.supplementId.flatMap { productsBySupplementId[$0] },
+                                productsLoading: supplement.supplementId.map { loadingProductIds.contains($0) } ?? false,
                                 onEvidenceInfoTapped: { level in
                                     showEvidenceInfo = level
                                 },
+                                onShopTapped: supplement.supplementId != nil ? {
+                                    shopSupplement = PlanRevealShopItem(
+                                        id: supplement.supplementId!,
+                                        name: supplement.name
+                                    )
+                                } : nil,
+                                onProductTapped: { rankedProduct in
+                                    shopProduct = rankedProduct
+                                },
+                                onSeeAllProductsTapped: supplement.supplementId != nil ? {
+                                    shopSupplement = PlanRevealShopItem(
+                                        id: supplement.supplementId!,
+                                        name: supplement.name
+                                    )
+                                } : nil,
                                 onTap: {
                                     HapticManager.selection()
                                     withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                                        expandedCardId = expandedCardId == supplement.id ? nil : supplement.id
+                                        let isExpanding = expandedCardId != supplement.id
+                                        expandedCardId = isExpanding ? supplement.id : nil
+                                        if isExpanding {
+                                            loadProducts(for: supplement)
+                                        }
                                     }
                                 }
                             )
@@ -440,6 +482,41 @@ struct PlanRevealScreen: View {
     private func toggleSupplement(_ id: UUID) {
         if let index = viewModel.generatedPlan?.supplements.firstIndex(where: { $0.id == id }) {
             viewModel.generatedPlan?.supplements[index].isIncluded.toggle()
+        }
+    }
+
+    // MARK: - Product Loading
+
+    private func loadProducts(for supplement: PlanSupplement) {
+        guard let supplementId = supplement.supplementId else {
+            print("[Products] No supplementId for \(supplement.name)")
+            return
+        }
+        guard productsBySupplementId[supplementId] == nil,
+              !loadingProductIds.contains(supplementId) else {
+            print("[Products] Already cached/loading for \(supplement.name) (\(supplementId))")
+            return
+        }
+
+        print("[Products] Fetching for \(supplement.name) (\(supplementId))")
+        loadingProductIds.insert(supplementId)
+
+        Task {
+            do {
+                let service = SupplementService()
+                let fetched = try await service.fetchProducts(forSupplementId: supplementId)
+                print("[Products] Got \(fetched.count) products for \(supplement.name)")
+                await MainActor.run {
+                    productsBySupplementId[supplementId] = fetched
+                    loadingProductIds.remove(supplementId)
+                }
+            } catch {
+                print("[Products] Error for \(supplement.name): \(error)")
+                await MainActor.run {
+                    productsBySupplementId[supplementId] = []
+                    loadingProductIds.remove(supplementId)
+                }
+            }
         }
     }
 
