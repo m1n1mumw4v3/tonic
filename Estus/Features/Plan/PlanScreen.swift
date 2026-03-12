@@ -375,19 +375,19 @@ struct PlanScreen: View {
                     HStack(spacing: 6) {
                         Image(systemName: "sparkles")
                             .font(.system(size: 12))
-                            .foregroundStyle(DesignTokens.textSecondary)
+                            .foregroundStyle(DesignTokens.textPrimary)
 
                         Text("PLAN OVERVIEW")
                             .font(DesignTokens.sectionHeader)
                             .tracking(1.5)
-                            .foregroundStyle(DesignTokens.textSecondary)
+                            .foregroundStyle(DesignTokens.textPrimary)
                     }
 
                     Spacer()
 
                     Image(systemName: "chevron.down")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(DesignTokens.textTertiary)
+                        .foregroundStyle(DesignTokens.textSecondary)
                         .rotationEffect(.degrees(isOverviewExpanded ? 0 : -90))
                 }
             }
@@ -401,7 +401,10 @@ struct PlanScreen: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .cardStyle()
+        .padding(DesignTokens.spacing16)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
     // MARK: - Empty State

@@ -2,12 +2,16 @@ import SwiftUI
 
 struct SettingsScreen: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.dismiss) private var dismiss
     @State private var hubViewModel = DeepProfileHubViewModel()
     @State private var showBaselineProfile = false
     @State private var showNotificationSettings = false
     @State private var isHealthKitConnecting = false
     @State private var showHealthKitUnavailable = false
     @State private var showSignOutConfirmation = false
+    @State private var isEditingName = false
+    @State private var editedName = ""
+    @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -16,8 +20,21 @@ struct SettingsScreen: View {
 
                 ScrollView {
                     VStack(spacing: DesignTokens.spacing24) {
-                        // User header
-                        userHeader
+                        // User header with close button overlay
+                        ZStack(alignment: .topTrailing) {
+                            userHeader
+
+                            Button {
+                                dismiss()
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(DesignTokens.textSecondary)
+                                    .frame(width: 32, height: 32)
+                                    .background(DesignTokens.bgElevated)
+                                    .clipShape(Circle())
+                            }
+                        }
 
                         // Health Profile section
                         healthProfileSection
@@ -102,12 +119,68 @@ struct SettingsScreen: View {
                     .foregroundStyle(DesignTokens.textPrimary)
             }
 
-            Text(appState.userName)
-                .font(DesignTokens.titleFont)
-                .foregroundStyle(DesignTokens.textPrimary)
+            if isEditingName {
+                HStack(alignment: .center, spacing: DesignTokens.spacing4) {
+                    TextField("Name", text: $editedName)
+                        .font(DesignTokens.titleFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .fixedSize()
+                        .focused($nameFieldFocused)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            saveName()
+                        }
+                        .onChange(of: nameFieldFocused) { _, focused in
+                            if !focused {
+                                saveName()
+                            }
+                        }
+
+                    Button {
+                        saveName()
+                    } label: {
+                        Text("SAVE")
+                            .font(DesignTokens.smallMono)
+                            .foregroundStyle(DesignTokens.positive)
+                            .padding(.horizontal, DesignTokens.spacing8)
+                            .padding(.vertical, DesignTokens.spacing4)
+                            .background(DesignTokens.positive.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+                    }
+                }
+                .animation(.easeInOut(duration: 0.2), value: editedName)
+            } else {
+                HStack(spacing: DesignTokens.spacing4) {
+                    Text(appState.userName)
+                        .font(DesignTokens.titleFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(DesignTokens.textTertiary)
+                }
+                .onTapGesture {
+                    editedName = appState.userName
+                    isEditingName = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        nameFieldFocused = true
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, DesignTokens.spacing16)
+        .padding(.top, DesignTokens.spacing12)
+    }
+
+    private func saveName() {
+        let trimmed = editedName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty {
+            appState.currentUser?.firstName = trimmed
+            if let profile = appState.currentUser {
+                try? LocalStorageService().saveProfile(profile)
+            }
+        }
+        isEditingName = false
     }
 
     // MARK: - Health Profile

@@ -9,6 +9,8 @@ struct WellbeingScoreRing: View {
     var size: CGFloat = 180
     var lineWidth: CGFloat = 12
     var centerLabel: String = "OVERALL"
+    var overallVariance: Double? = nil
+    var varianceLabel: String? = nil
     var animated: Bool = true
 
     @State private var animationProgress: CGFloat = 0
@@ -39,7 +41,7 @@ struct WellbeingScoreRing: View {
     }
 
     var body: some View {
-        VStack(spacing: DesignTokens.spacing20) {
+        VStack(spacing: DesignTokens.spacing24) {
             // Ring
             ZStack {
                 // Background ring with recessed inner shadow
@@ -126,28 +128,45 @@ struct WellbeingScoreRing: View {
                         .font(.custom("Geist-Medium", size: size * 0.25))
                         .foregroundStyle(DesignTokens.textPrimary)
 
-                    Text(centerLabel)
-                        .font(DesignTokens.smallMono)
-                        .tracking(1.2)
-                        .foregroundStyle(DesignTokens.textSecondary)
+                    if centerLabel != "OVERALL", !centerLabel.isEmpty {
+                        // Non-default label (e.g. "BASELINE")
+                        Text(centerLabel)
+                            .font(DesignTokens.smallMono)
+                            .tracking(1.2)
+                            .foregroundStyle(DesignTokens.textSecondary)
+                    } else if let variance = overallVariance, let label = varianceLabel {
+                        // Variance indicator
+                        VStack(spacing: 1) {
+                            Text(varianceText(variance))
+                                .font(.custom("GeistMono-Medium", size: size * 0.067))
+                                .foregroundStyle(varianceColor(variance))
+                            Text(label.uppercased())
+                                .font(.custom("GeistMono-Regular", size: size * 0.061))
+                                .tracking(0.8)
+                                .foregroundStyle(DesignTokens.textTertiary)
+                        }
+                    }
                 }
             }
 
-            // Mini dimension scores
-            HStack(spacing: DesignTokens.spacing16) {
+            // Dimension scores — full-width columns
+            HStack(spacing: DesignTokens.spacing8) {
                 ForEach(dimensions, id: \.0) { dimension, score in
-                    VStack(spacing: 4) {
+                    VStack(spacing: 3) {
                         Text("\(score)")
-                            .font(DesignTokens.dataMono)
-                            .foregroundStyle(DesignTokens.bgDeepest)
-                            .frame(width: 32, height: 32)
-                            .background(dimension.color)
-                            .clipShape(Circle())
-                        Text(dimension.rawValue.uppercased())
-                            .font(.custom("GeistMono-Regular", size: 9))
-                            .tracking(0.8)
+                            .font(.custom("GeistMono-Medium", size: 18))
+                            .foregroundStyle(DesignTokens.textPrimary)
+                        Text(dimension.label.uppercased())
+                            .font(.custom("GeistMono-Regular", size: 10))
+                            .tracking(0.6)
                             .foregroundStyle(DesignTokens.textTertiary)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DesignTokens.spacing8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+                            .stroke(dimension.color, lineWidth: 1)
+                    )
                 }
             }
         }
@@ -162,19 +181,34 @@ struct WellbeingScoreRing: View {
         }
     }
 
+    /// Maximum possible total across all 5 dimensions (each scored 0–10).
+    private let maxPossibleScore: CGFloat = 50.0
+
     private func segmentStartAngle(for index: Int) -> CGFloat {
         guard totalScore > 0 else { return 0 }
         var start: CGFloat = 0
         for i in 0..<index {
-            start += CGFloat(dimensions[i].1) / CGFloat(totalScore)
+            start += CGFloat(dimensions[i].1) / maxPossibleScore
         }
         return start
     }
 
     private func segmentEndAngle(for index: Int) -> CGFloat {
         guard totalScore > 0 else { return 0 }
-        let segmentSize = CGFloat(dimensions[index].1) / CGFloat(totalScore)
+        let segmentSize = CGFloat(dimensions[index].1) / maxPossibleScore
         return segmentStartAngle(for: index) + segmentSize
+    }
+
+    private func varianceColor(_ value: Double) -> Color {
+        if abs(value) < 0.15 {
+            return DesignTokens.textTertiary
+        }
+        return value > 0 ? DesignTokens.positive : DesignTokens.negative
+    }
+
+    private func varianceText(_ value: Double) -> String {
+        let sign = value >= 0 ? "+" : ""
+        return "\(sign)\(String(format: "%.1f", value))"
     }
 }
 

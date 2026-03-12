@@ -12,53 +12,67 @@ struct DeepProfileHomeCard: View {
         service.isComplete
     }
 
+    /// Includes onboarding profile as 1 completed module.
+    private var profileCompleted: Int {
+        service.completedCount + 1
+    }
+
+    private var profileTotal: Int {
+        service.totalCount + 1
+    }
+
+    private var profileProgress: CGFloat {
+        CGFloat(profileCompleted) / CGFloat(profileTotal)
+    }
+
     var body: some View {
         Button {
             HapticManager.impact(.light)
             showHub = true
         } label: {
-            VStack(alignment: .leading, spacing: 0) {
-                // Green accent bar
-                DesignTokens.positive
-                    .frame(height: 2)
+            VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+                // Module icon strip
+                moduleIconStrip
 
-                VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-                    // Module icon strip
-                    moduleIconStrip
+                // Title row
+                HStack(spacing: DesignTokens.spacing8) {
+                    Image(systemName: isComplete ? "checkmark.circle" : "sparkles")
+                        .font(.system(size: 16))
+                        .foregroundStyle(DesignTokens.positive)
 
-                    // Title row
-                    HStack(spacing: DesignTokens.spacing8) {
-                        Image(systemName: isComplete ? "checkmark.circle" : "sparkles")
-                            .font(.system(size: 16))
-                            .foregroundStyle(DesignTokens.positive)
+                    Text(isComplete ? "Profile Complete" : "Deep Dive Surveys")
+                        .font(DesignTokens.titleFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                }
 
-                        Text(isComplete ? "Profile Complete" : "Enhance Your Profile")
-                            .font(DesignTokens.titleFont)
-                            .foregroundStyle(DesignTokens.textPrimary)
-                    }
+                // Subtitle
+                Text(subtitleText)
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textSecondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                    // Subtitle
-                    Text(subtitleText)
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textSecondary)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                // Progress bar
+                if !isComplete {
+                    VStack(spacing: DesignTokens.spacing4) {
+                        SpectrumBar(height: 4, progress: profileProgress)
 
-                    // Inline CTA
-                    if !isComplete {
-                        HStack(spacing: DesignTokens.spacing4) {
-                            Text(service.hasStarted ? "Continue" : "Get Started")
-                                .font(DesignTokens.captionFont)
-                                .foregroundStyle(DesignTokens.positive)
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(DesignTokens.positive)
+                        HStack {
+                            Spacer()
+                            Text("\(profileCompleted)/\(profileTotal)")
+                                .font(DesignTokens.smallMono)
+                                .foregroundStyle(DesignTokens.textTertiary)
                         }
                     }
                 }
-                .padding(DesignTokens.spacing16)
+
+                // CTA
+                if !isComplete {
+                    CTAButton(title: "Enhance Your Profile", style: .ghost) {}
+                        .allowsHitTesting(false)
+                }
             }
+            .padding(DesignTokens.spacing16)
             .background(DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusLarge))
             .overlay(

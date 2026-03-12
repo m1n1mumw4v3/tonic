@@ -8,6 +8,7 @@ struct TodayScreen: View {
     @State private var checkInExpanded = false
     @State private var insightPage: UUID?
     @State private var yesterdayExpanded = false
+    @State private var scrollOffset: CGFloat = 0
 
     private var phase: TodayViewModel.TodayPhase {
         viewModel.currentPhase(appState: appState)
@@ -24,38 +25,61 @@ struct TodayScreen: View {
         ZStack(alignment: .bottom) {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: DesignTokens.spacing24) {
-                    // 1. Header
+            VStack(spacing: 0) {
+                // Sticky header
+                VStack(spacing: 0) {
                     headerSection
+                        .padding(.horizontal, DesignTokens.screenMargin)
+                        .padding(.top, DesignTokens.spacing4)
+                        .padding(.bottom, DesignTokens.spacing8)
 
-                    // 2. Wellbeing Score Card
-                    wellbeingScoreCard
-
-                    // 3. Yesterday Section (if applicable)
-                    if viewModel.showYesterdaySection {
-                        yesterdaySection
-                    }
-
-                    // 4. Supplements + Check-In
-                    supplementAndCheckInSection
-
-                    // 6. Micro-reward card
-                    if viewModel.allTaken, let content = viewModel.microRewardContent {
-                        MicroRewardCard(content: content)
-                    }
-
-                    // 7. Deep Profile Card
-                    DeepProfileHomeCard()
-
-                    // 8. Feed Section
-                    feedSection
+                    Rectangle()
+                        .fill(DesignTokens.borderSubtle)
+                        .frame(height: 1)
+                        .opacity(min(max(scrollOffset / 40, 0), 1))
                 }
-                .padding(.horizontal, DesignTokens.screenMargin)
-                .padding(.bottom, DesignTokens.spacing32)
+                .background(DesignTokens.bgDeepest)
+
+                ScrollView {
+                    VStack(spacing: DesignTokens.spacing24) {
+                        // 2. Wellbeing Score Card
+                        wellbeingScoreCard
+                            .padding(.top, DesignTokens.spacing20)
+
+                        // 3. Yesterday Section (if applicable)
+                        if viewModel.showYesterdaySection {
+                            yesterdaySection
+                        }
+
+                        // 4. Supplements + Check-In
+                        supplementAndCheckInSection
+
+                        // 6. Micro-reward card
+                        if viewModel.allTaken, let content = viewModel.microRewardContent {
+                            MicroRewardCard(content: content)
+                        }
+
+                        // 7. Deep Profile Card
+                        DeepProfileHomeCard()
+
+                        // 8. Feed Section
+                        feedSection
+                    }
+                    .padding(.horizontal, DesignTokens.screenMargin)
+                    .padding(.bottom, DesignTokens.spacing32)
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .onChange(of: geo.frame(in: .named("todayScroll")).minY) { _, newY in
+                                    scrollOffset = -newY
+                                }
+                        }
+                    )
+                }
+                .coordinateSpace(name: "todayScroll")
             }
         }
-        .sheet(isPresented: $state.showSettings) {
+        .fullScreenCover(isPresented: $state.showSettings) {
             SettingsScreen()
                 .environment(appState)
         }
@@ -126,31 +150,29 @@ struct TodayScreen: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
+        ZStack {
+            Text("ESTUS")
+                .font(.custom("Geist-Medium", size: 18))
+                .tracking(1.5)
+                .foregroundStyle(DesignTokens.textPrimary)
+
             HStack {
-                Text(viewModel.greeting)
-                    .font(DesignTokens.headlineFont)
-                    .foregroundStyle(DesignTokens.textPrimary)
-
-                Spacer()
-
                 streakBadge
-
+                Spacer()
                 Button {
                     appState.showSettings = true
                 } label: {
-                    Image(systemName: "gearshape.fill")
-                        .font(.system(size: 18))
-                        .foregroundStyle(DesignTokens.textTertiary)
+                    ZStack {
+                        Circle()
+                            .fill(DesignTokens.accentLongevity)
+                            .frame(width: 28, height: 28)
+                        Text(appState.userName.prefix(1).uppercased())
+                            .font(.custom("Geist-Medium", size: 12))
+                            .foregroundStyle(.white)
+                    }
                 }
             }
-
-            Text(viewModel.dateLabel.uppercased())
-                .font(DesignTokens.labelMono)
-                .tracking(1.2)
-                .foregroundStyle(DesignTokens.textTertiary)
         }
-        .padding(.top, DesignTokens.spacing8)
     }
 
     // MARK: - Streak Badge
@@ -177,6 +199,33 @@ struct TodayScreen: View {
         .animation(.easeInOut(duration: 0.4), value: dayComplete)
     }
 
+    // MARK: - Variance Helpers
+
+    private func computeOverallVariance(for checkIn: DailyCheckIn) -> Double? {
+        let todayOverall = checkIn.wellbeingScore
+
+        if viewModel.trailingCheckInCount >= 7, let trailingAvg = viewModel.trailingOverallAverage {
+            return todayOverall - trailingAvg
+        }
+
+        if let user = appState.currentUser {
+            let baselineAvg = Double(user.baselineSleep + user.baselineEnergy + user.baselineClarity + user.baselineMood + user.baselineGut) / 5.0
+            return todayOverall - baselineAvg
+        }
+
+        return nil
+    }
+
+    private var varianceLabelText: String? {
+        if viewModel.trailingCheckInCount >= 7 {
+            return "vs last week"
+        }
+        if appState.currentUser != nil {
+            return "vs baseline"
+        }
+        return nil
+    }
+
     // MARK: - Wellbeing Score Card
 
     @ViewBuilder
@@ -189,7 +238,9 @@ struct TodayScreen: View {
                     energyScore: scoreCheckIn.energyScore,
                     clarityScore: scoreCheckIn.clarityScore,
                     moodScore: scoreCheckIn.moodScore,
-                    gutScore: scoreCheckIn.gutScore
+                    gutScore: scoreCheckIn.gutScore,
+                    overallVariance: computeOverallVariance(for: scoreCheckIn),
+                    varianceLabel: varianceLabelText
                 )
             }
             .frame(maxWidth: .infinity)
@@ -516,6 +567,7 @@ struct TodayScreen: View {
                     }
                     .scrollTargetLayout()
                 }
+                .scrollClipDisabled()
                 .scrollTargetBehavior(.viewAligned)
                 .scrollPosition(id: $insightPage)
                 .contentMargins(.horizontal, 0, for: .scrollContent)

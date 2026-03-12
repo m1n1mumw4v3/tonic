@@ -41,6 +41,14 @@ class TodayViewModel {
     var moodScore: Double = 5
     var gutScore: Double = 5
     var trailingAverages: [WellnessDimension: Double] = [:]
+    var trailingCheckInCount: Int = 0
+
+    var trailingOverallAverage: Double? {
+        let dims = WellnessDimension.allCases
+        let values = dims.compactMap { trailingAverages[$0] }
+        guard values.count == dims.count else { return nil }
+        return values.reduce(0, +) / Double(values.count)
+    }
     var completionInsight: CheckInInsight?
     var wellbeingSubmitted: Bool = false
 
@@ -299,6 +307,8 @@ class TodayViewModel {
         let calendar = Calendar.current
         let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: calendar.startOfDay(for: Date()))!
         let recent = checkIns.filter { $0.checkInDate >= sevenDaysAgo && $0.wellbeingCompleted }
+
+        trailingCheckInCount = recent.count
 
         guard !recent.isEmpty else { return }
 
