@@ -8,6 +8,47 @@ struct SupplementPlan: Codable, Identifiable {
     var version: Int = 1
     var aiReasoning: String?
     var supplements: [PlanSupplement] = []
+
+    enum CodingKeys: String, CodingKey {
+        case id, userId, createdAt, isActive, version, aiReasoning, supplements
+    }
+}
+
+extension SupplementPlan {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        userId = try container.decodeIfPresent(UUID.self, forKey: .userId)
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? true
+        version = try container.decodeIfPresent(Int.self, forKey: .version) ?? 1
+        aiReasoning = try container.decodeIfPresent(String.self, forKey: .aiReasoning)
+        // Lossy decode: skip individual supplements that fail instead of losing the whole plan
+        if container.contains(.supplements) {
+            var supplementsContainer = try container.nestedUnkeyedContainer(forKey: .supplements)
+            var decoded: [PlanSupplement] = []
+            while !supplementsContainer.isAtEnd {
+                do {
+                    let supplement = try supplementsContainer.decode(PlanSupplement.self)
+                    decoded.append(supplement)
+                } catch {
+                    // Skip this supplement but continue decoding the rest
+                    _ = try? supplementsContainer.decode(AnyCodable.self)
+                    print("⚠️ [Restore] Skipped undecodable supplement: \(error)")
+                }
+            }
+            supplements = decoded
+        } else {
+            supplements = []
+        }
+    }
+}
+
+/// Throwaway type to advance the decoder past an undecodable element.
+private struct AnyCodable: Decodable {
+    init(from decoder: Decoder) throws {
+        _ = try decoder.singleValueContainer()
+    }
 }
 
 struct PlanSupplement: Codable, Identifiable, Hashable {
@@ -61,6 +102,42 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+}
+
+// MARK: - Resilient Decoder
+
+extension PlanSupplement {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        planId = try container.decodeIfPresent(UUID.self, forKey: .planId)
+        supplementId = try container.decodeIfPresent(UUID.self, forKey: .supplementId)
+        name = try container.decode(String.self, forKey: .name)
+        dosage = try container.decode(String.self, forKey: .dosage)
+        dosageMg = try container.decodeIfPresent(Double.self, forKey: .dosageMg)
+        timing = try container.decode(SupplementTiming.self, forKey: .timing)
+        frequency = try container.decodeIfPresent(SupplementFrequency.self, forKey: .frequency) ?? .daily
+        reasoning = try container.decodeIfPresent(String.self, forKey: .reasoning)
+        category = try container.decodeIfPresent(String.self, forKey: .category) ?? ""
+        sortOrder = try container.decodeIfPresent(Int.self, forKey: .sortOrder) ?? 0
+        isTaken = try container.decodeIfPresent(Bool.self, forKey: .isTaken) ?? false
+        tier = try container.decodeIfPresent(SupplementTier.self, forKey: .tier) ?? .supporting
+        matchedGoals = try container.decodeIfPresent([String].self, forKey: .matchedGoals) ?? []
+        tierScore = try container.decodeIfPresent(Int.self, forKey: .tierScore) ?? 0
+        isIncluded = try container.decodeIfPresent(Bool.self, forKey: .isIncluded) ?? true
+        isRemoved = try container.decodeIfPresent(Bool.self, forKey: .isRemoved) ?? false
+        researchNote = try container.decodeIfPresent(String.self, forKey: .researchNote)
+        whyInYourPlan = try container.decodeIfPresent(String.self, forKey: .whyInYourPlan)
+        dosageRationale = try container.decodeIfPresent(String.self, forKey: .dosageRationale)
+        expectedTimeline = try container.decodeIfPresent(String.self, forKey: .expectedTimeline)
+        whatToLookFor = try container.decodeIfPresent(String.self, forKey: .whatToLookFor)
+        formAndBioavailability = try container.decodeIfPresent(String.self, forKey: .formAndBioavailability)
+        interactionNote = try container.decodeIfPresent(String.self, forKey: .interactionNote)
+        evidenceDisplay = try container.decodeIfPresent(String.self, forKey: .evidenceDisplay)
+        evidenceLevel = try container.decodeIfPresent(EvidenceLevel.self, forKey: .evidenceLevel)
+        interactionWarnings = try container.decodeIfPresent([InteractionWarning].self, forKey: .interactionWarnings)
+        formUpgradeNote = try container.decodeIfPresent(String.self, forKey: .formUpgradeNote)
     }
 }
 
@@ -133,6 +210,13 @@ enum SupplementTiming: String, Codable, CaseIterable, Identifiable {
         case .afternoon: return 3
         case .evening: return 4
         case .bedtime: return 5
+        }
+    }
+
+    var isFoodRelated: Bool {
+        switch self {
+        case .withFood, .emptyStomach: return true
+        default: return false
         }
     }
 }

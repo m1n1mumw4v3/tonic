@@ -43,6 +43,7 @@ struct EvidenceInfoModal: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Close")
                 }
 
                 // Description

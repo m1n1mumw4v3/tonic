@@ -117,9 +117,9 @@ struct PlanRevealScreen: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: showEvidenceInfo != nil)
-        .onAppear {
+        .task {
             generateParticles()
-            startEntranceAnimation()
+            await startEntranceAnimation()
         }
         .sheet(item: $shopSupplement) { item in
             ProductListSheet(
@@ -522,7 +522,8 @@ struct PlanRevealScreen: View {
 
     // MARK: - Entrance Animation
 
-    private func startEntranceAnimation() {
+    @MainActor
+    private func startEntranceAnimation() async {
         let fadeDuration: Double = reduceMotion ? 0.15 : 0.4
 
         // Background + particles
@@ -531,43 +532,44 @@ struct PlanRevealScreen: View {
         }
 
         // Headline
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.05 : 0.3)) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showHeadline = true
-            }
-            HapticManager.notification(.success)
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.3))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showHeadline = true
         }
+        HapticManager.notification(.success)
 
         // Subtitle + SpectrumBar
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.1 : 0.6)) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showSubtitle = true
-            }
-            startCountAnimation()
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.3))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showSubtitle = true
         }
+        await startCountAnimation()
 
         // Goal chips staggered
-        let chipStart: Double = reduceMotion ? 0.12 : 0.9
         let chipInterval: Double = reduceMotion ? 0.03 : 0.08
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.02 : 0.3))
         for i in 0..<userGoals.count {
-            DispatchQueue.main.asyncAfter(deadline: .now() + chipStart + Double(i) * chipInterval) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    visibleGoalChips = i + 1
-                }
-            }
-        }
-
-        // Plan summary (after chips, before supplements)
-        let summaryStart = chipStart + Double(userGoals.count) * chipInterval + (reduceMotion ? 0.05 : 0.2)
-        DispatchQueue.main.asyncAfter(deadline: .now() + summaryStart) {
+            guard !Task.isCancelled else { return }
             withAnimation(.easeOut(duration: fadeDuration)) {
-                showSummary = true
+                visibleGoalChips = i + 1
             }
+            try? await Task.sleep(for: .seconds(chipInterval))
         }
 
-        // Stop shimmer after 2.5s
+        // Plan summary
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.2))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showSummary = true
+        }
+
+        // Stop shimmer after 2.5s (fire-and-forget child task)
         if !reduceMotion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + summaryStart + 2.5) {
+            Task {
+                try? await Task.sleep(for: .seconds(2.5))
+                guard !Task.isCancelled else { return }
                 withAnimation(.easeOut(duration: 0.3)) {
                     showShimmer = false
                 }
@@ -575,45 +577,39 @@ struct PlanRevealScreen: View {
         }
 
         // Tier headers + cards
-        let cardStart: Double = summaryStart + (reduceMotion ? 0.1 : 0.4)
-        var delay = cardStart
-
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.1 : 0.4))
         for tier in tiers {
-            let tierDelay = delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + tierDelay) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    showTierHeaders[tier] = true
-                }
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showTierHeaders[tier] = true
             }
-            delay += reduceMotion ? 0.05 : 0.2
+            try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.2))
 
             let tierSupplements = supplements.filter { $0.tier == tier }
             let cardInterval: Double = tier == .supporting ? 0.08 : 0.15
             for supplement in tierSupplements {
-                let cardDelay = delay
+                guard !Task.isCancelled else { return }
                 if let globalIndex = supplements.firstIndex(where: { $0.id == supplement.id }) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + cardDelay) {
-                        withAnimation(.easeOut(duration: fadeDuration)) {
-                            visibleCards = globalIndex + 1
-                        }
+                    withAnimation(.easeOut(duration: fadeDuration)) {
+                        visibleCards = globalIndex + 1
                     }
                 }
-                delay += reduceMotion ? 0.03 : cardInterval
+                try? await Task.sleep(for: .seconds(reduceMotion ? 0.03 : cardInterval))
             }
         }
 
         // CTA slides up after last card
-        let ctaDelay = delay + (reduceMotion ? 0.1 : 0.4)
-        DispatchQueue.main.asyncAfter(deadline: .now() + ctaDelay) {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                showCTA = true
-            }
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.1 : 0.4))
+        guard !Task.isCancelled else { return }
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            showCTA = true
         }
     }
 
     // MARK: - Count Animation
 
-    private func startCountAnimation() {
+    @MainActor
+    private func startCountAnimation() async {
         let target = totalCount
         guard target > 0 else {
             animatedSupplementCount = 0
@@ -629,10 +625,10 @@ struct PlanRevealScreen: View {
         let stepInterval = totalDuration / Double(target)
 
         for i in 1...target {
-            DispatchQueue.main.asyncAfter(deadline: .now() + stepInterval * Double(i)) {
-                withAnimation(.easeOut(duration: 0.1)) {
-                    animatedSupplementCount = i
-                }
+            try? await Task.sleep(for: .seconds(stepInterval))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.1)) {
+                animatedSupplementCount = i
             }
         }
     }

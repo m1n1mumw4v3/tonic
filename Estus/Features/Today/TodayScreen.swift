@@ -3,10 +3,16 @@ import SwiftUI
 struct TodayScreen: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = TodayViewModel()
-    @State private var phaseCheckTimer: Timer?
-    @State private var checkInCollapsed = false
-    @State private var checkInExpanded = false
+    @State private var phaseCheckTask: Task<Void, Never>?
+    @State private var checkInState: CheckInState = .open
     @State private var insightPage: UUID?
+
+    /// State machine for the wellbeing check-in card.
+    enum CheckInState: Equatable {
+        case open       // Not yet submitted — sliders visible
+        case collapsed  // Submitted — compact complete badge
+        case editing    // Submitted but re-editing sliders
+    }
     @State private var yesterdayExpanded = false
     @State private var scrollOffset: CGFloat = 0
 
@@ -99,25 +105,28 @@ struct TodayScreen: View {
             viewModel.load(appState: appState)
             startPhaseTimer()
             if viewModel.wellbeingSubmitted {
-                checkInCollapsed = true
+                checkInState = .collapsed
             }
         }
         .onDisappear {
-            phaseCheckTimer?.invalidate()
+            phaseCheckTask?.cancel()
         }
         .onChange(of: viewModel.wellbeingSubmitted) { _, submitted in
             if submitted {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                Task {
+                    try? await Task.sleep(for: .seconds(0.45))
                     withAnimation(.easeInOut(duration: 0.5)) {
-                        checkInCollapsed = true
+                        checkInState = .collapsed
                     }
                 }
             } else {
                 withAnimation(.easeInOut(duration: 0.4)) {
-                    checkInCollapsed = false
-                    checkInExpanded = false
+                    checkInState = .open
                 }
             }
+        }
+        .onChange(of: appState.activePlan?.id) { _, _ in
+            viewModel.load(appState: appState)
         }
         .onChange(of: viewModel.showYesterdaySection) { _, showing in
             if !showing {
@@ -139,11 +148,14 @@ struct TodayScreen: View {
     // MARK: - Phase Timer
 
     private func startPhaseTimer() {
-        phaseCheckTimer?.invalidate()
-        phaseCheckTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-            // Force view refresh by touching greeting
-            viewModel.greeting = "\(Date().greetingPrefix), \(appState.userName)"
-            viewModel.dateLabel = Date().monoDateLabel
+        phaseCheckTask?.cancel()
+        phaseCheckTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(60))
+                guard !Task.isCancelled else { break }
+                viewModel.greeting = "\(Date().greetingPrefix), \(appState.userName)"
+                viewModel.dateLabel = Date().monoDateLabel
+            }
         }
     }
 
@@ -366,7 +378,7 @@ struct TodayScreen: View {
                 }
 
                 // Check-In title (only when open)
-                if !checkInCollapsed {
+                if checkInState == .open {
                     Text("How are you feeling today?")
                         .font(DesignTokens.titleFont)
                         .foregroundStyle(DesignTokens.textPrimary)
@@ -376,7 +388,7 @@ struct TodayScreen: View {
                 }
 
                 wellbeingCheckInSection
-                    .padding(.top, checkInCollapsed ? DesignTokens.spacing8 : 0)
+                    .padding(.top, checkInState != .open ? DesignTokens.spacing8 : 0)
             }
         }
     }
@@ -384,11 +396,12 @@ struct TodayScreen: View {
     // MARK: - Wellbeing Check-In Section
 
     private var wellbeingCheckInSection: some View {
-        let showSliders = !checkInCollapsed || checkInExpanded
+        let isCollapsed = checkInState != .open
+        let showSliders = checkInState == .open || checkInState == .editing
 
         return VStack(spacing: 0) {
             // Collapsed header (visible once submitted)
-            if checkInCollapsed {
+            if isCollapsed {
                 HStack(spacing: DesignTokens.spacing4) {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 17, weight: .medium))
@@ -410,18 +423,18 @@ struct TodayScreen: View {
                     .transition(.opacity)
                     Spacer()
                     HStack(spacing: DesignTokens.spacing4) {
-                        Text(checkInExpanded ? "Edit" : "")
+                        Text(checkInState == .editing ? "Edit" : "")
                             .font(DesignTokens.captionFont)
                             .foregroundStyle(DesignTokens.textTertiary)
                         Image(systemName: "chevron.down")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(DesignTokens.textTertiary)
-                            .rotationEffect(.degrees(checkInExpanded ? 180 : 0))
+                            .rotationEffect(.degrees(checkInState == .editing ? 180 : 0))
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.5)) {
-                            checkInExpanded.toggle()
+                            checkInState = checkInState == .editing ? .collapsed : .editing
                         }
                     }
                 }
@@ -432,7 +445,7 @@ struct TodayScreen: View {
             }
 
             // Open state: spectrum bar (only when not collapsed)
-            if !checkInCollapsed {
+            if !isCollapsed {
                 SpectrumBar(height: 2)
             }
 
@@ -480,18 +493,17 @@ struct TodayScreen: View {
                     CTAButton(title: "Save Check-In", style: .ghost, spectrumBorder: true) {
                         viewModel.submitWellbeingCheckIn(appState: appState)
                         withAnimation(.easeInOut(duration: 0.5)) {
-                            checkInExpanded = false
+                            checkInState = .collapsed
                         }
                     }
                 }
                 .padding(DesignTokens.spacing16)
             }
         }
-        .animation(.easeInOut(duration: 0.6), value: checkInCollapsed)
-        .animation(.easeInOut(duration: 0.5), value: checkInExpanded)
+        .animation(.easeInOut(duration: 0.6), value: checkInState)
         .background(
             ZStack {
-                if checkInCollapsed {
+                if checkInState != .open {
                     RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                         .stroke(
                             AngularGradient(
@@ -508,7 +520,7 @@ struct TodayScreen: View {
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
                     .fill(DesignTokens.bgSurface)
             }
-            .animation(.easeInOut(duration: 0.6), value: checkInCollapsed)
+            .animation(.easeInOut(duration: 0.6), value: checkInState)
         )
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
         .overlay(
@@ -517,10 +529,10 @@ struct TodayScreen: View {
         )
         .overlay(
             SpectrumProgressBorder(
-                progress: checkInCollapsed ? 1.0 : 0,
+                progress: checkInState != .open ? 1.0 : 0,
                 cornerRadius: DesignTokens.radiusMedium
             )
-            .animation(.easeOut(duration: 0.5), value: checkInCollapsed)
+            .animation(.easeOut(duration: 0.5), value: checkInState)
         )
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }

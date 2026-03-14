@@ -26,6 +26,9 @@ class AppState {
     var drugInteractions: [DBDrugInteraction] = []
     var isMedicationsLoaded: Bool = false
 
+    // Session restore
+    var isRestoringSession: Bool = true
+
     // Navigation
     var selectedTab: AppTab = .today
     var showSettings: Bool = false
@@ -130,31 +133,46 @@ class AppState {
 
     @MainActor
     func restoreSessionIfNeeded() async {
-        guard authService.isAuthenticated else { return }
+        // No auth guard — local storage reads don't require authentication
 
         let storage = LocalStorageService()
-        if let profile = try? storage.getProfile() {
-            currentUser = profile
-            // Link userId to Supabase user if not already set
-            if profile.userId == nil, let supabaseId = authService.supabaseUserId {
-                currentUser?.userId = supabaseId
-                try? storage.saveProfile(currentUser!)
+        do {
+            if let profile = try storage.getProfile() {
+                currentUser = profile
+                if profile.userId == nil, let supabaseId = authService.supabaseUserId {
+                    currentUser?.userId = supabaseId
+                    try? storage.saveProfile(currentUser!)
+                }
             }
+        } catch {
+            print("⚠️ [Restore] Failed to decode UserProfile: \(error)")
         }
-        if let plan = try? storage.getActivePlan() {
-            activePlan = plan
+        do {
+            if let plan = try storage.getActivePlan() {
+                activePlan = plan
+            }
+        } catch {
+            print("⚠️ [Restore] Failed to decode SupplementPlan: \(error)")
         }
-        if let checkIns = try? storage.getCheckIns(limit: 30) {
-            recentCheckIns = checkIns
+        do {
+            recentCheckIns = try storage.getCheckIns(limit: 30)
+        } catch {
+            print("⚠️ [Restore] Failed to decode check-ins: \(error)")
         }
-        if let today = try? storage.getTodayCheckIn() {
-            todayCheckIn = today
+        do {
+            todayCheckIn = try storage.getTodayCheckIn()
+        } catch {
+            print("⚠️ [Restore] Failed to decode today check-in: \(error)")
         }
-        if let savedStreak = try? storage.getStreak() {
-            streak = savedStreak
+        do {
+            streak = try storage.getStreak()
+        } catch {
+            print("⚠️ [Restore] Failed to decode streak: \(error)")
         }
-        if let savedInsights = try? storage.getInsights() {
-            insights = savedInsights
+        do {
+            insights = try storage.getInsights()
+        } catch {
+            print("⚠️ [Restore] Failed to decode insights: \(error)")
         }
 
         deepProfileService.loadCompletedModules()
@@ -163,6 +181,14 @@ class AppState {
         if currentUser != nil && activePlan != nil {
             isOnboardingComplete = true
         }
+
+        // If onboarding was marked complete but data is missing, reset to re-onboard
+        if isOnboardingComplete && (currentUser == nil || activePlan == nil) {
+            print("⚠️ [Restore] Onboarding marked complete but profile/plan missing — resetting onboarding")
+            isOnboardingComplete = false
+        }
+
+        isRestoringSession = false
     }
 
     // MARK: - Sign Out

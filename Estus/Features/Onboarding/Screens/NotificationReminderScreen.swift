@@ -256,6 +256,8 @@ struct NotificationReminderScreen: View {
                 Toggle("", isOn: enabled)
                     .labelsHidden()
                     .tint(DesignTokens.accentGut)
+                    .accessibilityLabel("\(label) reminder")
+                    .accessibilityValue(enabled.wrappedValue ? "On" : "Off")
                     .onChange(of: enabled.wrappedValue) { _, newValue in
                         HapticManager.selection()
                         if !newValue {

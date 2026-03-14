@@ -95,6 +95,18 @@ extension View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
+
+    func borderedCardStyle() -> some View {
+        self
+            .padding(DesignTokens.spacing16)
+            .background(DesignTokens.bgSurface)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
+            )
+            .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
+    }
 }
 
 // MARK: - Button Styles

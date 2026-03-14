@@ -67,6 +67,11 @@ struct SupplementLogRow: View {
                     isPressed = false
                 }
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(shortName), \(supplement.dosage)")
+        .accessibilityValue(isTaken ? "Taken" : "Not taken")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint(isTaken ? "Double tap to mark as not taken" : "Double tap to mark as taken")
     }
 
     // MARK: - Toggle Circle

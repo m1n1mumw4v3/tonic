@@ -35,6 +35,10 @@ struct SupplementTimelineCard: View {
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(card.supplementName), \(card.dosage), \(card.timing.label). Phase \(card.phaseState.currentPhase.phaseNumber) of 4")
+        .accessibilityHint(isExpanded ? "Double tap to collapse" : "Double tap to expand details")
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Collapsed Content

@@ -139,6 +139,19 @@ struct WellnessSlider: View {
             }
         }
         .padding(.vertical, DesignTokens.spacing4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(dimension.label)")
+        .accessibilityValue("\(Int(value)) out of 10")
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment:
+                value = min(10, round(value) + 1)
+            case .decrement:
+                value = max(0, round(value) - 1)
+            @unknown default:
+                break
+            }
+        }
     }
 }
 

@@ -18,6 +18,7 @@ struct RemovableChip: View {
                     .font(.system(size: 18))
                     .foregroundStyle(DesignTokens.textTertiary)
             }
+            .accessibilityLabel("Remove \(name)")
         }
         .padding(.leading, DesignTokens.spacing16)
         .padding(.trailing, DesignTokens.spacing12)

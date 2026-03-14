@@ -27,7 +27,7 @@ struct TimelineSummaryCard: View {
 
             Spacer(minLength: 0)
         }
-        .cardStyle()
+        .padding(.vertical, DesignTokens.spacing4)
     }
 }
 

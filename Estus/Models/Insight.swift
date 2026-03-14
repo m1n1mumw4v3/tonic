@@ -11,12 +11,37 @@ struct Insight: Codable, Identifiable {
     var dimension: WellnessDimension?
     var isRead: Bool = false
     var isDismissed: Bool = false
+
+    enum CodingKeys: String, CodingKey {
+        case id, userId, createdAt, type, title, body
+        case dataPointsUsed, dimension, isRead, isDismissed
+    }
 }
+
+// MARK: - Resilient Decoder
+
+extension Insight {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        userId = try container.decodeIfPresent(UUID.self, forKey: .userId)
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        type = try container.decode(InsightType.self, forKey: .type)
+        title = try container.decode(String.self, forKey: .title)
+        body = try container.decode(String.self, forKey: .body)
+        dataPointsUsed = try container.decodeIfPresent(Int.self, forKey: .dataPointsUsed)
+        dimension = try container.decodeIfPresent(WellnessDimension.self, forKey: .dimension)
+        isRead = try container.decodeIfPresent(Bool.self, forKey: .isRead) ?? false
+        isDismissed = try container.decodeIfPresent(Bool.self, forKey: .isDismissed) ?? false
+    }
+}
+
+// MARK: - CheckInInsight Conversion
 
 extension Insight {
     init(from checkInInsight: CheckInInsight) {
         let key = checkInInsight.key
-        let (type, title): (InsightType, String) = {
+        let (mappedType, mappedTitle): (InsightType, String) = {
             if key.hasPrefix("pb_") { return (.milestone, "Personal Best") }
             if key.hasPrefix("supp_tip_") { return (.recommendation, "Supplement Tip") }
             if key.hasPrefix("supp_") { return (.milestone, "Supplement Consistency") }
@@ -28,12 +53,10 @@ extension Insight {
             return (.recommendation, "Daily Reflection")
         }()
 
-        self.init(
-            type: type,
-            title: title,
-            body: checkInInsight.message,
-            dimension: checkInInsight.dimension
-        )
+        self.type = mappedType
+        self.title = mappedTitle
+        self.body = checkInInsight.message
+        self.dimension = checkInInsight.dimension
     }
 }
 

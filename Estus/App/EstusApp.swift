@@ -15,12 +15,15 @@ struct EstusApp: App {
                 .task {
                     Task { await appState.authService.startListening() }
 
+                    // Restore local data first — UserDefaults reads are instant
+                    // and must complete before ContentView transitions to MainTabView
+                    await appState.restoreSessionIfNeeded()
+
                     await knowledgeBase.loadKnowledgeBase()
                     async let catalog: Void = appState.loadSupplementCatalog()
                     async let meds: Void = appState.loadMedications()
                     _ = await (catalog, meds)
 
-                    await appState.restoreSessionIfNeeded()
                     await appState.syncHealthKitIfEnabled()
 
                     if let profile = appState.currentUser {

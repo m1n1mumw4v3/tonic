@@ -5,7 +5,7 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if appState.authService.isLoading {
+            if appState.authService.isLoading || appState.isRestoringSession {
                 splashView
             } else if appState.isCatalogLoading && !appState.supplementCatalog.isLoaded {
                 catalogLoadingView
@@ -16,6 +16,7 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.35), value: appState.authService.isLoading)
+        .animation(.easeInOut(duration: 0.35), value: appState.isRestoringSession)
         .animation(.easeInOut(duration: 0.35), value: appState.isOnboardingComplete)
         .animation(.easeInOut(duration: 0.25), value: appState.supplementCatalog.isLoaded)
     }

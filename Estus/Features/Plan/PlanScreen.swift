@@ -199,13 +199,6 @@ struct PlanScreen: View {
                     .font(DesignTokens.headlineFont)
                     .foregroundStyle(DesignTokens.textPrimary)
 
-                if viewModel.activePlan != nil {
-                    Text("\(viewModel.planDateString.uppercased())\(viewModel.planVersionLabel)")
-                        .font(DesignTokens.labelMono)
-                        .tracking(1.2)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                }
-
                 SpectrumBar(height: 2)
                     .padding(.top, DesignTokens.spacing4)
             }

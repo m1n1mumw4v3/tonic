@@ -34,6 +34,7 @@ struct SettingsScreen: View {
                                     .background(DesignTokens.bgElevated)
                                     .clipShape(Circle())
                             }
+                            .accessibilityLabel("Close settings")
                         }
 
                         // Health Profile section

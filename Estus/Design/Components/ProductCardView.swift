@@ -37,6 +37,9 @@ struct ProductCardView: View {
                 if !isExpanded { expandedNoteIndex = nil }
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(isExpanded ? "Double tap to collapse" : "Double tap to expand details")
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Collapsed Content

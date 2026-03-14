@@ -29,6 +29,11 @@ struct PillboxCompartment: View {
         .scaleEffect(isPressed ? 0.92 : 1.0)
         .animation(.spring(duration: 0.3, bounce: 0.5), value: isPressed)
         .animation(.easeOut(duration: 0.25), value: isTaken)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(shortName), \(supplement.dosage)")
+        .accessibilityValue(isTaken ? "Taken" : "Not taken")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint(isTaken ? "Double tap to mark as not taken" : "Double tap to mark as taken")
         .onChange(of: isTaken) { _, newValue in
             if newValue {
                 triggerTakenAnimation()

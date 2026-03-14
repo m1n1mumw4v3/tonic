@@ -60,6 +60,70 @@ struct UserProfile: Codable, Identifiable {
     var eveningReminderEnabled: Bool = false
     var morningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 8, minute: 0))!
     var eveningReminderTime: Date = Calendar.current.date(from: DateComponents(hour: 20, minute: 0))!
+
+    enum CodingKeys: String, CodingKey {
+        case id, userId, createdAt, updatedAt
+        case firstName, age, dateOfBirth, sex, isPregnant, isBreastfeeding
+        case heightInches, weightLbs
+        case healthGoals, currentSupplements, takingSupplements
+        case allergies, medications, takingMedications
+        case medicationIds, customMedications
+        case dietType, customDietText, exerciseFrequency
+        case coffeeCupsDaily, teaCupsDaily, energyDrinksDaily, sodaCupsDaily
+        case alcoholWeekly, stressLevel
+        case baselineSleep, baselineEnergy, baselineClarity, baselineMood, baselineGut
+        case healthKitEnabled, healthMetrics
+        case morningReminderEnabled, eveningReminderEnabled
+        case morningReminderTime, eveningReminderTime
+    }
+}
+
+// MARK: - Resilient Decoder
+
+extension UserProfile {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        userId = try container.decodeIfPresent(UUID.self, forKey: .userId)
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt) ?? Date()
+        firstName = try container.decodeIfPresent(String.self, forKey: .firstName) ?? ""
+        age = try container.decodeIfPresent(Int.self, forKey: .age) ?? 30
+        dateOfBirth = try container.decodeIfPresent(Date.self, forKey: .dateOfBirth)
+        sex = try container.decodeIfPresent(Sex.self, forKey: .sex) ?? .preferNotToSay
+        isPregnant = try container.decodeIfPresent(Bool.self, forKey: .isPregnant) ?? false
+        isBreastfeeding = try container.decodeIfPresent(Bool.self, forKey: .isBreastfeeding) ?? false
+        heightInches = try container.decodeIfPresent(Int.self, forKey: .heightInches)
+        weightLbs = try container.decodeIfPresent(Int.self, forKey: .weightLbs)
+        healthGoals = try container.decodeIfPresent([HealthGoal].self, forKey: .healthGoals) ?? []
+        currentSupplements = try container.decodeIfPresent([String].self, forKey: .currentSupplements) ?? []
+        takingSupplements = try container.decodeIfPresent(Bool.self, forKey: .takingSupplements) ?? false
+        allergies = try container.decodeIfPresent([String].self, forKey: .allergies) ?? []
+        medications = try container.decodeIfPresent([String].self, forKey: .medications) ?? []
+        takingMedications = try container.decodeIfPresent(Bool.self, forKey: .takingMedications) ?? false
+        medicationIds = try container.decodeIfPresent([UUID].self, forKey: .medicationIds) ?? []
+        customMedications = try container.decodeIfPresent([String].self, forKey: .customMedications) ?? []
+        dietType = try container.decodeIfPresent(DietType.self, forKey: .dietType) ?? .omnivore
+        customDietText = try container.decodeIfPresent(String.self, forKey: .customDietText) ?? ""
+        exerciseFrequency = try container.decodeIfPresent(ExerciseFrequency.self, forKey: .exerciseFrequency) ?? .none
+        coffeeCupsDaily = try container.decodeIfPresent(Int.self, forKey: .coffeeCupsDaily) ?? 0
+        teaCupsDaily = try container.decodeIfPresent(Int.self, forKey: .teaCupsDaily) ?? 0
+        energyDrinksDaily = try container.decodeIfPresent(Int.self, forKey: .energyDrinksDaily) ?? 0
+        sodaCupsDaily = try container.decodeIfPresent(Int.self, forKey: .sodaCupsDaily) ?? 0
+        alcoholWeekly = try container.decodeIfPresent(AlcoholIntake.self, forKey: .alcoholWeekly) ?? .none
+        stressLevel = try container.decodeIfPresent(StressLevel.self, forKey: .stressLevel) ?? .moderate
+        baselineSleep = try container.decodeIfPresent(Int.self, forKey: .baselineSleep) ?? 5
+        baselineEnergy = try container.decodeIfPresent(Int.self, forKey: .baselineEnergy) ?? 5
+        baselineClarity = try container.decodeIfPresent(Int.self, forKey: .baselineClarity) ?? 5
+        baselineMood = try container.decodeIfPresent(Int.self, forKey: .baselineMood) ?? 5
+        baselineGut = try container.decodeIfPresent(Int.self, forKey: .baselineGut) ?? 5
+        healthKitEnabled = try container.decodeIfPresent(Bool.self, forKey: .healthKitEnabled) ?? false
+        healthMetrics = try container.decodeIfPresent(HealthMetrics.self, forKey: .healthMetrics)
+        morningReminderEnabled = try container.decodeIfPresent(Bool.self, forKey: .morningReminderEnabled) ?? false
+        eveningReminderEnabled = try container.decodeIfPresent(Bool.self, forKey: .eveningReminderEnabled) ?? false
+        morningReminderTime = try container.decodeIfPresent(Date.self, forKey: .morningReminderTime) ?? Calendar.current.date(from: DateComponents(hour: 8, minute: 0))!
+        eveningReminderTime = try container.decodeIfPresent(Date.self, forKey: .eveningReminderTime) ?? Calendar.current.date(from: DateComponents(hour: 20, minute: 0))!
+    }
 }
 
 // MARK: - Enums

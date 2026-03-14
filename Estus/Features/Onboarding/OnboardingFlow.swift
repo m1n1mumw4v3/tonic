@@ -181,9 +181,17 @@ struct OnboardingFlow: View {
 
         // Persist so restoreSessionIfNeeded() can find them on next launch
         let storage = LocalStorageService()
-        try? storage.saveProfile(profile)
+        do {
+            try storage.saveProfile(profile)
+        } catch {
+            print("⚠️ [Onboarding] Failed to save profile: \(error)")
+        }
         if let plan = appState.activePlan {
-            try? storage.savePlan(plan)
+            do {
+                try storage.savePlan(plan)
+            } catch {
+                print("⚠️ [Onboarding] Failed to save plan: \(error)")
+            }
         }
 
         NotificationService.scheduleNotifications(for: profile)
@@ -206,9 +214,17 @@ struct OnboardingFlow: View {
 
         // Persist so restoreSessionIfNeeded() can find them on next launch
         let storage = LocalStorageService()
-        try? storage.saveProfile(profile)
+        do {
+            try storage.saveProfile(profile)
+        } catch {
+            print("⚠️ [Onboarding] Failed to save profile: \(error)")
+        }
         if let plan = appState.activePlan {
-            try? storage.savePlan(plan)
+            do {
+                try storage.savePlan(plan)
+            } catch {
+                print("⚠️ [Onboarding] Failed to save plan: \(error)")
+            }
         }
 
         NotificationService.scheduleNotifications(for: profile)

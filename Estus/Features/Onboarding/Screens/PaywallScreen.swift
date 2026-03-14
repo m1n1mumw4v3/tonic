@@ -140,8 +140,8 @@ struct PaywallScreen: View {
                 ctaSection
             }
         }
-        .onAppear {
-            startEntranceAnimation()
+        .task {
+            await startEntranceAnimation()
         }
     }
 
@@ -399,79 +399,83 @@ struct PaywallScreen: View {
 
     // MARK: - Entrance Animation
 
-    private func startEntranceAnimation() {
+    @MainActor
+    private func startEntranceAnimation() async {
         let fadeDuration: Double = reduceMotion ? 0.15 : 0.4
+        let stagger: Double = reduceMotion ? 0.03 : 0.15
 
-        // 0.2s: Restore button
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.05 : 0.2)) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showRestore = true
-            }
+        // Restore button
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.2))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showRestore = true
         }
 
-        // 0.3s: Headline
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.05 : 0.3)) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showHeadline = true
-            }
-            HapticManager.notification(.success)
+        // Headline
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.0 : 0.1))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showHeadline = true
+        }
+        HapticManager.notification(.success)
+
+        // Subtitle + spectrum bar
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.2))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showSubtitle = true
         }
 
-        // 0.5s: Subtitle + spectrum bar
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.1 : 0.5)) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showSubtitle = true
-            }
-        }
-
-        // 0.8s: Supplement teaser cards stagger (0.15s apart)
-        let teaserCount = teaserSupplements.count + 1 // +1 for section header trigger
+        // Supplement teaser cards stagger
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.3))
+        let teaserCount = teaserSupplements.count + 1
         for i in 0..<teaserCount {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.15 : 0.8) + Double(i) * (reduceMotion ? 0.03 : 0.15)) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    visibleTeaserCards = i + 1
-                }
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                visibleTeaserCards = i + 1
             }
+            try? await Task.sleep(for: .seconds(stagger))
         }
 
-        // 1.2s: Benefit rows stagger (0.1s apart)
+        // Benefit rows stagger
+        let benefitStagger: Double = reduceMotion ? 0.03 : 0.1
         for i in 0..<Self.benefits.count {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.2 : 1.2) + Double(i) * (reduceMotion ? 0.03 : 0.1)) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    visibleBenefitRows = i + 1
-                }
-            }
-        }
-
-        // 1.5s: Timeline card appears
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.22 : 1.5)) {
+            guard !Task.isCancelled else { return }
             withAnimation(.easeOut(duration: fadeDuration)) {
-                showTimeline = true
+                visibleBenefitRows = i + 1
             }
+            try? await Task.sleep(for: .seconds(benefitStagger))
         }
 
-        // 1.8s: Timeline nodes stagger (0.15s apart)
+        // Timeline card appears
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.02 : 0.1))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showTimeline = true
+        }
+
+        // Timeline nodes stagger
         for i in 0..<3 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.25 : 1.8) + Double(i) * (reduceMotion ? 0.03 : 0.15)) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    visibleTimelineNodes = i + 1
-                }
-            }
-        }
-
-        // 2.2s: Pricing
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.3 : 2.2)) {
+            guard !Task.isCancelled else { return }
+            try? await Task.sleep(for: .seconds(stagger))
             withAnimation(.easeOut(duration: fadeDuration)) {
-                showPricing = true
+                visibleTimelineNodes = i + 1
             }
-            HapticManager.impact(.light)
         }
 
-        // 2.6s: CTA slides up with spring
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.35 : 2.6)) {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                showCTA = true
-            }
+        // Pricing
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.2))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showPricing = true
+        }
+        HapticManager.impact(.light)
+
+        // CTA slides up with spring
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.4))
+        guard !Task.isCancelled else { return }
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            showCTA = true
         }
     }
 

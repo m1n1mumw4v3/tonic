@@ -149,27 +149,15 @@ struct WellbeingScoreRing: View {
                 }
             }
 
-            // Dimension scores — full-width columns
+            // Dimension score cards — liquid glass
             HStack(spacing: DesignTokens.spacing8) {
                 ForEach(dimensions, id: \.0) { dimension, score in
-                    VStack(spacing: 3) {
-                        Text("\(score)")
-                            .font(.custom("GeistMono-Medium", size: 18))
-                            .foregroundStyle(DesignTokens.textPrimary)
-                        Text(dimension.label.uppercased())
-                            .font(.custom("GeistMono-Regular", size: 10))
-                            .tracking(0.6)
-                            .foregroundStyle(DesignTokens.textTertiary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.spacing8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                            .stroke(dimension.color, lineWidth: 1)
-                    )
+                    dimensionScoreCard(dimension: dimension, score: score)
                 }
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Wellbeing score \(String(format: "%.1f", wellbeingScore)) out of 10. Sleep \(sleepScore), Energy \(energyScore), Clarity \(clarityScore), Mood \(moodScore), Gut \(gutScore)")
         .onAppear {
             if animated {
                 withAnimation(.easeOut(duration: 0.8)) {
@@ -179,6 +167,32 @@ struct WellbeingScoreRing: View {
                 animationProgress = 1.0
             }
         }
+    }
+
+    private func dimensionScoreCard(dimension: WellnessDimension, score: Int) -> some View {
+        VStack(spacing: DesignTokens.spacing8) {
+            ZStack {
+                Circle()
+                    .fill(dimension.color)
+                    .frame(width: 32, height: 32)
+                Image(systemName: dimension.icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(.white)
+            }
+
+            Text("\(score)")
+                .font(.custom("Geist-Medium", size: 22))
+                .foregroundStyle(.black)
+
+            Text(dimension.label.uppercased())
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(DesignTokens.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, DesignTokens.spacing12)
+        .modifier(DimensionCardBackground(color: dimension.color))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(dimension.label), \(score) out of 10")
     }
 
     /// Maximum possible total across all 5 dimensions (each scored 0–10).
@@ -222,4 +236,36 @@ struct WellbeingScoreRing: View {
     )
     .padding()
     .background(DesignTokens.bgDeepest)
+}
+
+// MARK: - Dimension Card Background
+
+private struct DimensionCardBackground: ViewModifier {
+    let color: Color
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(
+                    .clear,
+                    in: RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                )
+        } else {
+            content
+                .background(
+                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                        .fill(
+                            LinearGradient(
+                                colors: [color.opacity(0.2), color.opacity(0.04)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                        .stroke(color.opacity(0.15), lineWidth: 1)
+                )
+        }
+    }
 }

@@ -99,6 +99,28 @@ struct UserStreak: Codable {
     var missedYesterday: Bool = false
     var forgivenessUsedThisWeek: Date?
 
+    enum CodingKeys: String, CodingKey {
+        case currentStreak, longestStreak, lastCheckInDate
+        case missedYesterday, forgivenessUsedThisWeek
+    }
+
+    init(currentStreak: Int = 0, longestStreak: Int = 0, lastCheckInDate: Date? = nil, missedYesterday: Bool = false, forgivenessUsedThisWeek: Date? = nil) {
+        self.currentStreak = currentStreak
+        self.longestStreak = longestStreak
+        self.lastCheckInDate = lastCheckInDate
+        self.missedYesterday = missedYesterday
+        self.forgivenessUsedThisWeek = forgivenessUsedThisWeek
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        currentStreak = try container.decodeIfPresent(Int.self, forKey: .currentStreak) ?? 0
+        longestStreak = try container.decodeIfPresent(Int.self, forKey: .longestStreak) ?? 0
+        lastCheckInDate = try container.decodeIfPresent(Date.self, forKey: .lastCheckInDate)
+        missedYesterday = try container.decodeIfPresent(Bool.self, forKey: .missedYesterday) ?? false
+        forgivenessUsedThisWeek = try container.decodeIfPresent(Date.self, forKey: .forgivenessUsedThisWeek)
+    }
+
     mutating func recordCheckIn(on date: Date = Date()) {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: date)

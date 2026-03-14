@@ -163,19 +163,10 @@ struct SupplementCardView: View {
                 }
             }
 
-            // Dosage + timing
-            HStack(spacing: DesignTokens.spacing8) {
-                Text(supplement.dosage)
-                    .font(DesignTokens.labelMono)
-                    .foregroundStyle(DesignTokens.info)
-
-                Text("\u{00B7}")
-                    .foregroundStyle(DesignTokens.textTertiary)
-
-                Text(supplement.timing.label)
-                    .font(DesignTokens.labelMono)
-                    .foregroundStyle(DesignTokens.textSecondary)
-            }
+            // Dosage
+            Text(supplement.dosage)
+                .font(DesignTokens.labelMono)
+                .foregroundStyle(DesignTokens.info)
 
             if !inlineGoals.isEmpty {
                 inlineGoalChips
@@ -251,6 +242,9 @@ struct SupplementCardView: View {
 
             // Why it's in your plan
             infoSection(icon: "person", label: "Why it's in your plan", text: supplement.whyInYourPlan)
+
+            // How and when to take it
+            howAndWhenSection
 
             // Dosage rationale (full detail only)
             if detailLevel == .full {
@@ -342,6 +336,74 @@ struct SupplementCardView: View {
                 }
             }
         }
+    }
+
+    // MARK: - How and When Section
+
+    private var howAndWhenSection: some View {
+        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.system(size: 14))
+                .foregroundStyle(DesignTokens.textSecondary)
+                .frame(width: 18, height: 18, alignment: .center)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("How and when to take it")
+                    .font(DesignTokens.captionFont)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(DesignTokens.textPrimary)
+
+                HStack(spacing: 6) {
+                    timingChip(label: supplement.timing.label, icon: timingIcon)
+
+                    if supplement.timing.isFoodRelated {
+                        // Already a food-related timing, no extra chip needed
+                    } else {
+                        // Show a food instruction chip if timing implies one
+                        timingChip(label: foodInstruction, icon: "fork.knife")
+                    }
+                }
+            }
+        }
+    }
+
+    private var timingIcon: String {
+        switch supplement.timing {
+        case .morning: return "sunrise"
+        case .afternoon: return "sun.max"
+        case .evening: return "sunset"
+        case .bedtime: return "moon"
+        case .withFood: return "fork.knife"
+        case .emptyStomach: return "stomach"
+        }
+    }
+
+    private var foodInstruction: String {
+        switch supplement.timing {
+        case .morning, .afternoon: return "With food"
+        case .evening: return "With dinner"
+        case .bedtime: return "Without food"
+        case .withFood: return "With food"
+        case .emptyStomach: return "Empty stomach"
+        }
+    }
+
+    private func timingChip(label: String, icon: String) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 10))
+            Text(label)
+                .font(DesignTokens.smallMono)
+        }
+        .foregroundStyle(DesignTokens.textSecondary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(DesignTokens.bgElevated)
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(DesignTokens.borderDefault, lineWidth: 1)
+        )
     }
 
     // MARK: - Category Badge

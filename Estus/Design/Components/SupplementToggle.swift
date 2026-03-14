@@ -18,5 +18,8 @@ struct SupplementToggle: View {
                 .animation(.easeInOut(duration: 0.2), value: isOn)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Supplement toggle")
+        .accessibilityValue(isOn ? "On" : "Off")
+        .accessibilityAddTraits(.isButton)
     }
 }

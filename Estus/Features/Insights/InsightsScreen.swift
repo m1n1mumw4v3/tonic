@@ -38,17 +38,18 @@ struct InsightsScreen: View {
                     if !viewModel.hasActivePlan {
                         noPlanState
                     } else {
-                        // Timeline header
-                        timelineHeader
-                            .opacity(showTimelineHeader ? 1 : 0)
-                            .offset(y: showTimelineHeader || reduceMotion ? 0 : 12)
+                        // Timeline header + summary
+                        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+                            timelineHeader
 
-                        // Summary card
-                        if let summary = viewModel.timelineSummary {
-                            TimelineSummaryCard(summary: summary)
-                                .opacity(showSummaryCard ? 1 : 0)
-                                .offset(y: showSummaryCard || reduceMotion ? 0 : 12)
+                            if let summary = viewModel.timelineSummary {
+                                TimelineSummaryCard(summary: summary)
+                                    .opacity(showSummaryCard ? 1 : 0)
+                                    .offset(y: showSummaryCard || reduceMotion ? 0 : 12)
+                            }
                         }
+                        .opacity(showTimelineHeader ? 1 : 0)
+                        .offset(y: showTimelineHeader || reduceMotion ? 0 : 12)
 
                         // Per-supplement cards
                         ForEach(viewModel.timelineCards) { card in
@@ -109,10 +110,10 @@ struct InsightsScreen: View {
                 .padding(.bottom, DesignTokens.spacing32)
             }
         }
-        .onAppear {
+        .task {
             viewModel.loadTimeline(appState: appState)
             viewModel.load(appState: appState, period: selectedPeriod)
-            startEntranceAnimation()
+            await startEntranceAnimation()
         }
         .onChange(of: selectedPeriod) {
             highlightedBarIndex = nil
@@ -122,7 +123,8 @@ struct InsightsScreen: View {
 
     // MARK: - Entrance Animation
 
-    private func startEntranceAnimation() {
+    @MainActor
+    private func startEntranceAnimation() async {
         let fadeDuration: Double = reduceMotion ? 0.15 : 0.4
 
         let headerDelay: Double = reduceMotion ? 0.02 : 0.10
@@ -132,89 +134,77 @@ struct InsightsScreen: View {
         let cardStagger: Double = reduceMotion ? 0.02 : 0.08
 
         // Phase 1: Screen header
-        DispatchQueue.main.asyncAfter(deadline: .now() + headerDelay) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showHeader = true
-            }
+        try? await Task.sleep(for: .seconds(headerDelay))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showHeader = true
         }
 
         // Phase 2: Timeline header
-        DispatchQueue.main.asyncAfter(deadline: .now() + timelineHeaderDelay) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showTimelineHeader = true
-            }
+        try? await Task.sleep(for: .seconds(timelineHeaderDelay - headerDelay))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showTimelineHeader = true
         }
 
         // Phase 3: Summary card
-        DispatchQueue.main.asyncAfter(deadline: .now() + summaryDelay) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                showSummaryCard = true
-            }
+        try? await Task.sleep(for: .seconds(summaryDelay - timelineHeaderDelay))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: fadeDuration)) {
+            showSummaryCard = true
         }
 
         // Phase 4: Staggered card reveals
-        for (index, card) in viewModel.timelineCards.enumerated() {
-            let delay = cardBaseDelay + cardStagger * Double(index)
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    cardAppearStates[card.id] = true
-                }
+        let cardsStartDelay = cardBaseDelay - summaryDelay
+        try? await Task.sleep(for: .seconds(cardsStartDelay))
+        for card in viewModel.timelineCards {
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                cardAppearStates[card.id] = true
             }
+            try? await Task.sleep(for: .seconds(cardStagger))
         }
 
-        // Phase 5: Phase bars fill (after last card + 0.1s)
-        let phaseBarDelay = cardBaseDelay + cardStagger * Double(viewModel.timelineCards.count) + 0.1
-        DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.10 : phaseBarDelay)) {
-            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.6)) {
-                phaseBarProgress = 1
-            }
+        // Phase 5: Phase bars fill
+        try? await Task.sleep(for: .seconds(0.1))
+        guard !Task.isCancelled else { return }
+        withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.6)) {
+            phaseBarProgress = 1
         }
 
         if viewModel.isEarlyState {
             // Ghost trends
-            let ghostDelay = phaseBarDelay + 0.15
-            DispatchQueue.main.asyncAfter(deadline: .now() + (reduceMotion ? 0.10 : ghostDelay)) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    showGhostTrends = true
-                }
+            try? await Task.sleep(for: .seconds(0.15))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showGhostTrends = true
             }
         } else {
-            // Real data (existing stagger)
-            let dataBaseDelay = phaseBarDelay + 0.15
-            let trendDelay: Double = reduceMotion ? 0.06 : dataBaseDelay
-            let barGrowDelay: Double = reduceMotion ? 0.08 : dataBaseDelay + 0.15
-            let dimDelay: Double = reduceMotion ? 0.08 : dataBaseDelay + 0.10
-            let dimBarGrowDelay: Double = reduceMotion ? 0.10 : dataBaseDelay + 0.30
-            let statsDelay: Double = reduceMotion ? 0.10 : dataBaseDelay + 0.25
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + trendDelay) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    showTrendCard = true
-                }
+            // Real data stagger
+            try? await Task.sleep(for: .seconds(0.15))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showTrendCard = true
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + barGrowDelay) {
-                withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
-                    barAnimationProgress = 1
-                }
+            try? await Task.sleep(for: .seconds(0.15))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
+                barAnimationProgress = 1
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + dimDelay) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    showDimensions = true
-                }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showDimensions = true
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + dimBarGrowDelay) {
-                withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
-                    dimensionBarProgress = 1
-                }
+            try? await Task.sleep(for: .seconds(0.15))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: reduceMotion ? 0.15 : 0.5)) {
+                dimensionBarProgress = 1
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + statsDelay) {
-                withAnimation(.easeOut(duration: fadeDuration)) {
-                    showStats = true
-                }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                showStats = true
             }
         }
     }

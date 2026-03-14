@@ -128,6 +128,8 @@ struct SupplementLogList: View {
                             isExpanded.wrappedValue.toggle()
                         }
                     }
+                    .accessibilityLabel(isExpanded.wrappedValue ? "Collapse \(label) supplements" : "Expand \(label) supplements")
+                    .accessibilityAddTraits(.isButton)
                     .transition(.opacity)
                 } else if onTakeAllSection != nil {
                     Button {

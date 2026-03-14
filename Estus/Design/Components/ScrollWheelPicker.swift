@@ -78,6 +78,28 @@ struct ScrollWheelPicker<Item: Hashable>: View {
                 HapticManager.selection()
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Picker")
+        .accessibilityValue(label(selection))
+        .accessibilityAdjustableAction { direction in
+            guard let currentIndex = items.firstIndex(of: selection) else { return }
+            switch direction {
+            case .increment:
+                let nextIndex = items.index(after: currentIndex)
+                if nextIndex < items.endIndex {
+                    selection = items[nextIndex]
+                    scrollPosition = selection
+                }
+            case .decrement:
+                if currentIndex > items.startIndex {
+                    let prevIndex = items.index(before: currentIndex)
+                    selection = items[prevIndex]
+                    scrollPosition = selection
+                }
+            @unknown default:
+                break
+            }
+        }
     }
 }
 
