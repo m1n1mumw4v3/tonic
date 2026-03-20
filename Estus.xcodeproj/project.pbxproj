@@ -159,6 +159,7 @@
 		C821396CEE5BAA0AA67ACB2B /* PhaseCalloutRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2390903AB28340F351E06E77 /* PhaseCalloutRow.swift */; };
 		C8EF4CD26DD87D5AAAB93BFB /* PregnancyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE194813456A3128253D258E /* PregnancyScreen.swift */; };
 		C957610BF34694E4D7810B3B /* TodayViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B059C01AA3A6B624A9FB3414 /* TodayViewModelTests.swift */; };
+		CA82CA398390693498340142 /* WeeklyWellbeingChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1DC877D4FDA9264274E333 /* WeeklyWellbeingChart.swift */; };
 		CAC02CFE4138C6F75E8A876B /* HeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A447F972B20892D640ED4496 /* HeightScreen.swift */; };
 		CBB8F93086B4C23C8E19AE99 /* AllergiesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3333BB6B08C50762281867B /* AllergiesScreen.swift */; };
 		CDE56E62AE39A2BE9E87332A /* AnimatedCheckmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D32DF02F6E06DD02F956C0F /* AnimatedCheckmark.swift */; };
@@ -222,6 +223,7 @@
 		0DFF71D861C73058DB9A44BF /* DiscoveryCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCarousel.swift; sourceTree = "<group>"; };
 		0E0392C1B9392C91C87BE5FE /* SafetyRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyRules.swift; sourceTree = "<group>"; };
 		0E162ECD2B7939C8B269F52A /* DeepProfileHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileHomeCard.swift; sourceTree = "<group>"; };
+		0F1DC877D4FDA9264274E333 /* WeeklyWellbeingChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyWellbeingChart.swift; sourceTree = "<group>"; };
 		0FD02ECC4548378EC32C6BC8 /* AlcoholScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcoholScreen.swift; sourceTree = "<group>"; };
 		1094E731364D406D631C36EC /* DeepProfileCompletionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileCompletionScreen.swift; sourceTree = "<group>"; };
 		1129A9438CFE388C082DAD18 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
@@ -803,6 +805,7 @@
 				16D606C24A4B93937160BAB2 /* TimelineSummaryCard.swift */,
 				F2D27B3DDD7D508F2BB368F7 /* UndoToast.swift */,
 				13E069482DD9F5D553E96885 /* UnitPicker.swift */,
+				0F1DC877D4FDA9264274E333 /* WeeklyWellbeingChart.swift */,
 				B94D7DC9B3A16AD14B7A63E7 /* WellbeingScoreRing.swift */,
 				4A303D04125D6C5960345CB1 /* WellnessSlider.swift */,
 			);
@@ -1092,6 +1095,7 @@
 				1BA1C3EFDA1F42CFB7B90C3A /* ValuePropComplexityScreen.swift in Sources */,
 				B672878A342E8C2EBF6B72F4 /* ValuePropProblemScreen.swift in Sources */,
 				1060788D5B68796746E7B8A0 /* ValuePropSolutionScreen.swift in Sources */,
+				CA82CA398390693498340142 /* WeeklyWellbeingChart.swift in Sources */,
 				9C8732C8126518D0BAB9B30C /* WeightScreen.swift in Sources */,
 				D5AE476D0DD9CBDBBDDE7442 /* WelcomeScreen.swift in Sources */,
 				BD99A82710527B9542ABFB04 /* WellbeingPreviewCard.swift in Sources */,

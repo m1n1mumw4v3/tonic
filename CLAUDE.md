@@ -30,7 +30,7 @@ iOS app that generates personalized supplement plans based on health goals and l
 - ALWAYS use `DesignTokens` for colors, fonts, spacing, and radii. NEVER use raw Color literals, system fonts, or magic numbers for layout.
 - State management uses Swift Observation framework (`@Observable`, `@Environment`). NEVER use `ObservableObject`/`@Published`/`@StateObject`.
 - Light-mode only (`.preferredColorScheme(.light)` set at root). All UI assumes warm white backgrounds (Estus brand system).
-- Brand palette: warm white backgrounds (`#FAF8F3`, `#F2EFE8`, `#EBE7DF`), olive text (`#1C1E17`, `#6B6E63`, `#A3A69B`), biological accent colors (Deep Purple, Pale Gold, Ocean Blue, Golden Membrane, Acid Chartreuse, Bright Teal, Magenta, Moss, Warm Red, Deep Teal, Terracotta).
+- Brand palette: light backgrounds (`#F8F8F8`, `#FFFFFF`, `#F0F0F0`), borders (`#EBEBEB`, `#F2F2F2`), olive text (`#1C1E17`, `#6B6E63`, `#A3A69B`), biological accent colors (Deep Purple, Pale Gold, Ocean Blue, Golden Membrane, Acid Chartreuse, Bright Teal, Magenta, Moss, Warm Red, Deep Teal, Terracotta).
 - Feature modules follow the pattern: `Screen` (SwiftUI view) + `ViewModel` (`@Observable` class) where state is non-trivial.
 - `RecommendationEngine` is deterministic and local — no API calls. It uses `SupplementKnowledgeBase` for supplement data and `goalSupplementMap` for goal-to-supplement mapping.
 - `DataStore` protocol abstracts persistence. Currently backed by `LocalStorageService`; will swap to Supabase in a future milestone.

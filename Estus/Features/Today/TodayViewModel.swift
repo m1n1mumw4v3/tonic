@@ -42,6 +42,7 @@ class TodayViewModel {
     var gutScore: Double = 5
     var trailingAverages: [WellnessDimension: Double] = [:]
     var trailingCheckInCount: Int = 0
+    var weeklyData: [WeeklyDayData] = []
 
     var trailingOverallAverage: Double? {
         let dims = WellnessDimension.allCases
@@ -103,6 +104,9 @@ class TodayViewModel {
 
         // Track if wellbeing was already submitted today
         wellbeingSubmitted = appState.hasCompletedWellbeingToday
+
+        // Weekly chart data
+        loadWeeklyData(appState: appState)
 
         // Feed
         loadFeed(appState: appState)
@@ -301,6 +305,36 @@ class TodayViewModel {
         }
     }
 
+    func loadWeeklyData(appState: AppState) {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "EEE"
+
+        weeklyData = (0..<7).reversed().map { daysBack in
+            let date = calendar.date(byAdding: .day, value: -daysBack, to: today)!
+            let dayLabel = formatter.string(from: date).uppercased()
+            let isToday = daysBack == 0
+
+            let checkIn = appState.recentCheckIns.first(where: {
+                calendar.isDate($0.checkInDate, inSameDayAs: date) && $0.wellbeingCompleted
+            })
+
+            let scores: [WellnessDimension: Int]? = checkIn.map { ci in
+                [
+                    .sleep: ci.sleepScore,
+                    .energy: ci.energyScore,
+                    .clarity: ci.clarityScore,
+                    .mood: ci.moodScore,
+                    .gut: ci.gutScore,
+                ]
+            }
+
+            return WeeklyDayData(date: date, dayLabel: dayLabel, isToday: isToday, scores: scores)
+        }
+    }
+
     func loadTrailingAverages() {
         guard let checkIns = try? dataStore.getCheckIns(limit: 7) else { return }
 
@@ -394,6 +428,9 @@ class TodayViewModel {
 
         wellbeingSubmitted = true
         HapticManager.notification(.success)
+
+        // Refresh weekly chart data
+        loadWeeklyData(appState: appState)
     }
 
     private static func baselines(from profile: UserProfile?) -> [WellnessDimension: Int] {

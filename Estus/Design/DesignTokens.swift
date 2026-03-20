@@ -6,9 +6,9 @@ import SwiftUI
 enum DesignTokens {
 
     // MARK: - Backgrounds
-    static let bgDeepest    = Color(hex: "#FAF8F3")
-    static let bgSurface    = Color(hex: "#F2EFE8")
-    static let bgElevated   = Color(hex: "#EBE7DF")
+    static let bgDeepest    = Color(hex: "#F8F8F8")
+    static let bgSurface    = Color(hex: "#FFFFFF")
+    static let bgElevated   = Color(hex: "#F0F0F0")
 
     // MARK: - Text
     static let textPrimary   = Color(hex: "#1C1E17")
@@ -16,8 +16,8 @@ enum DesignTokens {
     static let textTertiary  = Color(hex: "#A3A69B")
 
     // MARK: - Borders
-    static let borderDefault = Color(hex: "#D9D5CC")
-    static let borderSubtle  = Color(hex: "#E5E1D9")
+    static let borderDefault = Color(hex: "#EBEBEB")
+    static let borderSubtle  = Color(hex: "#F2F2F2")
 
     // MARK: - Dimension Accents
     static let accentSleep   = Color(hex: "#7B2D8E")
@@ -97,7 +97,7 @@ enum DesignTokens {
     static let radiusFull:   CGFloat = 999
 
     // MARK: - Shadows
-    static let cardShadowColor   = Color.black.opacity(0.06)
-    static let cardShadowRadius:  CGFloat = 6
-    static let cardShadowY:       CGFloat = 2
+    static let cardShadowColor   = Color.black.opacity(0.04)
+    static let cardShadowRadius:  CGFloat = 8
+    static let cardShadowY:       CGFloat = 3
 }

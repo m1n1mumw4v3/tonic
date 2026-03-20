@@ -15,6 +15,7 @@ struct TodayScreen: View {
     }
     @State private var yesterdayExpanded = false
     @State private var scrollOffset: CGFloat = 0
+    @State private var selectedDayIndex: Int? = nil
 
     private var phase: TodayViewModel.TodayPhase {
         viewModel.currentPhase(appState: appState)
@@ -242,54 +243,58 @@ struct TodayScreen: View {
 
     @ViewBuilder
     private var wellbeingScoreCard: some View {
-        if let scoreCheckIn = appState.mostRecentWellbeingScore {
-            // Has completed check-in — show actual scores
-            VStack(spacing: DesignTokens.spacing16) {
-                WellbeingScoreRing(
-                    sleepScore: scoreCheckIn.sleepScore,
-                    energyScore: scoreCheckIn.energyScore,
-                    clarityScore: scoreCheckIn.clarityScore,
-                    moodScore: scoreCheckIn.moodScore,
-                    gutScore: scoreCheckIn.gutScore,
-                    overallVariance: computeOverallVariance(for: scoreCheckIn),
-                    varianceLabel: varianceLabelText
-                )
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, DesignTokens.spacing12)
-        } else if let user = appState.currentUser {
-            // No check-in yet, but has profile — show baseline scores
-            WellbeingScoreRing(
-                sleepScore: user.baselineSleep,
-                energyScore: user.baselineEnergy,
-                clarityScore: user.baselineClarity,
-                moodScore: user.baselineMood,
-                gutScore: user.baselineGut,
-                centerLabel: "BASELINE"
-            )
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, DesignTokens.spacing12)
-        } else {
-            // No check-in, no profile — zeroed fallback
-            VStack(spacing: DesignTokens.spacing16) {
-                WellbeingScoreRing(
-                    sleepScore: 0,
-                    energyScore: 0,
-                    clarityScore: 0,
-                    moodScore: 0,
-                    gutScore: 0,
-                    animated: false
-                )
-                .opacity(0.3)
+        let displayIndex = selectedDayIndex ?? (viewModel.weeklyData.count - 1)
+        let selectedDay = viewModel.weeklyData.indices.contains(displayIndex)
+            ? viewModel.weeklyData[displayIndex]
+            : nil
 
-                Text("Complete your daily check-in to see your score")
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
-                    .multilineTextAlignment(.center)
+        VStack(spacing: 0) {
+            WeeklyWellbeingChart(
+                weeklyData: viewModel.weeklyData,
+                selectedIndex: displayIndex,
+                onSelectDay: { index in
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedDayIndex = index
+                    }
+                }
+            )
+
+            if let day = selectedDay {
+                Rectangle()
+                    .fill(DesignTokens.borderDefault)
+                    .frame(height: 1)
+                    .padding(.vertical, DesignTokens.spacing12)
+
+                if day.hasData {
+                    let variance: String? = {
+                        guard day.isToday,
+                              let checkIn = appState.mostRecentWellbeingScore,
+                              let v = computeOverallVariance(for: checkIn),
+                              let label = varianceLabelText else { return nil }
+                        let sign = v >= 0 ? "+" : ""
+                        return "\(sign)\(String(format: "%.1f", v)) \(label)"
+                    }()
+
+                    DailyOverviewCard(dayData: day, varianceText: variance)
+                } else {
+                    Text("No check-in recorded")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textTertiary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, DesignTokens.spacing12)
         }
+        .padding(.vertical, DesignTokens.spacing12)
+        .padding(.horizontal, DesignTokens.spacing16)
+        .background(
+            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                .fill(DesignTokens.bgSurface)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                .stroke(DesignTokens.borderDefault, lineWidth: 1)
+        )
+        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
     // MARK: - Yesterday Section
@@ -458,36 +463,31 @@ struct TodayScreen: View {
                             value: $viewModel.sleepScore,
                             lowLabel: WellnessDimension.sleep.lowLabel,
                             highLabel: WellnessDimension.sleep.highLabel,
-                            averageValue: viewModel.trailingAverages[.sleep]
-                        )
+                            averageValue: viewModel.trailingAverages[.sleep]                        )
                         WellnessSlider(
                             dimension: .energy,
                             value: $viewModel.energyScore,
                             lowLabel: WellnessDimension.energy.lowLabel,
                             highLabel: WellnessDimension.energy.highLabel,
-                            averageValue: viewModel.trailingAverages[.energy]
-                        )
+                            averageValue: viewModel.trailingAverages[.energy]                        )
                         WellnessSlider(
                             dimension: .clarity,
                             value: $viewModel.clarityScore,
                             lowLabel: WellnessDimension.clarity.lowLabel,
                             highLabel: WellnessDimension.clarity.highLabel,
-                            averageValue: viewModel.trailingAverages[.clarity]
-                        )
+                            averageValue: viewModel.trailingAverages[.clarity]                        )
                         WellnessSlider(
                             dimension: .mood,
                             value: $viewModel.moodScore,
                             lowLabel: WellnessDimension.mood.lowLabel,
                             highLabel: WellnessDimension.mood.highLabel,
-                            averageValue: viewModel.trailingAverages[.mood]
-                        )
+                            averageValue: viewModel.trailingAverages[.mood]                        )
                         WellnessSlider(
                             dimension: .gut,
                             value: $viewModel.gutScore,
                             lowLabel: WellnessDimension.gut.lowLabel,
                             highLabel: WellnessDimension.gut.highLabel,
-                            averageValue: viewModel.trailingAverages[.gut]
-                        )
+                            averageValue: viewModel.trailingAverages[.gut]                        )
                     }
 
                     CTAButton(title: "Save Check-In", style: .ghost, spectrumBorder: true) {
