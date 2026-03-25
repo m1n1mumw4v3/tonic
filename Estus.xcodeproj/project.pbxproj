@@ -31,6 +31,7 @@
 		1CD4DF265C137DD9D6ED745A /* PillboxLid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D073CB7295861DCE06C104D8 /* PillboxLid.swift */; };
 		1CF0F250559CFCA738B32A90 /* InsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE15B284D437AD658B557801 /* InsightCard.swift */; };
 		1EB6AE01BA202AF81AFA4825 /* TodayScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54F779091C21BED86E3043F /* TodayScreen.swift */; };
+		1F602BFA674EE8BFFF7A00E6 /* estus-icon-01.png in Resources */ = {isa = PBXBuildFile; fileRef = B09ADD7F86699E17E005DA8C /* estus-icon-01.png */; };
 		2018FC5D43187B35D7A916BD /* SupplementTimelineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330AEA7795FA4D611E0EEC0D /* SupplementTimelineCard.swift */; };
 		20C92917CB8A5C06F138CB80 /* SupplementPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70628058A4602D76A3D203FE /* SupplementPhase.swift */; };
 		20E76966624982159104A663 /* WellbeingScoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B6E8DEC96B24E119C66992E /* WellbeingScoreTests.swift */; };
@@ -41,6 +42,7 @@
 		24B96BFF3E08954EDAE497BF /* EmberGlowModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D3F757E819046A89ECB9D7 /* EmberGlowModifier.swift */; };
 		24D29ADB77B496011DCD07FB /* SupplementCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773B06802CA3E6B84CC9815B /* SupplementCardView.swift */; };
 		24FAFDFCB28DE0345E97A92C /* KnowledgeBaseMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76CFC2342772AA17E77FEBC /* KnowledgeBaseMapper.swift */; };
+		261ED86FC904181CF01C139D /* estus-logo-02.svg in Resources */ = {isa = PBXBuildFile; fileRef = 219A53F2AE373483C6E7B6A5 /* estus-logo-02.svg */; };
 		282DD2CA6EB316947F9EAB1C /* ProductDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3A5D804CE8EEC6238963E /* ProductDetailScreen.swift */; };
 		292D4CA2865A45E4C8FE740F /* MedicalDisclaimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0DC9BEAA7FBE5AE3DBEAA6 /* MedicalDisclaimerScreen.swift */; };
 		2A4AF3A4274A8529B3FB6F5F /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26D3AE3CFB18D77C6AEE82 /* AppState.swift */; };
@@ -48,6 +50,7 @@
 		2D7DF9112BE9151A454BFBB5 /* CurrentSuppsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FDAECA7EA43E8093920E97 /* CurrentSuppsScreen.swift */; };
 		2E134966CD8169A392A3B21D /* SupabaseCaveat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DC1B56362BA1659D2CB071 /* SupabaseCaveat.swift */; };
 		2FB61B730259CA6976DDA6FE /* SupabaseSupplementForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA0DFC3E776EF1130FA6772 /* SupabaseSupplementForm.swift */; };
+		2FBE09BF2EEA0B7C2B81B0ED /* estus-logo-02.png in Resources */ = {isa = PBXBuildFile; fileRef = 11E30E4126CA0C3E17F858E0 /* estus-logo-02.png */; };
 		3454FC6E794EE16148D81AB9 /* DietScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240B2259728C98AE37E69FD /* DietScreen.swift */; };
 		34B06A5705B5E7C883B53F03 /* HealthKitScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316451E6034E84D95FAD8E55 /* HealthKitScreen.swift */; };
 		3805EF7145F3D1D6C0994E54 /* DeepProfileHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E162ECD2B7939C8B269F52A /* DeepProfileHomeCard.swift */; };
@@ -125,6 +128,7 @@
 		9A5C1C84AA358CD20E4EFD3A /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06888BC1B72BEAE75121F3FA /* Geist-Medium.ttf */; };
 		9C4681D231517B180921919A /* DeepProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31430DB0E2FFFE5A385C670 /* DeepProfile.swift */; };
 		9C5D3E27F7ED0DB591427966 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 79A5974ED8DE0D0A0D1E8FB1 /* GeistMono-Regular.ttf */; };
+		9C6B0B41FC2BA89E33AC5862 /* estus-icon-01.ai in Resources */ = {isa = PBXBuildFile; fileRef = 8AE9492FD865AB79BB099009 /* estus-icon-01.ai */; };
 		9C8732C8126518D0BAB9B30C /* WeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001FA343772A4C791183F821 /* WeightScreen.swift */; };
 		9FDEEC77B8A1D86FCBA3FC61 /* PhaseProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5AE5ED3E6859C78692D7D0 /* PhaseProgressBar.swift */; };
 		A0A5E6D691B1E89A83C0A277 /* SleepCircadianModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFE6A0BA40F20A7F2AE11C9 /* SleepCircadianModule.swift */; };
@@ -142,11 +146,13 @@
 		B6A2E28D8ADC71169B8F45DA /* RecommendationEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BC66D299AB13718F27AE94 /* RecommendationEngineTests.swift */; };
 		B75D58CFD5170479EBE90E11 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8148A4BF49E6631B0AD4C /* RecommendationEngine.swift */; };
 		B83FDDDE3674D49C285788C7 /* SupplementLogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC377EB034C62B0BB143CC1 /* SupplementLogRow.swift */; };
+		B84C21CA6750251DBA61B30F /* estus-logo-02.ai in Resources */ = {isa = PBXBuildFile; fileRef = A9501935E61A229D808C7678 /* estus-logo-02.ai */; };
 		B93598867FA2DAB0B9131ACE /* PersonalizationScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB54D7F6DE20BCD213E0A84 /* PersonalizationScorer.swift */; };
 		B94B50973A4031C210983493 /* DeficiencyRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2BFDDA5F9482A0A6EAFC99B /* DeficiencyRingView.swift */; };
 		BA9118D7EDBF0EEE72A2CD63 /* Geist-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3AE8D37A1495D3D1DCD8707D /* Geist-Bold.ttf */; };
 		BC98814DC553F89460D3E612 /* CompletionShimmerModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A16D62DCE658E29D2198E1 /* CompletionShimmerModifier.swift */; };
 		BD99A82710527B9542ABFB04 /* WellbeingPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBAD79235D66A652B30C8CF /* WellbeingPreviewCard.swift */; };
+		BE130042DB8F9487AEC86C49 /* estus-icon-01.svg in Resources */ = {isa = PBXBuildFile; fileRef = 2FA25C3F8C8733BD494EAAB8 /* estus-icon-01.svg */; };
 		BEC531CB1F6867E59320F1A6 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C34EB4A91282036F9D4334C /* PaywallScreen.swift */; };
 		BED506D655280588B020AA4A /* SupabaseKBFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEED8FC0C37C3F4AB6796B81 /* SupabaseKBFetcher.swift */; };
 		C024438EDBF62BE930C774A5 /* StressNervousSystemModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC8BB937E1055245DAF02A6 /* StressNervousSystemModule.swift */; };
@@ -169,7 +175,9 @@
 		D5173043D91B2A43C3E7238E /* NotificationSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F705B4F0126A041EBDB4AF /* NotificationSettingsSheet.swift */; };
 		D5AE476D0DD9CBDBBDDE7442 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B0D8779C4B8F2A1F1E8157 /* WelcomeScreen.swift */; };
 		D6D2717EB3858ADADD854163 /* CompactProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659FD1F10EDB1B4E11C5808C /* CompactProgressRing.swift */; };
+		D81697C07AA73692D965F538 /* estus-logo-01.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B372E1C539D497678AD207 /* estus-logo-01.png */; };
 		D985C3457074B5CCC6D7FF8F /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E94E0469F9CDF372FCCA73 /* OnboardingViewModel.swift */; };
+		DCC7E5615EDEDCFABBB45888 /* estus-logo-01.svg in Resources */ = {isa = PBXBuildFile; fileRef = 7C29998EF6DDB776E70D74D3 /* estus-logo-01.svg */; };
 		DFE209E39922243415CC20AF /* RemovableChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE36872D32AB82D7E0C97A4D /* RemovableChip.swift */; };
 		E0B0366E7CB3DA6C053F4AA2 /* ExerciseScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6C17832F666D8AEE51A2BE /* ExerciseScreen.swift */; };
 		E10E61B0F81832A4D70A1FA7 /* GoalsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A2DDECA1F19264853C53F2 /* GoalsScreen.swift */; };
@@ -183,6 +191,7 @@
 		EACFF47A168EE34CF49418EE /* KnowledgeBaseCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EB35E2A0EE225283F445F2 /* KnowledgeBaseCacheService.swift */; };
 		EAF15FF43041FFDE9C94E87D /* ShopLinksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0818431DA8E10DACBE85F93 /* ShopLinksSheet.swift */; };
 		EC99C87DA148AF301DC4BBA1 /* DeepProfileModuleFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD86AD132D3CA6A0673A34D /* DeepProfileModuleFlow.swift */; };
+		ED0C2A9A2967BABF6B00223D /* estus-logo-01.ai in Resources */ = {isa = PBXBuildFile; fileRef = 9C5AE48C91228B9FA645DE5B /* estus-logo-01.ai */; };
 		ED8F3989D17AF0AF2C8E45CB /* AgeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20333F6423EF135982DE37C /* AgeScreen.swift */; };
 		EE01E1BA73F9570B6E18DC99 /* SupabaseSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2989B2E305C36226118AD3DF /* SupabaseSource.swift */; };
 		EE5DE48FE54C1F40E0955670 /* BaselineProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31265096D48726E12B13D42A /* BaselineProfileViewModel.swift */; };
@@ -228,6 +237,7 @@
 		1094E731364D406D631C36EC /* DeepProfileCompletionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileCompletionScreen.swift; sourceTree = "<group>"; };
 		1129A9438CFE388C082DAD18 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		113A3B4C3224ADDDEE82AA2C /* CaffeineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaffeineScreen.swift; sourceTree = "<group>"; };
+		11E30E4126CA0C3E17F858E0 /* estus-logo-02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "estus-logo-02.png"; sourceTree = "<group>"; };
 		13E069482DD9F5D553E96885 /* UnitPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitPicker.swift; sourceTree = "<group>"; };
 		16D606C24A4B93937160BAB2 /* TimelineSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSummaryCard.swift; sourceTree = "<group>"; };
 		17EE453BE0D9BE57C81387B4 /* BaselineProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineProfileSheet.swift; sourceTree = "<group>"; };
@@ -237,6 +247,7 @@
 		1BF33903528DB9ABA133F70C /* DeepProfileQuestionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileQuestionScreen.swift; sourceTree = "<group>"; };
 		1F87ADFCA91E25F336A88EAD /* KnowledgeBaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeBaseProvider.swift; sourceTree = "<group>"; };
 		20841A2E761CE4BAEC3654BC /* ProductListCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListCard.swift; sourceTree = "<group>"; };
+		219A53F2AE373483C6E7B6A5 /* estus-logo-02.svg */ = {isa = PBXFileReference; path = "estus-logo-02.svg"; sourceTree = "<group>"; };
 		2390903AB28340F351E06E77 /* PhaseCalloutRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseCalloutRow.swift; sourceTree = "<group>"; };
 		285F1945684DFD661CA6DC57 /* SupplementLogList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementLogList.swift; sourceTree = "<group>"; };
 		2989B2E305C36226118AD3DF /* SupabaseSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseSource.swift; sourceTree = "<group>"; };
@@ -247,6 +258,7 @@
 		2E2C5B0DA41067463858C5DD /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		2EAB099D9E2DC6877C81A639 /* DeepProfileFlowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileFlowViewModel.swift; sourceTree = "<group>"; };
 		2F12306891707C3CBF0DE1F3 /* RecommendationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCard.swift; sourceTree = "<group>"; };
+		2FA25C3F8C8733BD494EAAB8 /* estus-icon-01.svg */ = {isa = PBXFileReference; path = "estus-icon-01.svg"; sourceTree = "<group>"; };
 		31265096D48726E12B13D42A /* BaselineProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineProfileViewModel.swift; sourceTree = "<group>"; };
 		316451E6034E84D95FAD8E55 /* HealthKitScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitScreen.swift; sourceTree = "<group>"; };
 		32456861878A8F2CD508E897 /* AccountCreationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationScreen.swift; sourceTree = "<group>"; };
@@ -289,6 +301,7 @@
 		64537947A100FEF72B90C5AB /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		64BA715031328F37C28BFF31 /* BaselineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineScreen.swift; sourceTree = "<group>"; };
 		659FD1F10EDB1B4E11C5808C /* CompactProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactProgressRing.swift; sourceTree = "<group>"; };
+		69B372E1C539D497678AD207 /* estus-logo-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "estus-logo-01.png"; sourceTree = "<group>"; };
 		6AA0DFC3E776EF1130FA6772 /* SupabaseSupplementForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseSupplementForm.swift; sourceTree = "<group>"; };
 		6AEAD268C8E1A16F3B15DD42 /* RadialRevealModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadialRevealModifier.swift; sourceTree = "<group>"; };
 		6B2B8FC437DF25B0B900A7EE /* SupplementCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementCatalog.swift; sourceTree = "<group>"; };
@@ -304,6 +317,7 @@
 		77E94E0469F9CDF372FCCA73 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		79649082B11EF9420560D590 /* ProductListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListScreen.swift; sourceTree = "<group>"; };
 		79A5974ED8DE0D0A0D1E8FB1 /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Regular.ttf"; sourceTree = "<group>"; };
+		7C29998EF6DDB776E70D74D3 /* estus-logo-01.svg */ = {isa = PBXFileReference; path = "estus-logo-01.svg"; sourceTree = "<group>"; };
 		7DF346DE3D509316635A640D /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		8186C845CFB5E02F645F7B47 /* GrainOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrainOverlay.swift; sourceTree = "<group>"; };
 		8267E80CC9E23EC7F54A572A /* DeepProfileIntroScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileIntroScreen.swift; sourceTree = "<group>"; };
@@ -313,12 +327,14 @@
 		881BA2611A13F63AA37C9A8C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8821D2438A4C8F9ACB82693F /* CompletionShimmerShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CompletionShimmerShader.metal; sourceTree = "<group>"; };
 		888C565B6966444480BDDB32 /* DeepProfileHubViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileHubViewModel.swift; sourceTree = "<group>"; };
+		8AE9492FD865AB79BB099009 /* estus-icon-01.ai */ = {isa = PBXFileReference; path = "estus-icon-01.ai"; sourceTree = "<group>"; };
 		8CB09CF3C06C69A269D52547 /* SupabaseSupplement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseSupplement.swift; sourceTree = "<group>"; };
 		8E4BF3FF297EDE4E358F1358 /* SupabaseDrugInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseDrugInteraction.swift; sourceTree = "<group>"; };
 		8EBAD79235D66A652B30C8CF /* WellbeingPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellbeingPreviewCard.swift; sourceTree = "<group>"; };
 		8EC8BB937E1055245DAF02A6 /* StressNervousSystemModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressNervousSystemModule.swift; sourceTree = "<group>"; };
 		954082930E4AAF0D2C77B0E9 /* SupabasePersonalizationSignal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabasePersonalizationSignal.swift; sourceTree = "<group>"; };
 		9B6E287A3AFBF07F38C2AA5B /* CognitiveFunctionModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CognitiveFunctionModule.swift; sourceTree = "<group>"; };
+		9C5AE48C91228B9FA645DE5B /* estus-logo-01.ai */ = {isa = PBXFileReference; path = "estus-logo-01.ai"; sourceTree = "<group>"; };
 		9E6C17832F666D8AEE51A2BE /* ExerciseScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseScreen.swift; sourceTree = "<group>"; };
 		A2C0B3F1C6C121443E693F25 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A3333BB6B08C50762281867B /* AllergiesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllergiesScreen.swift; sourceTree = "<group>"; };
@@ -326,10 +342,12 @@
 		A52B78AC98CC873E4298C6EF /* SexScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SexScreen.swift; sourceTree = "<group>"; };
 		A5E95A2B80AD542D62CB6666 /* EmberGlowShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = EmberGlowShader.metal; sourceTree = "<group>"; };
 		A7E7C886EE403ADEC13AE622 /* TodayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
+		A9501935E61A229D808C7678 /* estus-logo-02.ai */ = {isa = PBXFileReference; path = "estus-logo-02.ai"; sourceTree = "<group>"; };
 		A9A2DDECA1F19264853C53F2 /* GoalsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsScreen.swift; sourceTree = "<group>"; };
 		AD4A8E1FD766544D824B33A7 /* MicroRewardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicroRewardCard.swift; sourceTree = "<group>"; };
 		B0389FA0DAB6FD008E8F5C72 /* GradientFlowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientFlowBackground.swift; sourceTree = "<group>"; };
 		B059C01AA3A6B624A9FB3414 /* TodayViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModelTests.swift; sourceTree = "<group>"; };
+		B09ADD7F86699E17E005DA8C /* estus-icon-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "estus-icon-01.png"; sourceTree = "<group>"; };
 		B15F045B1E15862E1D1A8FD4 /* SupabaseContraindication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseContraindication.swift; sourceTree = "<group>"; };
 		B20333F6423EF135982DE37C /* AgeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeScreen.swift; sourceTree = "<group>"; };
 		B2BFDDA5F9482A0A6EAFC99B /* DeficiencyRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeficiencyRingView.swift; sourceTree = "<group>"; };
@@ -561,6 +579,22 @@
 			path = Plan;
 			sourceTree = "<group>";
 		};
+		4FD516F7BFCA357189010F47 /* estus-logos */ = {
+			isa = PBXGroup;
+			children = (
+				8AE9492FD865AB79BB099009 /* estus-icon-01.ai */,
+				B09ADD7F86699E17E005DA8C /* estus-icon-01.png */,
+				2FA25C3F8C8733BD494EAAB8 /* estus-icon-01.svg */,
+				9C5AE48C91228B9FA645DE5B /* estus-logo-01.ai */,
+				69B372E1C539D497678AD207 /* estus-logo-01.png */,
+				7C29998EF6DDB776E70D74D3 /* estus-logo-01.svg */,
+				A9501935E61A229D808C7678 /* estus-logo-02.ai */,
+				11E30E4126CA0C3E17F858E0 /* estus-logo-02.png */,
+				219A53F2AE373483C6E7B6A5 /* estus-logo-02.svg */,
+			);
+			path = "estus-logos";
+			sourceTree = "<group>";
+		};
 		50504D452EADF5BF87296607 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -591,6 +625,7 @@
 				05F66B7F620518C68AF00D27 /* Estus.entitlements */,
 				3BB22A2561832F8BF9EDBAE3 /* App */,
 				852E63077E13716CDAFBE20C /* Design */,
+				4FD516F7BFCA357189010F47 /* estus-logos */,
 				50504D452EADF5BF87296607 /* Features */,
 				98FE73636EF5098745E55BA8 /* Models */,
 				2CE4DA6C777F56906053F8BE /* Resources */,
@@ -912,6 +947,15 @@
 				9C5D3E27F7ED0DB591427966 /* GeistMono-Regular.ttf in Resources */,
 				1A10F667E7C90F36495E650A /* GeistPixel-Grid.ttf in Resources */,
 				4F3A89155FADE72878EF5D03 /* Roboto-Medium.ttf in Resources */,
+				9C6B0B41FC2BA89E33AC5862 /* estus-icon-01.ai in Resources */,
+				1F602BFA674EE8BFFF7A00E6 /* estus-icon-01.png in Resources */,
+				BE130042DB8F9487AEC86C49 /* estus-icon-01.svg in Resources */,
+				ED0C2A9A2967BABF6B00223D /* estus-logo-01.ai in Resources */,
+				D81697C07AA73692D965F538 /* estus-logo-01.png in Resources */,
+				DCC7E5615EDEDCFABBB45888 /* estus-logo-01.svg in Resources */,
+				B84C21CA6750251DBA61B30F /* estus-logo-02.ai in Resources */,
+				2FBE09BF2EEA0B7C2B81B0ED /* estus-logo-02.png in Resources */,
+				261ED86FC904181CF01C139D /* estus-logo-02.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
