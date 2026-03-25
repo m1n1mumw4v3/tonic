@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "skills": {
+    "ios-accessibility": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "a26b0c79f27531508171c4b79eb8b5808026b9734a7b53db03d6353246845f93"
+    },
+    "swift-concurrency": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "74c3da2596b80f786269d35ac8c50b77a8d1899c47b42564c2a548180e6242ff"
+    },
+    "swift-testing": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "b0eeb825d35974b8ff90205caff543ad67e91f7aafff39ddce09d342e7af62d0"
+    },
+    "swiftui-animation": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "c81319a0dd62193af8d5d6b013d6372088a116af0bc56ed36b35769904b62d7e"
+    },
+    "swiftui-patterns": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "computedHash": "7fc62c992ba43c133e55373f8d80db96d4207a2767e80a387f8a99ef8fa7f9ae"
+    }
+  }
+}

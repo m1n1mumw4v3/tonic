@@ -32,13 +32,13 @@ struct WeeklyWellbeingChart: View {
     @State private var animationProgress: CGFloat = 0
 
     private let maxTotal: CGFloat = 50 // 5 dimensions × 10 max each
-    private let barAreaHeight: CGFloat = 120
+    private let barAreaHeight: CGFloat = 160
     private let barWidth: CGFloat = 28
 
     var body: some View {
         VStack(spacing: DesignTokens.spacing16) {
-            legendRow
             barChart
+            legendRow
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.6).delay(0.15)) {

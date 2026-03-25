@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estus Home — Redesign Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #E5E1D9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .comparison {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .variant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .variant-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6B6E63;
+  }
+
+  /* iPhone frame */
+  .phone {
+    width: 375px;
+    height: 720px;
+    background: #FAF8F3;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+    position: relative;
+  }
+
+  /* Notch */
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 32px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+  }
+
+  .screen {
+    padding: 56px 24px 24px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* — HEADER — */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .streak-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #F2EFE8;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1C1E17;
+  }
+
+  .streak-badge .flame { font-size: 14px; }
+
+  .logo {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #1C1E17;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+  }
+
+  /* — RING — */
+  .ring-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .ring-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+
+  .ring-container svg {
+    width: 200px;
+    height: 200px;
+    transform: rotate(-90deg);
+  }
+
+  .ring-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .ring-score {
+    font-size: 44px;
+    font-weight: 700;
+    color: #1C1E17;
+    line-height: 1;
+  }
+
+  .ring-delta {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .ring-delta.negative { color: #D94040; }
+  .ring-delta.positive { color: #2E9E9E; }
+
+  .ring-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #A3A69B;
+    margin-top: 2px;
+  }
+
+  /* — DIMENSION CARDS — */
+  .dimensions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .dim-card {
+    flex: 1;
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dim-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .dim-score {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .dim-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ======================== */
+  /* CURRENT (BEFORE) VARIANT */
+  /* ======================== */
+  .current .avatar { background: #1A6B6A; }
+
+  /* Current: rainbow ring segments */
+  .current .ring-track {
+    fill: none;
+    stroke: #E5E1D9;
+    stroke-width: 14;
+    stroke-linecap: round;
+  }
+
+  /* Current: pastel card backgrounds (the problem) */
+  .current .dim-card.sleep {
+    background: #E8D8F0;
+  }
+  .current .dim-card.energy {
+    background: #FDF5C8;
+  }
+  .current .dim-card.clarity {
+    background: #D4E8F5;
+  }
+  .current .dim-card.mood {
+    background: #F5E8C8;
+  }
+  .current .dim-card.gut {
+    background: #E8F0C8;
+  }
+
+  .current .dim-icon.sleep { background: #7B2D8E; color: white; }
+  .current .dim-icon.energy { background: #E8C94A; color: #B89B1A; }
+  .current .dim-icon.clarity { background: #4A8FC2; color: white; }
+  .current .dim-icon.mood { background: #D4A017; color: white; }
+  .current .dim-icon.gut { background: #B8C234; color: white; }
+
+  .current .dim-score.sleep { color: #7B2D8E; }
+  .current .dim-score.energy { color: #B89B1A; }
+  .current .dim-score.clarity { color: #4A8FC2; }
+  .current .dim-score.mood { color: #A47B0E; }
+  .current .dim-score.gut { color: #8A9118; }
+
+  .current .dim-label { color: #6B6E63; }
+
+  /* ====================== */
+  /* REDESIGN (AFTER) VARIANT */
+  /* ====================== */
+  .redesign .avatar { background: #1A6B6A; }
+
+  .redesign .ring-track {
+    fill: none;
+    stroke: #EBE7DF;
+    stroke-width: 14;
+    stroke-linecap: round;
+  }
+
+  /* Redesign: unified card backgrounds */
+  .redesign .dim-card {
+    background: #F2EFE8;
+    border: 1px solid #E5E1D9;
+  }
+
+  .redesign .dim-icon.sleep { background: rgba(123, 45, 142, 0.12); color: #7B2D8E; }
+  .redesign .dim-icon.energy { background: rgba(232, 201, 74, 0.18); color: #B89B1A; }
+  .redesign .dim-icon.clarity { background: rgba(74, 143, 194, 0.12); color: #4A8FC2; }
+  .redesign .dim-icon.mood { background: rgba(212, 160, 23, 0.14); color: #A47B0E; }
+  .redesign .dim-icon.gut { background: rgba(184, 194, 52, 0.14); color: #8A9118; }
+
+  .redesign .dim-score { color: #1C1E17; }
+  .redesign .dim-label { color: #A3A69B; }
+
+  /* — INSIGHT CARD (redesign only) — */
+  .insight-card {
+    background: #F2EFE8;
+    border: 1px solid #E5E1D9;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .insight-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1A6B6A;
+  }
+
+  .insight-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6B6E63;
+  }
+
+  .insight-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1C1E17;
+  }
+
+  /* Annotations */
+  .annotations {
+    margin-top: 20px;
+    padding: 20px;
+    background: #F2EFE8;
+    border-radius: 16px;
+    max-width: 375px;
+  }
+
+  .annotations h3 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1A6B6A;
+    margin-bottom: 12px;
+  }
+
+  .annotations ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .annotations li {
+    font-size: 13px;
+    color: #1C1E17;
+    line-height: 1.5;
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .annotations li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #1A6B6A;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="comparison">
+
+  <!-- ==================== CURRENT (BEFORE) ==================== -->
+  <div class="variant">
+    <div class="variant-label">Current</div>
+    <div class="phone current">
+      <div class="screen">
+        <div class="header">
+          <div class="streak-badge"><span class="flame">🔥</span> 30</div>
+          <div class="logo">ESTUS</div>
+          <div class="avatar">M</div>
+        </div>
+
+        <div class="ring-section">
+          <div class="ring-container">
+            <svg viewBox="0 0 200 200">
+              <!-- Track -->
+              <circle class="ring-track" cx="100" cy="100" r="80" />
+              <!-- Rainbow segments: purple, gold, blue, amber, chartreuse -->
+              <circle fill="none" stroke="#7B2D8E" stroke-width="14" stroke-linecap="round"
+                cx="100" cy="100" r="80"
+                stroke-dasharray="40 462" stroke-dashoffset="-10" />
+              <circle fill="none" stroke="#E8C94A" stroke-width="14" stroke-linecap="round"
+                cx="100" cy="100" r="80"
+                stroke-dasharray="40 462" stroke-dashoffset="-70" />
+              <circle fill="none" stroke="#4A8FC2" stroke-width="14" stroke-linecap="round"
+                cx="100" cy="100" r="80"
+                stroke-dasharray="40 462" stroke-dashoffset="-130" />
+              <circle fill="none" stroke="#D4A017" stroke-width="14" stroke-linecap="round"
+                cx="100" cy="100" r="80"
+                stroke-dasharray="40 462" stroke-dashoffset="-190" />
+              <circle fill="none" stroke="#B8C234" stroke-width="14" stroke-linecap="round"
+                cx="100" cy="100" r="80"
+                stroke-dasharray="40 462" stroke-dashoffset="-250" />
+            </svg>
+            <div class="ring-center">
+              <div class="ring-score">4.0</div>
+              <div class="ring-delta negative">-1.4</div>
+              <div class="ring-label">vs baseline</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dimensions">
+          <div class="dim-card sleep">
+            <div class="dim-icon sleep">🌙</div>
+            <div class="dim-score sleep">4</div>
+            <div class="dim-label">Sleep</div>
+          </div>
+          <div class="dim-card energy">
+            <div class="dim-icon energy">⚡</div>
+            <div class="dim-score energy">4</div>
+            <div class="dim-label">Energy</div>
+          </div>
+          <div class="dim-card clarity">
+            <div class="dim-icon clarity">🧠</div>
+            <div class="dim-score clarity">4</div>
+            <div class="dim-label">Clarity</div>
+          </div>
+          <div class="dim-card mood">
+            <div class="dim-icon mood">❤️</div>
+            <div class="dim-score mood">5</div>
+            <div class="dim-label">Mood</div>
+          </div>
+          <div class="dim-card gut">
+            <div class="dim-icon gut">💬</div>
+            <div class="dim-score gut">3</div>
+            <div class="dim-label">Gut</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotations">
+      <h3>Problems</h3>
+      <ul>
+        <li>5 saturated colors compete in the ring — no hierarchy</li>
+        <li>Random pastel card backgrounds feel generic, not brand-derived</li>
+        <li>Colored score numbers add more visual noise</li>
+        <li>Cool purples/blues muddy against warm cream</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== REDESIGN (AFTER) ==================== -->
+  <div class="variant">
+    <div class="variant-label">Redesign</div>
+    <div class="phone redesign">
+      <div class="screen">
+        <div class="header">
+          <div class="streak-badge"><span class="flame">🔥</span> 30</div>
+          <div class="logo">ESTUS</div>
+          <div class="avatar">M</div>
+        </div>
+
+        <div class="ring-section">
+          <div class="ring-container">
+            <svg viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1A6B6A" />
+                  <stop offset="100%" stop-color="#2E9E9E" />
+                </linearGradient>
+              </defs>
+              <!-- Track -->
+              <circle class="ring-track" cx="100" cy="100" r="80" />
+              <!-- Single teal gradient arc — 80% fill representing 4.0/5.0 -->
+              <circle fill="none" stroke="url(#ringGrad)" stroke-width="14" stroke-linecap="round"
+                cx="100" cy="100" r="80"
+                stroke-dasharray="402 502" stroke-dashoffset="0" />
+            </svg>
+            <div class="ring-center">
+              <div class="ring-score">4.0</div>
+              <div class="ring-delta negative">-1.4</div>
+              <div class="ring-label">vs baseline</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dimensions">
+          <div class="dim-card sleep">
+            <div class="dim-icon sleep">🌙</div>
+            <div class="dim-score">4</div>
+            <div class="dim-label">Sleep</div>
+          </div>
+          <div class="dim-card energy">
+            <div class="dim-icon energy">⚡</div>
+            <div class="dim-score">4</div>
+            <div class="dim-label">Energy</div>
+          </div>
+          <div class="dim-card clarity">
+            <div class="dim-icon clarity">🧠</div>
+            <div class="dim-score">4</div>
+            <div class="dim-label">Clarity</div>
+          </div>
+          <div class="dim-card mood">
+            <div class="dim-icon mood">❤️</div>
+            <div class="dim-score">5</div>
+            <div class="dim-label">Mood</div>
+          </div>
+          <div class="dim-card gut">
+            <div class="dim-icon gut">💬</div>
+            <div class="dim-score">3</div>
+            <div class="dim-label">Gut</div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-dot"></div>
+            <div class="insight-title">Insight</div>
+          </div>
+          <div class="insight-text">Your gut score has dropped 1.2 pts over 5 days. Consider reviewing your probiotic timing.</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotations">
+      <h3>What changed</h3>
+      <ul>
+        <li>Ring uses a single deep teal → bright teal gradient — calm, premium, one read</li>
+        <li>Cards share unified #F2EFE8 background + subtle border — no competing pastels</li>
+        <li>Color lives only in the icon (at 12% opacity tint) — one signal per card</li>
+        <li>Scores are all #1C1E17 — no colored numbers competing with icons</li>
+        <li>Visual hierarchy: ring dominates → cards support → insight whispers</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
