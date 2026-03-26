@@ -6,12 +6,12 @@ import SwiftUI
 enum DesignTokens {
 
     // MARK: - Backgrounds
-    static let bgDeepest    = Color(hex: "#F8F8F8")
+    static let bgDeepest    = Color(hex: "#E3E3E3")
     static let bgSurface    = Color(hex: "#FFFFFF")
     static let bgElevated   = Color(hex: "#F0F0F0")
 
     // MARK: - Text
-    static let textPrimary   = Color(hex: "#1C1E17")
+    static let textPrimary   = Color(hex: "#0C0D0D")
     static let textSecondary = Color(hex: "#6B6E63")
     static let textTertiary  = Color(hex: "#A3A69B")
 
@@ -20,17 +20,17 @@ enum DesignTokens {
     static let borderSubtle  = Color(hex: "#F2F2F2")
 
     // MARK: - Dimension Accents
-    static let accentSleep   = Color(hex: "#7B2D8E")
-    static let accentEnergy  = Color(hex: "#E8C94A")
-    static let accentClarity = Color(hex: "#4A8FC2")
-    static let accentMood    = Color(hex: "#D4A017")
-    static let accentGut     = Color(hex: "#B8C234")
-    static let accentLongevity = Color(hex: "#2E9E9E")
-    static let accentSkin      = Color(hex: "#C94277")
+    static let accentSleep   = Color(hex: "#8F3B43")
+    static let accentEnergy  = Color(hex: "#C25D93")
+    static let accentClarity = Color(hex: "#6A93DE")
+    static let accentMood    = Color(hex: "#96953F")
+    static let accentGut     = Color(hex: "#E0B23D")
+    static let accentLongevity = Color(hex: "#42467A")
+    static let accentSkin      = Color(hex: "#9462BF")
 
     // MARK: - Goal Accents
-    static let accentMuscle    = Color(hex: "#3B5E3B")
-    static let accentHeart     = Color(hex: "#D94040")
+    static let accentMuscle    = Color(hex: "#F2A150")
+    static let accentHeart     = Color(hex: "#E66363")
     static let accentImmunity  = Color(hex: "#1A6B6A")
     static let accentTerracotta = Color(hex: "#B07156")
     static let warmStone        = Color(hex: "#8C7E6A")
@@ -54,9 +54,9 @@ enum DesignTokens {
     static let iconSizeLarge:  CGFloat = 44   // pillbox compartment
 
     // MARK: - Darkened Icon Foregrounds (for low-contrast accents on light bg)
-    static let iconFgEnergy = Color(hex: "#B89B1A")
-    static let iconFgMood   = Color(hex: "#A47B0E")
-    static let iconFgGut    = Color(hex: "#8A9118")
+    static let iconFgEnergy = Color(hex: "#C25D93")
+    static let iconFgMood   = Color(hex: "#96953F")
+    static let iconFgGut    = Color(hex: "#E0B23D")
 
     // MARK: - Typography
     static let displayFont   = Font.custom("Geist-Regular", size: 32)

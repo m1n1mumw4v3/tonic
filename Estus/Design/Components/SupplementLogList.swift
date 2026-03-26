@@ -45,7 +45,7 @@ struct SupplementLogList: View {
                 sectionContainer(
                     icon: "sun.max.fill",
                     label: "AM",
-                    tint: DesignTokens.accentEnergy,
+                    tint: DesignTokens.accentGut,
                     progress: amProgress,
                     isComplete: amComplete,
                     isExpanded: $amExpanded,
@@ -107,7 +107,7 @@ struct SupplementLogList: View {
                     }
                     .padding(.horizontal, DesignTokens.spacing8)
                     .padding(.vertical, 3)
-                    .background(DesignTokens.positive)
+                    .background(DesignTokens.textPrimary.opacity(0.5))
                     .clipShape(Capsule())
                     .transition(.opacity)
                 }

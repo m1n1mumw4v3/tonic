@@ -4,9 +4,11 @@ struct WelcomeScreen: View {
     let onContinue: () -> Void
     var onLogin: (() -> Void)? = nil
 
-    @State private var showTagline = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     @State private var showLogo = false
-    @State private var showCard = false
+    @State private var showTagline = false
+    @State private var showButtons = false
 
     var body: some View {
         GeometryReader { geo in
@@ -15,12 +17,12 @@ struct WelcomeScreen: View {
 
                 VStack(spacing: 0) {
                     // Tagline
-                    Text("Your body knows.\nNow you will too.")
-                        .font(.custom("Geist-Medium", size: 18))
+                    Text("The supplement plan\nyour body's been asking for.")
+                        .font(.custom("Geist-Regular", size: 18))
                         .multilineTextAlignment(.center)
                         .foregroundStyle(DesignTokens.textPrimary)
                         .opacity(showTagline ? 1 : 0)
-                        .offset(y: showTagline ? 0 : 8)
+                        .offset(y: showTagline ? 0 : -12)
                         .padding(.top, 50)
 
                     Spacer()
@@ -32,7 +34,7 @@ struct WelcomeScreen: View {
                         .aspectRatio(contentMode: .fit)
                         .padding(.horizontal, 28)
                         .opacity(showLogo ? 1 : 0)
-                        .offset(y: showLogo ? 0 : 8)
+                        .scaleEffect(showLogo ? 1 : 0.98)
 
                     Spacer().frame(height: 20)
 
@@ -49,7 +51,7 @@ struct WelcomeScreen: View {
                                     .font(.custom("Geist-Medium", size: 17))
                                     .tracking(0.32)
                                     .foregroundStyle(.white)
-                                    .frame(maxWidth: 260)
+                                    .frame(maxWidth: 240)
                                     .frame(height: 52)
                                     .background(.white.opacity(0.2))
                                     .clipShape(Capsule())
@@ -70,31 +72,44 @@ struct WelcomeScreen: View {
                             }
                             .padding(.top, DesignTokens.spacing4)
                         }
+                        .opacity(showButtons ? 1 : 0)
                         .padding(.bottom, DesignTokens.spacing40)
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 28))
                     .frame(height: geo.size.height * 0.56)
                     .padding(.horizontal, 28)
                     .padding(.bottom, max(28 - geo.safeAreaInsets.bottom, 0))
-                    .opacity(showCard ? 1 : 0)
-                    .offset(y: showCard ? 0 : 12)
                 }
             }
         }
         .onAppear {
-            withAnimation(.easeOut(duration: 0.6)) {
+            guard !reduceMotion else {
+                showLogo = true
                 showTagline = true
+                showButtons = true
+                return
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                withAnimation(.easeOut(duration: 0.6)) {
+
+            // Beat 1: Logo breathes in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                withAnimation(.easeInOut(duration: 1.8)) {
                     showLogo = true
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation(.easeOut(duration: 0.7)) {
-                    showCard = true
+
+            // Beat 2: Tagline fades in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    showTagline = true
                 }
-                HapticManager.impact(.medium)
+            }
+
+            // Beat 3: CTA buttons + haptic
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    showButtons = true
+                }
+                HapticManager.impact(.light)
             }
         }
     }
@@ -168,39 +183,39 @@ private struct WelcomeOrbBackground: View {
     }
 
     private func randomizePositions() {
-        let drift: CGFloat = 120
-        withAnimation(.easeInOut(duration: .random(in: 5...8))) {
+        let drift: CGFloat = 180
+        withAnimation(.easeInOut(duration: .random(in: 3...5))) {
             yellowOffset = CGSize(
                 width: .random(in: -drift...drift),
                 height: .random(in: -drift...drift)
             )
-            yellowScale = .random(in: 0.85...1.15)
+            yellowScale = .random(in: 0.7...1.3)
         }
-        withAnimation(.easeInOut(duration: .random(in: 6...9))) {
+        withAnimation(.easeInOut(duration: .random(in: 3.5...5.5))) {
             pinkOffset = CGSize(
                 width: .random(in: -drift...drift),
                 height: .random(in: -drift...drift)
             )
-            pinkScale = .random(in: 0.85...1.15)
+            pinkScale = .random(in: 0.7...1.3)
         }
     }
 
     private func startDriftTimer() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .random(in: 4...6)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .random(in: 2.5...4)) {
             randomizePositions()
             startDriftTimer()
         }
     }
 
     private func startColorCycle() {
-        withAnimation(.easeInOut(duration: 5)) {
+        withAnimation(.easeInOut(duration: 3.5)) {
             showPink = true
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-            withAnimation(.easeInOut(duration: 5)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+            withAnimation(.easeInOut(duration: 3.5)) {
                 showPink = false
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                 startColorCycle()
             }
         }

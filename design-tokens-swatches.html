@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: -apple-system, Helvetica Neue, sans-serif; font-size: 11px; color: #1C1E17; margin: 30px; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 14px; margin-top: 24px; margin-bottom: 6px; border-bottom: 1px solid #EBEBEB; padding-bottom: 4px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 16px; }
+  th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #6B6E63; padding: 4px 8px; border-bottom: 2px solid #EBEBEB; }
+  td { padding: 5px 8px; border-bottom: 1px solid #F2F2F2; vertical-align: middle; }
+  .swatch { display: inline-block; width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); vertical-align: middle; }
+  .token { font-family: 'SF Mono', Menlo, monospace; font-size: 10px; }
+  .hex { font-family: 'SF Mono', Menlo, monospace; font-size: 10px; color: #6B6E63; }
+  .use { font-size: 10px; color: #6B6E63; }
+  .subtitle { font-size: 11px; color: #A3A69B; margin-top: 0; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Estus Design System</h1>
+<p class="subtitle">Color tokens &amp; swatches — current palette</p>
+
+<h2>Backgrounds</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#E3E3E3"></span></td><td class="token">bgDeepest</td><td class="hex">#E3E3E3</td><td class="use">Main screen background, deepest layer</td></tr>
+  <tr><td><span class="swatch" style="background:#FFFFFF"></span></td><td class="token">bgSurface</td><td class="hex">#FFFFFF</td><td class="use">Cards, sheets, elevated content surfaces</td></tr>
+  <tr><td><span class="swatch" style="background:#F0F0F0"></span></td><td class="token">bgElevated</td><td class="hex">#F0F0F0</td><td class="use">Secondary surfaces, grouped backgrounds</td></tr>
+</table>
+
+<h2>Text</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#0C0D0D"></span></td><td class="token">textPrimary</td><td class="hex">#0C0D0D</td><td class="use">Headings, body copy, primary labels</td></tr>
+  <tr><td><span class="swatch" style="background:#6B6E63"></span></td><td class="token">textSecondary</td><td class="hex">#6B6E63</td><td class="use">Supporting text, descriptions, subtitles</td></tr>
+  <tr><td><span class="swatch" style="background:#A3A69B"></span></td><td class="token">textTertiary</td><td class="hex">#A3A69B</td><td class="use">Placeholders, disabled text, hints</td></tr>
+</table>
+
+<h2>Borders</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#EBEBEB"></span></td><td class="token">borderDefault</td><td class="hex">#EBEBEB</td><td class="use">Card borders, dividers</td></tr>
+  <tr><td><span class="swatch" style="background:#F2F2F2"></span></td><td class="token">borderSubtle</td><td class="hex">#F2F2F2</td><td class="use">Lighter separators, inner dividers</td></tr>
+</table>
+
+<h2>Dimension Accents (Wellness Tracking)</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#8F3B43"></span></td><td class="token">accentSleep</td><td class="hex">#8F3B43</td><td class="use">Sleep — dusty rose</td></tr>
+  <tr><td><span class="swatch" style="background:#C25D93"></span></td><td class="token">accentEnergy</td><td class="hex">#C25D93</td><td class="use">Energy — rose pink</td></tr>
+  <tr><td><span class="swatch" style="background:#6A93DE"></span></td><td class="token">accentClarity</td><td class="hex">#6A93DE</td><td class="use">Clarity — periwinkle</td></tr>
+  <tr><td><span class="swatch" style="background:#96953F"></span></td><td class="token">accentMood</td><td class="hex">#96953F</td><td class="use">Mood — olive gold</td></tr>
+  <tr><td><span class="swatch" style="background:#E0B23D"></span></td><td class="token">accentGut</td><td class="hex">#E0B23D</td><td class="use">Gut — warm gold</td></tr>
+  <tr><td><span class="swatch" style="background:#42467A"></span></td><td class="token">accentLongevity</td><td class="hex">#42467A</td><td class="use">Longevity — deep indigo</td></tr>
+  <tr><td><span class="swatch" style="background:#9462BF"></span></td><td class="token">accentSkin</td><td class="hex">#9462BF</td><td class="use">Skin — soft violet</td></tr>
+</table>
+
+<h2>Goal Accents</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#F2A150"></span></td><td class="token">accentMuscle</td><td class="hex">#F2A150</td><td class="use">Muscle/strength — warm amber</td></tr>
+  <tr><td><span class="swatch" style="background:#E66363"></span></td><td class="token">accentHeart</td><td class="hex">#E66363</td><td class="use">Heart/cardio — soft coral</td></tr>
+  <tr><td><span class="swatch" style="background:#1A6B6A"></span></td><td class="token">accentImmunity</td><td class="hex">#1A6B6A</td><td class="use">Immunity — dark teal</td></tr>
+  <tr><td><span class="swatch" style="background:#B07156"></span></td><td class="token">accentTerracotta</td><td class="hex">#B07156</td><td class="use">Terracotta accent</td></tr>
+  <tr><td><span class="swatch" style="background:#8C7E6A"></span></td><td class="token">warmStone</td><td class="hex">#8C7E6A</td><td class="use">Warm stone — neutral earthy tone</td></tr>
+</table>
+
+<h2>Darkened Icon Foregrounds</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#C25D93"></span></td><td class="token">iconFgEnergy</td><td class="hex">#C25D93</td><td class="use">Energy icon foreground on light bg</td></tr>
+  <tr><td><span class="swatch" style="background:#96953F"></span></td><td class="token">iconFgMood</td><td class="hex">#96953F</td><td class="use">Mood icon foreground on light bg</td></tr>
+  <tr><td><span class="swatch" style="background:#E0B23D"></span></td><td class="token">iconFgGut</td><td class="hex">#E0B23D</td><td class="use">Gut icon foreground on light bg</td></tr>
+</table>
+
+<h2>Functional</h2>
+<table>
+  <tr><th>Swatch</th><th>Token</th><th>Hex</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#2E9E9E"></span></td><td class="token">positive</td><td class="hex">#2E9E9E</td><td class="use">Positive trends, improvements</td></tr>
+  <tr><td><span class="swatch" style="background:#D94040"></span></td><td class="token">negative</td><td class="hex">#D94040</td><td class="use">Negative trends, warnings</td></tr>
+  <tr><td><span class="swatch" style="background:#4A8FC2"></span></td><td class="token">info</td><td class="hex">#4A8FC2</td><td class="use">Informational states</td></tr>
+</table>
+
+<h2>Welcome Screen (Not Tokenized)</h2>
+<table>
+  <tr><th>Swatch</th><th>Value</th><th>Use</th></tr>
+  <tr><td><span class="swatch" style="background:#E3E3E3"></span></td><td class="hex">#E3E3E3</td><td class="use">Welcome screen light grey background</td></tr>
+  <tr><td><span class="swatch" style="background:#0D0D0D"></span></td><td class="hex">#0D0D0D</td><td class="use">Welcome screen card/orb dark background</td></tr>
+  <tr><td><span class="swatch" style="background:linear-gradient(to right, #E0B23D, #96953F)"></span></td><td class="hex">#E0B23D / #96953F</td><td class="use">Yellow orb gradient (inner / outer)</td></tr>
+  <tr><td><span class="swatch" style="background:linear-gradient(to right, #C25D93, #8F3B43)"></span></td><td class="hex">#C25D93 / #8F3B43</td><td class="use">Pink orb gradient (inner / outer)</td></tr>
+</table>
+
+</body>
+</html>

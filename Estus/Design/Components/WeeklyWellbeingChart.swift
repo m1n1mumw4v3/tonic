@@ -58,7 +58,7 @@ struct WeeklyWellbeingChart: View {
                         .frame(width: 6, height: 6)
                     Text(dim.label)
                         .font(DesignTokens.smallMono)
-                        .foregroundStyle(DesignTokens.textTertiary)
+                        .foregroundStyle(dim.color)
                 }
             }
         }
@@ -109,9 +109,7 @@ struct WeeklyWellbeingChart: View {
                         let score = CGFloat(scores[dim] ?? 0)
                         let segmentHeight = total > 0 ? (score / total) * scaledHeight : 0
 
-                        let opacity: Double = day.isToday || isSelected ? 0.85 : 0.35
-
-                        dim.color.opacity(opacity)
+                        dim.color
                             .frame(height: segmentHeight)
                     }
                 }

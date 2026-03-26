@@ -32,12 +32,13 @@ struct SupplementLogRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(shortName)
                         .font(DesignTokens.bodyFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
+                        .foregroundStyle(DesignTokens.textPrimary.opacity(isTaken ? 0.4 : 1.0))
+                        .strikethrough(isTaken, color: DesignTokens.textPrimary.opacity(0.4))
                         .lineLimit(1)
 
                     Text(supplement.dosage)
                         .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
+                        .foregroundStyle(DesignTokens.textTertiary.opacity(isTaken ? 0.5 : 1.0))
                         .lineLimit(1)
                 }
 
@@ -79,10 +80,10 @@ struct SupplementLogRow: View {
     private var toggleCircle: some View {
         ZStack {
             Circle()
-                .stroke(isTaken ? DesignTokens.positive : DesignTokens.borderDefault, lineWidth: 1.5)
+                .stroke(isTaken ? DesignTokens.textPrimary : DesignTokens.borderDefault, lineWidth: 1.5)
                 .background(
                     Circle()
-                        .fill(isTaken ? DesignTokens.positive : Color.clear)
+                        .fill(isTaken ? DesignTokens.textPrimary : Color.clear)
                 )
 
             if isTaken {

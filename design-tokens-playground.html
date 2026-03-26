@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estus Design Tokens Playground</title>
+<style>
+  :root {
+    --bg: #F8F8F8;
+    --surface: #FFFFFF;
+    --text-primary: #1C1E17;
+    --text-secondary: #6B6E63;
+    --text-tertiary: #A3A69B;
+    --border: #EBEBEB;
+    --border-subtle: #F2F2F2;
+    --accent: #2E9E9E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 32px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 32px;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+
+  .actions-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .actions-bar button {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-primary {
+    background: var(--text-primary);
+    color: #fff;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border) !important;
+  }
+  .btn-secondary:hover { background: var(--border-subtle); }
+
+  .btn-danger {
+    background: #D94040;
+    color: #fff;
+  }
+  .btn-danger:hover { opacity: 0.85; }
+
+  .change-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    padding: 0 6px;
+    margin-left: 6px;
+  }
+
+  .change-count.hidden { display: none; }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    margin-top: 28px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .token-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .token-row.changed {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  .swatch-pair {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+  }
+
+  .arrow {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .token-row.changed .arrow { opacity: 1; }
+
+  .swatch-new {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 2px dashed var(--border);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    background: transparent;
+  }
+
+  .token-row.changed .swatch-new {
+    border-style: solid;
+    border-color: rgba(0,0,0,0.08);
+    border-width: 1px;
+  }
+
+  .token-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .token-name {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .token-use {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hex-current {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    width: 68px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .hex-input-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hex-input {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    width: 90px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .hex-input:focus {
+    border-color: var(--accent);
+  }
+
+  .hex-input.invalid {
+    border-color: #D94040;
+    background: #FFF5F5;
+  }
+
+  .token-row .reset-btn {
+    opacity: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-tertiary);
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .token-row.changed .reset-btn { opacity: 1; }
+  .reset-btn:hover { color: #D94040; background: #FFF5F5; }
+
+  /* Export modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.visible {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  .modal h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .modal .subtitle {
+    margin-bottom: 16px;
+  }
+
+  .modal pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .modal .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    justify-content: flex-end;
+  }
+
+  .copied-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  .copied-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Estus Token Playground</h1>
+  <p class="subtitle">Edit hex values to preview changes. Export when ready.</p>
+  <div class="actions-bar">
+    <button class="btn-primary" onclick="exportChanges()">
+      Export Changes<span id="changeCount" class="change-count hidden">0</span>
+    </button>
+    <button class="btn-secondary" onclick="resetAll()">Reset All</button>
+  </div>
+</header>
+
+<div id="tokenSections"></div>
+
+<div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Token Changes</h3>
+    <p class="subtitle">Copy this and paste it to Claude to update DesignTokens.swift</p>
+    <pre id="exportOutput"></pre>
+    <div class="actions">
+      <button class="btn-secondary" onclick="closeModal()">Close</button>
+      <button class="btn-primary" onclick="copyExport()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="copied-toast">Copied!</div>
+
+<script>
+const TOKEN_DATA = [
+  {
+    section: "Backgrounds",
+    tokens: [
+      { name: "bgDeepest",  hex: "#E3E3E3", use: "Main screen background, deepest layer" },
+      { name: "bgSurface",  hex: "#FFFFFF", use: "Cards, sheets, elevated content surfaces" },
+      { name: "bgElevated", hex: "#F0F0F0", use: "Secondary surfaces, grouped backgrounds" },
+    ]
+  },
+  {
+    section: "Text",
+    tokens: [
+      { name: "textPrimary",   hex: "#0C0D0D", use: "Headings, body copy, primary labels" },
+      { name: "textSecondary", hex: "#6B6E63", use: "Supporting text, descriptions, subtitles" },
+      { name: "textTertiary",  hex: "#A3A69B", use: "Placeholders, disabled text, hints" },
+    ]
+  },
+  {
+    section: "Borders",
+    tokens: [
+      { name: "borderDefault", hex: "#EBEBEB", use: "Card borders, dividers" },
+      { name: "borderSubtle",  hex: "#F2F2F2", use: "Lighter separators, inner dividers" },
+    ]
+  },
+  {
+    section: "Dimension Accents (Wellness Tracking)",
+    tokens: [
+      { name: "accentSleep",     hex: "#8F3B43", use: "Sleep — dusty rose" },
+      { name: "accentEnergy",    hex: "#C25D93", use: "Energy — rose pink" },
+      { name: "accentClarity",   hex: "#6A93DE", use: "Clarity — periwinkle" },
+      { name: "accentMood",      hex: "#96953F", use: "Mood — olive gold" },
+      { name: "accentGut",       hex: "#E0B23D", use: "Gut — warm gold" },
+      { name: "accentLongevity", hex: "#42467A", use: "Longevity — deep indigo" },
+      { name: "accentSkin",      hex: "#9462BF", use: "Skin — soft violet" },
+    ]
+  },
+  {
+    section: "Goal Accents",
+    tokens: [
+      { name: "accentMuscle",    hex: "#F2A150", use: "Muscle/strength — warm amber" },
+      { name: "accentHeart",     hex: "#E66363", use: "Heart/cardio — soft coral" },
+      { name: "accentImmunity",  hex: "#1A6B6A", use: "Immunity — dark teal" },
+      { name: "accentTerracotta", hex: "#B07156", use: "Terracotta accent" },
+      { name: "warmStone",       hex: "#8C7E6A", use: "Warm stone — neutral earthy tone" },
+    ]
+  },
+  {
+    section: "Darkened Icon Foregrounds",
+    tokens: [
+      { name: "iconFgEnergy", hex: "#C25D93", use: "Energy icon foreground on light bg" },
+      { name: "iconFgMood",   hex: "#96953F", use: "Mood icon foreground on light bg" },
+      { name: "iconFgGut",    hex: "#E0B23D", use: "Gut icon foreground on light bg" },
+    ]
+  },
+  {
+    section: "Functional",
+    tokens: [
+      { name: "positive", hex: "#2E9E9E", use: "Positive trends, improvements" },
+      { name: "negative", hex: "#D94040", use: "Negative trends, warnings" },
+      { name: "info",     hex: "#4A8FC2", use: "Informational states" },
+    ]
+  },
+];
+
+const changes = {};
+
+function isValidHex(v) {
+  return /^#[0-9A-Fa-f]{6}$/.test(v) || /^#[0-9A-Fa-f]{3}$/.test(v);
+}
+
+function normalizeHex(v) {
+  let h = v.trim();
+  if (!h.startsWith('#')) h = '#' + h;
+  return h.toUpperCase();
+}
+
+function buildUI() {
+  const container = document.getElementById('tokenSections');
+  let html = '';
+
+  TOKEN_DATA.forEach(section => {
+    html += `<h2>${section.section}</h2>`;
+    section.tokens.forEach(token => {
+      html += `
+        <div class="token-row" id="row-${token.name}">
+          <div class="swatch-pair">
+            <div class="swatch" style="background:${token.hex}"></div>
+            <span class="arrow">&rarr;</span>
+            <div class="swatch-new" id="swatch-new-${token.name}"></div>
+          </div>
+          <div class="token-info">
+            <div class="token-name">${token.name}</div>
+            <div class="token-use">${token.use}</div>
+          </div>
+          <div class="hex-current">${token.hex}</div>
+          <div class="hex-input-wrap">
+            <input
+              class="hex-input"
+              id="input-${token.name}"
+              type="text"
+              placeholder="${token.hex}"
+              data-token="${token.name}"
+              data-original="${token.hex}"
+              oninput="handleInput(this)"
+            >
+          </div>
+          <button class="reset-btn" title="Reset" onclick="resetToken('${token.name}')">&#x2715;</button>
+        </div>`;
+    });
+  });
+
+  container.innerHTML = html;
+}
+
+function handleInput(el) {
+  const tokenName = el.dataset.token;
+  const original = el.dataset.original;
+  const raw = el.value.trim();
+  const row = document.getElementById(`row-${tokenName}`);
+  const swatchNew = document.getElementById(`swatch-new-${tokenName}`);
+
+  if (!raw) {
+    delete changes[tokenName];
+    row.classList.remove('changed');
+    el.classList.remove('invalid');
+    swatchNew.style.background = 'transparent';
+    updateCount();
+    return;
+  }
+
+  let hex = raw;
+  if (!hex.startsWith('#')) hex = '#' + hex;
+
+  if (isValidHex(hex)) {
+    el.classList.remove('invalid');
+    const upper = hex.toUpperCase();
+    if (upper === original.toUpperCase()) {
+      delete changes[tokenName];
+      row.classList.remove('changed');
+      swatchNew.style.background = 'transparent';
+    } else {
+      changes[tokenName] = upper;
+      row.classList.add('changed');
+      swatchNew.style.background = hex;
+    }
+  } else {
+    el.classList.add('invalid');
+    swatchNew.style.background = 'transparent';
+    delete changes[tokenName];
+    row.classList.remove('changed');
+  }
+
+  updateCount();
+}
+
+function resetToken(tokenName) {
+  const input = document.getElementById(`input-${tokenName}`);
+  const row = document.getElementById(`row-${tokenName}`);
+  const swatchNew = document.getElementById(`swatch-new-${tokenName}`);
+  input.value = '';
+  input.classList.remove('invalid');
+  row.classList.remove('changed');
+  swatchNew.style.background = 'transparent';
+  delete changes[tokenName];
+  updateCount();
+}
+
+function resetAll() {
+  Object.keys(changes).forEach(resetToken);
+}
+
+function updateCount() {
+  const count = Object.keys(changes).length;
+  const badge = document.getElementById('changeCount');
+  if (count > 0) {
+    badge.textContent = count;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+function exportChanges() {
+  const keys = Object.keys(changes);
+  if (keys.length === 0) {
+    showToast('No changes to export');
+    return;
+  }
+
+  // Build a lookup of token -> section
+  const tokenSection = {};
+  TOKEN_DATA.forEach(s => s.tokens.forEach(t => tokenSection[t.name] = s.section));
+
+  // Group changes by section
+  const grouped = {};
+  keys.forEach(k => {
+    const sec = tokenSection[k] || 'Other';
+    if (!grouped[sec]) grouped[sec] = [];
+    const original = TOKEN_DATA.flatMap(s => s.tokens).find(t => t.name === k);
+    grouped[sec].push({ name: k, from: original.hex, to: changes[k] });
+  });
+
+  let output = `Update the following design tokens in DesignTokens.swift:\n\n`;
+  Object.entries(grouped).forEach(([section, items]) => {
+    output += `## ${section}\n`;
+    items.forEach(item => {
+      output += `  ${item.name}: ${item.from} -> ${item.to}\n`;
+    });
+    output += `\n`;
+  });
+  output += `Also update design-tokens-swatches.html and design-tokens.md to match.`;
+
+  document.getElementById('exportOutput').textContent = output;
+  document.getElementById('modalOverlay').classList.add('visible');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('visible');
+  }
+}
+
+function copyExport() {
+  const text = document.getElementById('exportOutput').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// Keyboard shortcut: Escape closes modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+buildUI();
+</script>
+</body>
+</html>

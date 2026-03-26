@@ -68,7 +68,7 @@ struct DeepProfileHomeCard: View {
 
                 // CTA
                 if !isComplete {
-                    CTAButton(title: "Enhance Your Profile", style: .ghost) {}
+                    CTAButton(title: "Enhance Your Profile", style: .secondary) {}
                         .allowsHitTesting(false)
                 }
             }

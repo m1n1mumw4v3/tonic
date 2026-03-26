@@ -50,12 +50,12 @@ struct SupplementIconView: View {
     var body: some View {
         Text(config.abbreviation)
             .font(pixelFont)
-            .foregroundStyle(foregroundColor)
+            .foregroundStyle(foregroundColor.opacity(isTaken ? 0.5 : 1.0))
             .frame(width: size, height: size)
-            .background(accent.opacity(isTaken ? 0.22 : 0.14))
+            .background(accent.opacity(isTaken ? 0.1 : 0.18))
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(accent.opacity(0.25), lineWidth: 1)
+                    .stroke(accent.opacity(isTaken ? 0.15 : 0.3), lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }

@@ -4,15 +4,8 @@ struct TodayScreen: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = TodayViewModel()
     @State private var phaseCheckTask: Task<Void, Never>?
-    @State private var checkInState: CheckInState = .open
+    @State private var showCheckInSheet = false
     @State private var insightPage: UUID?
-
-    /// State machine for the wellbeing check-in card.
-    enum CheckInState: Equatable {
-        case open       // Not yet submitted — sliders visible
-        case collapsed  // Submitted — compact complete badge
-        case editing    // Submitted but re-editing sliders
-    }
     @State private var yesterdayExpanded = false
     @State private var scrollOffset: CGFloat = 0
     @State private var selectedDayIndex: Int? = nil
@@ -90,6 +83,9 @@ struct TodayScreen: View {
             SettingsScreen()
                 .environment(appState)
         }
+        .sheet(isPresented: $showCheckInSheet) {
+            wellbeingCheckInSheet
+        }
         .sheet(isPresented: $state.showPaywall) {
             PaywallScreen(
                 viewModel: Self.paywallViewModel(from: appState),
@@ -105,26 +101,9 @@ struct TodayScreen: View {
         .onAppear {
             viewModel.load(appState: appState)
             startPhaseTimer()
-            if viewModel.wellbeingSubmitted {
-                checkInState = .collapsed
-            }
         }
         .onDisappear {
             phaseCheckTask?.cancel()
-        }
-        .onChange(of: viewModel.wellbeingSubmitted) { _, submitted in
-            if submitted {
-                Task {
-                    try? await Task.sleep(for: .seconds(0.45))
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        checkInState = .collapsed
-                    }
-                }
-            } else {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    checkInState = .open
-                }
-            }
         }
         .onChange(of: appState.activePlan?.id) { _, _ in
             viewModel.load(appState: appState)
@@ -163,21 +142,24 @@ struct TodayScreen: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        ZStack {
-            Text("ESTUS")
-                .font(.custom("Geist-Medium", size: 18))
-                .tracking(1.5)
-                .foregroundStyle(DesignTokens.textPrimary)
+        HStack {
+            Image("EstusLogomark")
+                .resizable()
+                .renderingMode(.original)
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 20)
 
-            HStack {
+            Spacer()
+
+            HStack(spacing: DesignTokens.spacing8) {
                 streakBadge
-                Spacer()
+
                 Button {
                     appState.showSettings = true
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(DesignTokens.accentLongevity)
+                            .fill(DesignTokens.textPrimary)
                             .frame(width: 28, height: 28)
                         Text(appState.userName.prefix(1).uppercased())
                             .font(.custom("Geist-Medium", size: 12))
@@ -276,6 +258,10 @@ struct TodayScreen: View {
                     }()
 
                     DailyOverviewCard(dayData: day, varianceText: variance)
+                } else if day.isToday && !viewModel.wellbeingSubmitted {
+                    CTAButton(title: "Complete Your Check-In", style: .primary) {
+                        showCheckInSheet = true
+                    }
                 } else {
                     Text("No check-in recorded")
                         .font(DesignTokens.captionFont)
@@ -368,173 +354,84 @@ struct TodayScreen: View {
         if let plan = appState.activePlan {
             let visible = viewModel.visibleSupplements(for: phase, plan: plan)
 
-            VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-                if !visible.isEmpty {
-                    SupplementLogList(
-                        supplements: visible,
-                        supplementStates: viewModel.supplementStates,
-                        onToggle: { id in viewModel.toggleSupplement(id, appState: appState) },
-                        onTakeAllSection: { ids in viewModel.takeAllByIDs(ids, appState: appState) },
-                        amProgress: viewModel.amProgress,
-                        pmProgress: viewModel.pmProgress,
-                        amComplete: viewModel.amComplete,
-                        pmComplete: viewModel.pmComplete
-                    )
-                }
-
-                // Check-In title (only when open)
-                if checkInState == .open {
-                    Text("How are you feeling today?")
+            if !visible.isEmpty {
+                VStack(alignment: .leading, spacing: DesignTokens.spacing2) {
+                    Text("Your Daily Stack")
                         .font(DesignTokens.titleFont)
                         .foregroundStyle(DesignTokens.textPrimary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, DesignTokens.spacing8)
-                        .transition(.opacity)
+                    Text("Log the supplements you've taken today.")
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textSecondary)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, DesignTokens.spacing4)
+                .padding(.bottom, -DesignTokens.spacing12)
 
-                wellbeingCheckInSection
-                    .padding(.top, checkInState != .open ? DesignTokens.spacing8 : 0)
+                SupplementLogList(
+                    supplements: visible,
+                    supplementStates: viewModel.supplementStates,
+                    onToggle: { id in viewModel.toggleSupplement(id, appState: appState) },
+                    onTakeAllSection: { ids in viewModel.takeAllByIDs(ids, appState: appState) },
+                    amProgress: viewModel.amProgress,
+                    pmProgress: viewModel.pmProgress,
+                    amComplete: viewModel.amComplete,
+                    pmComplete: viewModel.pmComplete
+                )
             }
         }
     }
 
-    // MARK: - Wellbeing Check-In Section
+    // MARK: - Wellbeing Check-In Sheet
 
-    private var wellbeingCheckInSection: some View {
-        let isCollapsed = checkInState != .open
-        let showSliders = checkInState == .open || checkInState == .editing
-
-        return VStack(spacing: 0) {
-            // Collapsed header (visible once submitted)
-            if isCollapsed {
-                HStack(spacing: DesignTokens.spacing4) {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundStyle(DesignTokens.accentHeart)
-                    Text("CHECK-IN")
-                        .font(.custom("Geist-SemiBold", size: 16))
-                        .tracking(1.5)
-                        .foregroundStyle(DesignTokens.textSecondary)
-                    HStack(spacing: 4) {
-                        AnimatedCheckmark(isChecked: true, color: .white, size: 8)
-                        Text("COMPLETE")
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.horizontal, DesignTokens.spacing8)
-                    .padding(.vertical, 3)
-                    .background(DesignTokens.positive)
-                    .clipShape(Capsule())
-                    .transition(.opacity)
-                    Spacer()
-                    HStack(spacing: DesignTokens.spacing4) {
-                        Text(checkInState == .editing ? "Edit" : "")
-                            .font(DesignTokens.captionFont)
-                            .foregroundStyle(DesignTokens.textTertiary)
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(DesignTokens.textTertiary)
-                            .rotationEffect(.degrees(checkInState == .editing ? 180 : 0))
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            checkInState = checkInState == .editing ? .collapsed : .editing
-                        }
-                    }
-                }
-                .padding(.horizontal, DesignTokens.screenMargin)
-                .padding(.top, DesignTokens.spacing12)
-                .padding(.bottom, showSliders ? DesignTokens.spacing4 : DesignTokens.spacing12)
-                .transition(.opacity)
+    private var wellbeingCheckInSheet: some View {
+        VStack(spacing: DesignTokens.spacing16) {
+            VStack(spacing: DesignTokens.spacing20) {
+                WellnessSlider(
+                    dimension: .sleep,
+                    value: $viewModel.sleepScore,
+                    lowLabel: WellnessDimension.sleep.lowLabel,
+                    highLabel: WellnessDimension.sleep.highLabel,
+                    averageValue: viewModel.trailingAverages[.sleep]
+                )
+                WellnessSlider(
+                    dimension: .energy,
+                    value: $viewModel.energyScore,
+                    lowLabel: WellnessDimension.energy.lowLabel,
+                    highLabel: WellnessDimension.energy.highLabel,
+                    averageValue: viewModel.trailingAverages[.energy]
+                )
+                WellnessSlider(
+                    dimension: .clarity,
+                    value: $viewModel.clarityScore,
+                    lowLabel: WellnessDimension.clarity.lowLabel,
+                    highLabel: WellnessDimension.clarity.highLabel,
+                    averageValue: viewModel.trailingAverages[.clarity]
+                )
+                WellnessSlider(
+                    dimension: .mood,
+                    value: $viewModel.moodScore,
+                    lowLabel: WellnessDimension.mood.lowLabel,
+                    highLabel: WellnessDimension.mood.highLabel,
+                    averageValue: viewModel.trailingAverages[.mood]
+                )
+                WellnessSlider(
+                    dimension: .gut,
+                    value: $viewModel.gutScore,
+                    lowLabel: WellnessDimension.gut.lowLabel,
+                    highLabel: WellnessDimension.gut.highLabel,
+                    averageValue: viewModel.trailingAverages[.gut]
+                )
             }
 
-            // Open state: spectrum bar (only when not collapsed)
-            if !isCollapsed {
-                SpectrumBar(height: 2)
-            }
-
-            // Sliders + CTA
-            if showSliders {
-                VStack(spacing: DesignTokens.spacing16) {
-                    VStack(spacing: DesignTokens.spacing20) {
-                        WellnessSlider(
-                            dimension: .sleep,
-                            value: $viewModel.sleepScore,
-                            lowLabel: WellnessDimension.sleep.lowLabel,
-                            highLabel: WellnessDimension.sleep.highLabel,
-                            averageValue: viewModel.trailingAverages[.sleep]                        )
-                        WellnessSlider(
-                            dimension: .energy,
-                            value: $viewModel.energyScore,
-                            lowLabel: WellnessDimension.energy.lowLabel,
-                            highLabel: WellnessDimension.energy.highLabel,
-                            averageValue: viewModel.trailingAverages[.energy]                        )
-                        WellnessSlider(
-                            dimension: .clarity,
-                            value: $viewModel.clarityScore,
-                            lowLabel: WellnessDimension.clarity.lowLabel,
-                            highLabel: WellnessDimension.clarity.highLabel,
-                            averageValue: viewModel.trailingAverages[.clarity]                        )
-                        WellnessSlider(
-                            dimension: .mood,
-                            value: $viewModel.moodScore,
-                            lowLabel: WellnessDimension.mood.lowLabel,
-                            highLabel: WellnessDimension.mood.highLabel,
-                            averageValue: viewModel.trailingAverages[.mood]                        )
-                        WellnessSlider(
-                            dimension: .gut,
-                            value: $viewModel.gutScore,
-                            lowLabel: WellnessDimension.gut.lowLabel,
-                            highLabel: WellnessDimension.gut.highLabel,
-                            averageValue: viewModel.trailingAverages[.gut]                        )
-                    }
-
-                    CTAButton(title: "Save Check-In", style: .ghost, spectrumBorder: true) {
-                        viewModel.submitWellbeingCheckIn(appState: appState)
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            checkInState = .collapsed
-                        }
-                    }
-                }
-                .padding(DesignTokens.spacing16)
+            CTAButton(title: "Save Check-In", style: .ghost, spectrumBorder: true) {
+                viewModel.submitWellbeingCheckIn(appState: appState)
+                showCheckInSheet = false
             }
         }
-        .animation(.easeInOut(duration: 0.6), value: checkInState)
-        .background(
-            ZStack {
-                if checkInState != .open {
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(
-                            AngularGradient(
-                                colors: DesignTokens.spectrumColors + [DesignTokens.spectrumColors[0]],
-                                center: .center
-                            ),
-                            lineWidth: 4
-                        )
-                        .blur(radius: 8)
-                        .opacity(0.4)
-                        .transition(.opacity)
-                }
-
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .fill(DesignTokens.bgSurface)
-            }
-            .animation(.easeInOut(duration: 0.6), value: checkInState)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(DesignTokens.borderDefault, lineWidth: 1)
-        )
-        .overlay(
-            SpectrumProgressBorder(
-                progress: checkInState != .open ? 1.0 : 0,
-                cornerRadius: DesignTokens.radiusMedium
-            )
-            .animation(.easeOut(duration: 0.5), value: checkInState)
-        )
-        .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
+        .padding(DesignTokens.spacing20)
+        .padding(.top, DesignTokens.spacing8)
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
     }
 
     // MARK: - Feed Section
