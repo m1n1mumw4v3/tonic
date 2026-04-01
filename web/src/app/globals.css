@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Backgrounds */
+  --color-bg-deepest: #FAFAF7;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-elevated: #F0F0F0;
+  --color-bg-hero: #E3E3E3;
+  --color-bg-dark: #0D0D0D;
+
+  /* Text */
+  --color-text-primary: #0C0D0D;
+  --color-text-secondary: #6B6E63;
+  --color-text-tertiary: #A3A69B;
+
+  /* Borders */
+  --color-border-default: #EBEBEB;
+  --color-border-subtle: #F2F2F2;
+
+  /* Dimension Accents */
+  --color-accent-sleep: #8F3B43;
+  --color-accent-energy: #C25D93;
+  --color-accent-clarity: #6A93DE;
+  --color-accent-mood: #96953F;
+  --color-accent-gut: #E0B23D;
+  --color-accent-longevity: #42467A;
+  --color-accent-skin: #9462BF;
+
+  /* Goal Accents */
+  --color-accent-muscle: #F2A150;
+  --color-accent-heart: #E66363;
+  --color-accent-immunity: #1A6B6A;
+
+  /* Functional */
+  --color-positive: #2E9E9E;
+  --color-negative: #D94040;
+  --color-info: #4A8FC2;
+
+  /* Spacing */
+  --spacing: 4px;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  /* Shadows */
+  --shadow-card: 0 3px 8px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Animations */
+  --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
+  --animate-fade-in: fade-in 0.4s ease-out forwards;
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+body {
+  background: var(--color-bg-deepest);
+  color: var(--color-text-primary);
+}
+
+/* Spectrum gradient utility */
+.bg-spectrum {
+  background: linear-gradient(to right, #8F3B43, #C25D93, #6A93DE, #96953F, #E0B23D);
+}
