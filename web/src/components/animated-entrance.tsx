@@ -30,7 +30,7 @@ export function AnimatedEntrance({
     <motion.div
       initial={{ opacity: 0, ...directionMap[direction] }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "-100px" }}
       transition={{ duration, ease: "easeOut", delay }}
       className={className}
     >

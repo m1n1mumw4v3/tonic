@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { FeatureCard } from "@/components/feature-card";
 import { AnimatedEntrance } from "@/components/animated-entrance";
 import { tokens } from "@/lib/design-tokens";
+import { PhoneMockup } from "@/components/phone-mockup";
 
 const dimensions = [
   { name: "Sleep", color: "#8F3B43", description: "Restfulness & recovery" },
@@ -28,7 +29,7 @@ export default function Home() {
           <HeroOrbBackground />
 
           {/* Content overlay */}
-          <div className="relative z-10 flex flex-col items-center text-center px-6 py-24 md:py-32">
+          <div className="relative z-10 flex flex-col items-center text-center px-6 pt-24 md:pt-32 pb-0">
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
@@ -72,6 +73,19 @@ export default function Home() {
             <CTAButton href="#" variant="hero" className="min-w-[200px]">
               Download App
             </CTAButton>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: instant ?? 2.4,
+              duration: instant ?? 1.0,
+              ease: "easeInOut",
+            }}
+            className="mt-12"
+          >
+            <PhoneMockup />
           </motion.div>
           </div>
         </div>
@@ -150,19 +164,19 @@ export default function Home() {
 
 
       {/* ─── Final CTA ─── */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
+      <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 bg-bg-dark" />
 
         {/* Subtle orb glow */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-30"
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-30"
           style={{
             background: `radial-gradient(circle, ${tokens.colors.orbYellowInner}, ${tokens.colors.orbYellowOuter}, transparent)`,
             filter: "blur(80px)",
           }}
         />
 
-        <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
           <AnimatedEntrance>
             <h2 className="text-[28px] md:text-[36px] font-light text-bg-deepest mb-4 leading-tight">
               Start feeling better,
