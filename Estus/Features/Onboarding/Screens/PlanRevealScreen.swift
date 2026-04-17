@@ -71,10 +71,6 @@ struct PlanRevealScreen: View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            // Background particles
-            particleField
-                .opacity(showBackground ? 1 : 0)
-
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: DesignTokens.spacing24) {
@@ -82,13 +78,13 @@ struct PlanRevealScreen: View {
                         headerSection
                             .padding(.top, DesignTokens.spacing40)
 
-                        // Goal chips
-                        goalChipsSection
-
                         // AI reasoning as flowing text
                         if let summary = viewModel.generatedPlan?.aiReasoning {
                             summaryBlurb(summary)
                         }
+
+                        // Goal chips
+                        goalChipsSection
 
                         // Tiered supplement sections
                         supplementSections
@@ -139,42 +135,27 @@ struct PlanRevealScreen: View {
 
     private var headerSection: some View {
         VStack(spacing: DesignTokens.spacing8) {
-            HeadlineText(
-                text: "Your plan is ready, \(userName).",
-                alignment: .center,
-                fontSize: 32
-            )
+            Text("Your plan is ready, \(userName).")
+                .font(.custom("Geist-Regular", size: 28))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(DesignTokens.textPrimary)
             .opacity(showHeadline ? 1 : 0)
             .offset(y: showHeadline || reduceMotion ? 0 : 12)
 
-            HStack(spacing: 4) {
-                Text("\(animatedSupplementCount)")
-                    .font(DesignTokens.dataMono)
-                    .foregroundStyle(DesignTokens.info)
-                    .contentTransition(.numericText())
-                Text("supplements tailored to your goals")
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
-            }
-            .opacity(showSubtitle ? 1 : 0)
         }
     }
 
     // MARK: - Goal Chips
 
     private var goalChipsSection: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: DesignTokens.spacing8) {
-                // "All" chip
-                allChip
-                    .opacity(visibleGoalChips > 0 ? 1 : 0)
-                    .offset(x: visibleGoalChips > 0 || reduceMotion ? 0 : -20)
+        HStack(spacing: DesignTokens.spacing4) {
+            // "All" chip
+            allChip
+                .opacity(visibleGoalChips > 0 ? 1 : 0)
 
-                ForEach(Array(userGoals.enumerated()), id: \.element.id) { index, goal in
-                    goalChip(for: goal)
-                        .opacity(index < visibleGoalChips ? 1 : 0)
-                        .offset(x: index < visibleGoalChips || reduceMotion ? 0 : -20)
-                }
+            ForEach(Array(userGoals.enumerated()), id: \.element.id) { index, goal in
+                goalChip(for: goal)
+                    .opacity(index < visibleGoalChips ? 1 : 0)
             }
         }
     }
@@ -185,19 +166,15 @@ struct PlanRevealScreen: View {
                 selectedGoalFilter = nil
             }
         } label: {
-            HStack(spacing: 4) {
-                Image(systemName: "square.grid.2x2")
-                    .font(.system(size: 11))
-                Text("All")
-                    .font(DesignTokens.labelMono)
-            }
-            .foregroundStyle(DesignTokens.textPrimary)
-            .padding(.horizontal, DesignTokens.spacing12)
-            .padding(.vertical, 6)
-            .background(selectedGoalFilter == nil ? DesignTokens.textPrimary.opacity(0.15) : DesignTokens.textPrimary.opacity(0.06))
-            .clipShape(Capsule())
-            .overlay(Capsule().stroke(DesignTokens.textPrimary.opacity(selectedGoalFilter == nil ? 0.4 : 0.15), lineWidth: 1))
-            .opacity(selectedGoalFilter != nil ? 0.6 : 1)
+            Text("All")
+                .font(DesignTokens.labelMono)
+                .foregroundStyle(selectedGoalFilter == nil ? .white : DesignTokens.textPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(selectedGoalFilter == nil ? DesignTokens.textPrimary : Color.white)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(DesignTokens.textPrimary, lineWidth: selectedGoalFilter == nil ? 0 : 1))
+                .opacity(selectedGoalFilter != nil ? 0.6 : 1)
         }
         .buttonStyle(.plain)
     }
@@ -211,19 +188,15 @@ struct PlanRevealScreen: View {
                 selectedGoalFilter = selectedGoalFilter == goal ? nil : goal
             }
         } label: {
-            HStack(spacing: 4) {
-                Image(systemName: goal.icon)
-                    .font(.system(size: 11))
-                Text(goal.shortLabel)
-                    .font(DesignTokens.labelMono)
-            }
-            .foregroundStyle(goal.accentColor)
-            .padding(.horizontal, DesignTokens.spacing12)
-            .padding(.vertical, 6)
-            .background(goal.accentColor.opacity(isSelected ? 0.30 : 0.12))
-            .clipShape(Capsule())
-            .overlay(Capsule().stroke(goal.accentColor.opacity(isSelected ? 0.6 : 0.25), lineWidth: 1))
-            .opacity(isFiltering && !isSelected ? 0.6 : 1)
+            Text(goal.shortLabel)
+                .font(DesignTokens.labelMono)
+                .foregroundStyle(isSelected ? .white : goal.chipColor)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(isSelected ? goal.chipColor : Color.white)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(goal.chipColor, lineWidth: isSelected ? 0 : 1))
+                .opacity(isFiltering && !isSelected ? 0.6 : 1)
         }
         .buttonStyle(.plain)
     }
@@ -247,63 +220,38 @@ struct PlanRevealScreen: View {
     // MARK: - Summary Blurb
 
     private func summaryBlurb(_ text: String) -> some View {
-        HStack(alignment: .top, spacing: DesignTokens.spacing12) {
-            // Spectrum gradient left accent bar
-            RoundedRectangle(cornerRadius: 1)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            DesignTokens.accentSleep,
-                            DesignTokens.accentEnergy,
-                            DesignTokens.accentClarity,
-                            DesignTokens.accentMood,
-                            DesignTokens.accentGut
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .frame(width: 2)
+        VStack(spacing: 0) {
+            // Header pill
+            HStack(spacing: DesignTokens.spacing8) {
+                Image("EstusAIIcon")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 28, height: 28)
+                    .foregroundStyle(DesignTokens.textPrimary)
 
-            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                // AI label header
-                HStack(spacing: 6) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(DesignTokens.accentClarity)
-                    Text("PERSONALIZED FOR YOU")
-                        .font(DesignTokens.sectionHeader)
-                        .foregroundStyle(DesignTokens.textSecondary)
-                        .tracking(1.2)
-                }
-
-                // Summary text with line limit
-                Text(text)
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
-                    .lineSpacing(4)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(isSummaryExpanded ? nil : 3)
-                    .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
-
-                // Read more / Less button
-                Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                        isSummaryExpanded.toggle()
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(isSummaryExpanded ? "LESS" : "READ MORE")
-                            .font(DesignTokens.smallMono)
-                        Image(systemName: isSummaryExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 9, weight: .medium))
-                    }
-                    .foregroundStyle(DesignTokens.textTertiary)
-                }
-                .buttonStyle(.plain)
+                Text("Plan Overview")
+                    .font(.custom("Geist-Regular", size: 20))
+                    .foregroundStyle(DesignTokens.textPrimary)
             }
+            .padding(.horizontal, DesignTokens.spacing20)
+            .padding(.vertical, DesignTokens.spacing16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white)
+            .clipShape(Capsule())
+
+            // Description card
+            Text(text)
+                .font(DesignTokens.bodyFont)
+                .foregroundStyle(DesignTokens.textSecondary)
+                .lineSpacing(2)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
+                .padding(DesignTokens.spacing20)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 26))
         }
-        .padding(.vertical, DesignTokens.spacing4)
         .opacity(showSummary ? 1 : 0)
         .offset(y: showSummary || reduceMotion ? 0 : 8)
     }
@@ -336,7 +284,7 @@ struct PlanRevealScreen: View {
                                 inlineGoals: sortedGoals(for: supplement),
                                 isIncluded: supplement.isIncluded,
                                 isExpanded: expandedCardId == supplement.id,
-                                showBottomLearnMore: true,
+                                showBottomLearnMore: false,
                                 products: supplement.supplementId.flatMap { productsBySupplementId[$0] },
                                 productsLoading: supplement.supplementId.map { loadingProductIds.contains($0) } ?? false,
                                 onEvidenceInfoTapped: { level in
@@ -382,20 +330,14 @@ struct PlanRevealScreen: View {
     private func tierHeader(for tier: SupplementTier, count: Int) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(spacing: DesignTokens.spacing8) {
-                Image(systemName: tier.icon)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(tierAccentColor(for: tier))
-
                 HStack(spacing: 4) {
                     Text(tier.label)
-                        .font(DesignTokens.sectionHeader)
+                        .font(.custom("Geist-Regular", size: 16))
                         .foregroundStyle(DesignTokens.textPrimary)
-                        .tracking(1.2)
 
                     Text("(\(count))")
-                        .font(DesignTokens.sectionHeader)
+                        .font(.custom("Geist-Regular", size: 16))
                         .foregroundStyle(DesignTokens.textTertiary)
-                        .tracking(1.2)
                 }
             }
 
@@ -459,14 +401,12 @@ struct PlanRevealScreen: View {
             .frame(height: 20)
 
             VStack(spacing: 0) {
-                CTAButton(
+                SpectrumFillButton(
                     title: "Start my plan (\(includedCount))",
-                    style: .primary,
-                    action: onConfirm,
-                    spectrumBorder: true
+                    disabled: includedCount == 0,
+                    action: onConfirm
                 )
                 .opacity(includedCount > 0 ? 1.0 : 0.4)
-                .disabled(includedCount == 0)
                 .scaleEffect(showCTA || reduceMotion ? 1.0 : 0.95)
                 .padding(.horizontal, DesignTokens.spacing24)
                 .padding(.bottom, DesignTokens.spacing16)
@@ -684,6 +624,72 @@ struct PlanRevealScreen: View {
     }
 }
 
+
+// MARK: - Spectrum Fill Button
+
+private struct SpectrumFillButton: View {
+    let title: String
+    let disabled: Bool
+    let action: () -> Void
+
+    @State private var fillProgress: CGFloat = 0
+    @State private var hasTriggered = false
+
+    private let spectrumGradient = LinearGradient(
+        colors: [
+            DesignTokens.accentSleep,
+            DesignTokens.accentEnergy,
+            DesignTokens.accentClarity,
+            DesignTokens.accentMood,
+            DesignTokens.accentGut
+        ],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
+
+    var body: some View {
+        Button {
+            guard !disabled, !hasTriggered else { return }
+            hasTriggered = true
+            HapticManager.impact(.light)
+
+            withAnimation(.easeInOut(duration: 0.5)) {
+                fillProgress = 1
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                HapticManager.notification(.success)
+                action()
+            }
+        } label: {
+            Text(title)
+                .font(DesignTokens.ctaFont)
+                .tracking(0.32)
+                .foregroundStyle(fillProgress > 0.5 ? .white : DesignTokens.bgDeepest)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(
+                    ZStack {
+                        // Spectrum fill from outline inward
+                        spectrumGradient
+
+                        // Shrinking dark center that reveals the gradient beneath
+                        DesignTokens.textPrimary
+                            .clipShape(Capsule())
+                            .scaleEffect(1 - fillProgress)
+                    }
+                )
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(spectrumGradient, lineWidth: 1.5)
+                )
+        }
+        .buttonStyle(CTAPressStyle())
+        .disabled(disabled)
+        .animation(.easeInOut(duration: 0.3), value: fillProgress > 0.5)
+    }
+}
 
 // MARK: - Pulse Animation
 

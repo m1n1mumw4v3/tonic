@@ -34,7 +34,7 @@ struct ValuePropProblemScreen: View {
                     .offset(y: showHeadline ? 0 : 12)
 
                     // Symptom cards
-                    VStack(spacing: 0) {
+                    VStack(spacing: DesignTokens.spacing8) {
                         ForEach(Array(symptoms.enumerated()), id: \.0) { index, symptom in
                             HStack(spacing: 0) {
                                 VStack(alignment: .leading, spacing: 2) {

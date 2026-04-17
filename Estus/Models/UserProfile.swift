@@ -207,6 +207,21 @@ enum HealthGoal: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    var chipColor: Color {
+        switch self {
+        case .energy:          return DesignTokens.accentEnergyDark
+        case .sleep:           return DesignTokens.accentSleep
+        case .stressAnxiety:   return DesignTokens.accentMoodDark
+        case .focus:           return DesignTokens.accentClarity
+        case .gutHealth:       return DesignTokens.accentGutDark
+        case .immunity:        return DesignTokens.accentImmunity
+        case .muscleDevelopment: return DesignTokens.accentMuscle
+        case .skinHairNails:   return DesignTokens.accentSkin
+        case .heartHealth:     return DesignTokens.accentHeart
+        case .longevity:       return DesignTokens.accentLongevityDark
+        }
+    }
+
     var shortLabel: String {
         switch self {
         case .energy: return "Energy"

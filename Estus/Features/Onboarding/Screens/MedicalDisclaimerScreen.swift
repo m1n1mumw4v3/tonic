@@ -10,8 +10,6 @@ struct MedicalDisclaimerScreen: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignTokens.spacing24) {
-                    SpectrumBar(height: 3)
-
                     HeadlineText(text: "Medical Disclaimer")
 
                     Text("Estus provides general wellness and supplement information for educational purposes only. It is not intended as medical advice, diagnosis, or treatment.\n\nAlways consult a qualified healthcare provider before starting any new supplement, especially if you are pregnant, nursing, taking medication, or have a medical condition.\n\nSupplement recommendations are generated algorithmically based on your stated goals and preferences. They do not account for your complete medical history. Individual results may vary.\n\nEstus is not responsible for any adverse effects resulting from the use of information provided through this app.")

@@ -159,16 +159,11 @@ struct SupplementCardView: View {
                     )
 
                 Text(supplement.name)
-                    .font(DesignTokens.bodyFont)
-                    .fontWeight(.semibold)
+                    .font(.custom("Geist-Regular", size: 20))
                     .foregroundStyle(DesignTokens.textPrimary)
                     .strikethrough(!isIncluded, color: DesignTokens.textTertiary)
                     .lineLimit(1)
                     .layoutPriority(1)
-
-                Text(supplement.dosage)
-                    .font(DesignTokens.labelMono)
-                    .foregroundStyle(DesignTokens.textTertiary)
 
                 Spacer()
 
@@ -181,8 +176,23 @@ struct SupplementCardView: View {
             }
 
             if !inlineGoals.isEmpty {
-                inlineGoalChips
-                    .padding(.top, 4)
+                HStack(alignment: .bottom) {
+                    inlineGoalChips
+
+                    Spacer()
+
+                    Text(supplement.dosage)
+                        .font(DesignTokens.labelMono)
+                        .foregroundStyle(DesignTokens.textTertiary)
+                }
+                .padding(.top, 4)
+            } else {
+                HStack {
+                    Spacer()
+                    Text(supplement.dosage)
+                        .font(DesignTokens.labelMono)
+                        .foregroundStyle(DesignTokens.textTertiary)
+                }
             }
         }
     }
@@ -195,13 +205,13 @@ struct SupplementCardView: View {
                 Text(goal.shortLabel)
                     .font(DesignTokens.smallMono)
                     .fixedSize()
-                    .foregroundStyle(goal.accentColor)
+                    .foregroundStyle(goal.chipColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .clipShape(Capsule())
                     .overlay(
                         Capsule()
-                            .stroke(goal.accentColor, lineWidth: 1)
+                            .stroke(goal.chipColor, lineWidth: 1)
                     )
             }
         }
@@ -219,13 +229,13 @@ struct SupplementCardView: View {
                         Text(goal.shortLabel)
                             .font(DesignTokens.smallMono)
                             .fixedSize()
-                            .foregroundStyle(goal.accentColor)
+                            .foregroundStyle(goal.chipColor)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .clipShape(Capsule())
                             .overlay(
                                 Capsule()
-                                    .stroke(goal.accentColor, lineWidth: 1)
+                                    .stroke(goal.chipColor, lineWidth: 1)
                             )
                     }
                     if overflowChipCount > 0 {
@@ -243,8 +253,8 @@ struct SupplementCardView: View {
                 }
                 .padding(.top, 2)
             }
-        case .toggle(let isOn, let action):
-            SupplementToggle(isOn: isOn, action: action)
+        case .toggle:
+            EmptyView()
         }
     }
 

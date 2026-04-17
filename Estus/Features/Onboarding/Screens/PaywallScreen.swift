@@ -72,9 +72,9 @@ struct PaywallScreen: View {
         } else if let single = labels.first {
             goalText = single
         } else {
-            return "\(count) more supplements"
+            return "Start your free trial to view \(count) more supplements"
         }
-        return "\(count) more supplements targeting your \(goalText) goals"
+        return "Start your free trial to view \(count) more supplements targeting your \(goalText) goals"
     }
 
     @Environment(AppState.self) private var appState
@@ -232,26 +232,24 @@ struct PaywallScreen: View {
             }
 
             if remainingCount > 0 {
-                HStack {
-                    Spacer()
-                    HStack(alignment: .center, spacing: 6) {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 11))
-                        Text(hiddenGoalsCopy)
-                            .font(DesignTokens.labelMono)
-                            .lineSpacing(0)
-                    }
-                    .foregroundStyle(DesignTokens.accentImmunity)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(DesignTokens.accentImmunity.opacity(0.06))
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(DesignTokens.accentImmunity.opacity(0.2), lineWidth: 1)
-                    )
-                    Spacer()
+                VStack(spacing: DesignTokens.spacing4) {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 18))
+
+                    Text(hiddenGoalsCopy)
+                        .font(DesignTokens.captionFont)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(0)
                 }
+                .foregroundStyle(Color(hex: "#C25D93"))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 26))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 26)
+                        .stroke(Color(hex: "#C25D93"), lineWidth: 1)
+                )
                 .opacity(visibleTeaserCards >= teaserSupplements.count ? 1 : 0)
             }
         }
@@ -363,7 +361,7 @@ struct PaywallScreen: View {
                     title: "Start My Free Trial",
                     style: .primary,
                     action: onSubscribe,
-                    spectrumBorder: true
+                    spectrumBorder: false
                 )
 
                 Text(ctaSubtext)
@@ -692,14 +690,14 @@ private struct TrialTimelineView: View {
     @ViewBuilder
     private func timelineNode(index: Int) -> some View {
         if index == 0 {
-            // Today: filled chartreuse
+            // Today: filled green
             Circle()
-                .fill(DesignTokens.accentGut)
+                .fill(DesignTokens.onboardingSelected)
                 .frame(width: 14, height: 14)
         } else if index == 1 {
-            // Day 5: outlined chartreuse
+            // Day 5: outlined green
             Circle()
-                .stroke(DesignTokens.accentGut, lineWidth: 1.5)
+                .stroke(DesignTokens.onboardingSelected, lineWidth: 1.5)
                 .frame(width: 14, height: 14)
         } else {
             // Day 7: outlined tertiary

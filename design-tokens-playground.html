@@ -375,13 +375,22 @@ const TOKEN_DATA = [
   {
     section: "Dimension Accents (Wellness Tracking)",
     tokens: [
-      { name: "accentSleep",     hex: "#8F3B43", use: "Sleep — dusty rose" },
-      { name: "accentEnergy",    hex: "#C25D93", use: "Energy — rose pink" },
+      { name: "accentSleep",     hex: "#42467A", use: "Sleep — deep indigo" },
+      { name: "accentEnergy",    hex: "#FAC655", use: "Energy — bright gold" },
       { name: "accentClarity",   hex: "#6A93DE", use: "Clarity — periwinkle" },
-      { name: "accentMood",      hex: "#96953F", use: "Mood — olive gold" },
-      { name: "accentGut",       hex: "#E0B23D", use: "Gut — warm gold" },
-      { name: "accentLongevity", hex: "#42467A", use: "Longevity — deep indigo" },
+      { name: "accentMood",      hex: "#DE62A4", use: "Mood — vibrant pink" },
+      { name: "accentGut",       hex: "#A19D37", use: "Gut — olive green" },
+      { name: "accentLongevity", hex: "#AB3543", use: "Longevity — deep rose" },
       { name: "accentSkin",      hex: "#9462BF", use: "Skin — soft violet" },
+    ]
+  },
+  {
+    section: "Darker Accent Variants",
+    tokens: [
+      { name: "accentEnergyDark",    hex: "#E0B23D", use: "Darker yellow — for text/icons on light yellow bg" },
+      { name: "accentMoodDark",      hex: "#C25D93", use: "Darker pink — for text/icons on light pink bg" },
+      { name: "accentGutDark",       hex: "#96953F", use: "Darker green — for text/icons on light green bg" },
+      { name: "accentLongevityDark", hex: "#8F3B43", use: "Darker maroon — for text/icons on light maroon bg" },
     ]
   },
   {
@@ -390,16 +399,20 @@ const TOKEN_DATA = [
       { name: "accentMuscle",    hex: "#F2A150", use: "Muscle/strength — warm amber" },
       { name: "accentHeart",     hex: "#E66363", use: "Heart/cardio — soft coral" },
       { name: "accentImmunity",  hex: "#1A6B6A", use: "Immunity — dark teal" },
-      { name: "accentTerracotta", hex: "#B07156", use: "Terracotta accent" },
-      { name: "warmStone",       hex: "#8C7E6A", use: "Warm stone — neutral earthy tone" },
+    ]
+  },
+  {
+    section: "Onboarding",
+    tokens: [
+      { name: "onboardingSelected", hex: "#A19D37", use: "Selected state outline for onboarding buttons" },
     ]
   },
   {
     section: "Darkened Icon Foregrounds",
     tokens: [
-      { name: "iconFgEnergy", hex: "#C25D93", use: "Energy icon foreground on light bg" },
-      { name: "iconFgMood",   hex: "#96953F", use: "Mood icon foreground on light bg" },
-      { name: "iconFgGut",    hex: "#E0B23D", use: "Gut icon foreground on light bg" },
+      { name: "iconFgEnergy", hex: "#FAC655", use: "Energy icon foreground on light bg" },
+      { name: "iconFgMood",   hex: "#DE62A4", use: "Mood icon foreground on light bg" },
+      { name: "iconFgGut",    hex: "#A19D37", use: "Gut icon foreground on light bg" },
     ]
   },
   {
@@ -558,7 +571,7 @@ function exportChanges() {
     });
     output += `\n`;
   });
-  output += `Also update design-tokens-swatches.html and design-tokens.md to match.`;
+  output += `Also update design-guide.html and design-tokens-playground.html to match.`;
 
   document.getElementById('exportOutput').textContent = output;
   document.getElementById('modalOverlay').classList.add('visible');

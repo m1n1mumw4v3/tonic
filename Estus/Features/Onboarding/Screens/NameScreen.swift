@@ -25,9 +25,9 @@ struct NameScreen: View {
                     .foregroundStyle(DesignTokens.textPrimary)
                     .padding(DesignTokens.spacing16)
                     .background(DesignTokens.bgSurface)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                    .clipShape(Capsule())
                     .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                        Capsule()
                             .stroke(
                                 isFieldFocused ? DesignTokens.onboardingSelected : DesignTokens.borderDefault,
                                 lineWidth: 1

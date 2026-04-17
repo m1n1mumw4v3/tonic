@@ -20,12 +20,12 @@ enum DesignTokens {
     static let borderSubtle  = Color(hex: "#F2F2F2")
 
     // MARK: - Dimension Accents
-    static let accentSleep   = Color(hex: "#8F3B43")
-    static let accentEnergy  = Color(hex: "#C25D93")
+    static let accentSleep   = Color(hex: "#42467A")
+    static let accentEnergy  = Color(hex: "#FAC655")
     static let accentClarity = Color(hex: "#6A93DE")
-    static let accentMood    = Color(hex: "#96953F")
-    static let accentGut     = Color(hex: "#E0B23D")
-    static let accentLongevity = Color(hex: "#42467A")
+    static let accentMood    = Color(hex: "#DE62A4")
+    static let accentGut     = Color(hex: "#A19D37")
+    static let accentLongevity = Color(hex: "#AB3543")
     static let accentSkin      = Color(hex: "#9462BF")
 
     // MARK: - Goal Accents
@@ -41,6 +41,12 @@ enum DesignTokens {
 
     static let spectrumColors: [Color] = [accentSleep, accentEnergy, accentClarity, accentMood, accentGut]
 
+    // MARK: - Darker Accent Variants
+    static let accentEnergyDark    = Color(hex: "#E0B23D")
+    static let accentMoodDark      = Color(hex: "#C25D93")
+    static let accentGutDark       = Color(hex: "#96953F")
+    static let accentLongevityDark = Color(hex: "#8F3B43")
+
     // MARK: - Onboarding
     static let onboardingSelected = Color(hex: "#A19D37")
 
@@ -55,16 +61,16 @@ enum DesignTokens {
     static let iconSizeLarge:  CGFloat = 44   // pillbox compartment
 
     // MARK: - Darkened Icon Foregrounds (for low-contrast accents on light bg)
-    static let iconFgEnergy = Color(hex: "#C25D93")
-    static let iconFgMood   = Color(hex: "#96953F")
-    static let iconFgGut    = Color(hex: "#E0B23D")
+    static let iconFgEnergy = Color(hex: "#FAC655")
+    static let iconFgMood   = Color(hex: "#DE62A4")
+    static let iconFgGut    = Color(hex: "#A19D37")
 
     // MARK: - Typography
     static let displayFont   = Font.custom("Geist-Regular", size: 32)
     static let sectionHeader = Font.custom("Geist-SemiBold", size: 13)
     static let bodyFont      = Font.custom("Geist-Regular", size: 16)
     static let dataMono      = Font.custom("GeistMono-Medium", size: 16)
-    static let labelMono     = Font.custom("GeistMono-Regular", size: 11)
+    static let labelMono     = Font.custom("Geist-Regular", size: 12)
 
     // Pixel icon fonts (GeistPixel-Grid)
     static let pixelIconFont  = Font.custom("GeistPixel-Grid", size: 18)
@@ -76,7 +82,7 @@ enum DesignTokens {
     static let titleFont     = Font.custom("Geist-SemiBold", size: 20)
     static let ctaFont       = Font.custom("Geist-SemiBold", size: 16)
     static let captionFont   = Font.custom("Geist-Regular", size: 13)
-    static let smallMono     = Font.custom("GeistMono-Regular", size: 10)
+    static let smallMono     = Font.custom("Geist-Regular", size: 11)
 
     // MARK: - Spacing
     static let screenMargin: CGFloat = 18

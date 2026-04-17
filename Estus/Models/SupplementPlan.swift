@@ -150,9 +150,9 @@ enum SupplementTier: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .core: return "CORE"
-        case .targeted: return "TARGETED"
-        case .supporting: return "SUPPORTING"
+        case .core: return "Core"
+        case .targeted: return "Targeted"
+        case .supporting: return "Supporting"
         }
     }
 
