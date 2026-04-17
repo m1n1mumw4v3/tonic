@@ -89,7 +89,7 @@ struct GoalsScreen: View {
                 HapticManager.selection()
             }
         } label: {
-            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+            VStack(spacing: DesignTokens.spacing4) {
                 Image(systemName: goal.icon)
                     .font(.system(size: 20))
                     .foregroundStyle(isSelected ? accent : DesignTokens.textSecondary)
@@ -97,24 +97,17 @@ struct GoalsScreen: View {
                 Text(goal.label)
                     .font(DesignTokens.bodyFont)
                     .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(DesignTokens.spacing12)
-            .frame(height: 88)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-            .overlay(alignment: .topTrailing) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18))
-                    .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
-                    .padding(DesignTokens.spacing12)
-            }
-            .background(isSelected ? accent.opacity(0.15) : DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .padding(.horizontal, DesignTokens.spacing12)
+            .frame(maxWidth: .infinity)
+            .frame(height: 96)
+            .background(DesignTokens.bgSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 26))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                RoundedRectangle(cornerRadius: 26)
                     .stroke(isSelected ? accent : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
             .opacity(!isSelected && viewModel.isAtGoalLimit ? 0.4 : 1.0)

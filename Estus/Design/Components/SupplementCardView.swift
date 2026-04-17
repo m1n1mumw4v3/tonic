@@ -121,27 +121,43 @@ struct SupplementCardView: View {
         .padding(DesignTokens.spacing16)
         .background(cardBackground)
         .opacity(isIncluded ? 1.0 : 0.5)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: 26))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: 26)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
-        .overlay(alignment: .leading) {
-            accentBar
+        .clipShape(RoundedRectangle(cornerRadius: 26))
+        .overlay(alignment: .topTrailing) {
+            if expansionMode == .inline && !showBottomLearnMore {
+                chevronHint
+                    .padding(.top, DesignTokens.spacing24)
+                    .padding(.trailing, DesignTokens.spacing16)
+            }
         }
-        .overlay(alignment: .leading) {
-            coreGlow
-        }
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
     // MARK: - Collapsed Row
 
     private var collapsedRow: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
             // Top row: name + trailing accessories
-            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+            HStack(alignment: .center, spacing: DesignTokens.spacing8) {
+                Image("EstusSuppIcon")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
+                    .foregroundStyle(
+                        accentColors.count > 1
+                            ? AnyShapeStyle(LinearGradient(
+                                colors: accentColors,
+                                startPoint: .bottomLeading,
+                                endPoint: .topTrailing
+                              ))
+                            : AnyShapeStyle(accentColors.first ?? DesignTokens.textSecondary)
+                    )
+
                 Text(supplement.name)
                     .font(DesignTokens.bodyFont)
                     .fontWeight(.semibold)
@@ -149,6 +165,10 @@ struct SupplementCardView: View {
                     .strikethrough(!isIncluded, color: DesignTokens.textTertiary)
                     .lineLimit(1)
                     .layoutPriority(1)
+
+                Text(supplement.dosage)
+                    .font(DesignTokens.labelMono)
+                    .foregroundStyle(DesignTokens.textTertiary)
 
                 Spacer()
 
@@ -158,15 +178,7 @@ struct SupplementCardView: View {
                     kebabMenu
                 }
 
-                if expansionMode == .inline && !showBottomLearnMore {
-                    chevronHint
-                }
             }
-
-            // Dosage
-            Text(supplement.dosage)
-                .font(DesignTokens.labelMono)
-                .foregroundStyle(DesignTokens.info)
 
             if !inlineGoals.isEmpty {
                 inlineGoalChips
@@ -180,18 +192,17 @@ struct SupplementCardView: View {
     private var inlineGoalChips: some View {
         HStack(spacing: 6) {
             ForEach(inlineGoals) { goal in
-                HStack(spacing: 3) {
-                    Image(systemName: goal.icon)
-                        .font(.system(size: 9))
-                    Text(goal.shortLabel)
-                        .font(DesignTokens.smallMono)
-                }
-                .fixedSize()
-                .foregroundStyle(goal.accentColor)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(goal.accentColor.opacity(0.12))
-                .clipShape(Capsule())
+                Text(goal.shortLabel)
+                    .font(DesignTokens.smallMono)
+                    .fixedSize()
+                    .foregroundStyle(goal.accentColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(goal.accentColor, lineWidth: 1)
+                    )
             }
         }
     }
@@ -211,8 +222,11 @@ struct SupplementCardView: View {
                             .foregroundStyle(goal.accentColor)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(goal.accentColor.opacity(0.12))
                             .clipShape(Capsule())
+                            .overlay(
+                                Capsule()
+                                    .stroke(goal.accentColor, lineWidth: 1)
+                            )
                     }
                     if overflowChipCount > 0 {
                         Text("+\(overflowChipCount)")
@@ -220,8 +234,11 @@ struct SupplementCardView: View {
                             .foregroundStyle(DesignTokens.textTertiary)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(DesignTokens.textTertiary.opacity(0.10))
                             .clipShape(Capsule())
+                            .overlay(
+                                Capsule()
+                                    .stroke(DesignTokens.textTertiary, lineWidth: 1)
+                            )
                     }
                 }
                 .padding(.top, 2)
@@ -546,16 +563,11 @@ struct SupplementCardView: View {
     // MARK: - Chevron Hint
 
     private var chevronHint: some View {
-        HStack(spacing: 4) {
-            Text("MORE")
-                .font(DesignTokens.smallMono)
-                .foregroundStyle(DesignTokens.textTertiary)
-            Image(systemName: "chevron.right")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(DesignTokens.textTertiary)
-                .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
-        }
+        Image(systemName: "chevron.down")
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundStyle(DesignTokens.textSecondary)
+            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+            .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
     }
 
     private var bottomLearnMore: some View {
@@ -627,7 +639,7 @@ struct SupplementCardView: View {
                 startRadius: 0,
                 endRadius: 120
             )
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(RoundedRectangle(cornerRadius: 26))
             .allowsHitTesting(false)
         }
     }

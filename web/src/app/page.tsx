@@ -8,6 +8,10 @@ import { FeatureCard } from "@/components/feature-card";
 import { AnimatedEntrance } from "@/components/animated-entrance";
 import { tokens } from "@/lib/design-tokens";
 import { PhoneMockup } from "@/components/phone-mockup";
+import { HowItWorks } from "@/components/how-it-works";
+import { ScienceSection } from "@/components/science-section";
+import { PrivacyCallout } from "@/components/privacy-callout";
+import { FAQSection } from "@/components/faq-section";
 
 const dimensions = [
   { name: "Sleep", color: "#8F3B43", description: "Restfulness & recovery" },
@@ -70,7 +74,7 @@ export default function Home() {
             }}
             className="mt-10"
           >
-            <CTAButton href="#" variant="hero" className="min-w-[200px]">
+            <CTAButton href="#" variant="primary" className="min-w-[200px] !bg-white !text-text-primary hover:!bg-white/90">
               Download App
             </CTAButton>
           </motion.div>
@@ -93,6 +97,9 @@ export default function Home() {
 
 
 
+      {/* ─── How It Works ─── */}
+      <HowItWorks />
+
       {/* ─── Features ─── */}
       <section id="features" className="py-20 md:py-28 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-6">
@@ -106,7 +113,7 @@ export default function Home() {
             <FeatureCard
               icon="✦"
               title="Personalized for You"
-              description="Your plan is built from your goals, lifestyle, and health profile. No generic stacks — just what your body needs."
+              description="Your plan is built from 15+ health factors — goals, medications, allergies, diet, and more. No generic stacks — just what your body needs."
               delay={0}
             />
             <FeatureCard
@@ -118,12 +125,15 @@ export default function Home() {
             <FeatureCard
               icon="↻"
               title="Gets Smarter Over Time"
-              description="Your plan adjusts based on real patterns in your data. The longer you track, the better it gets."
+              description="Your plan tracks supplement phases from loading through steady state, and adjusts based on real patterns in your data."
               delay={0.3}
             />
           </div>
         </div>
       </section>
+
+      {/* ─── Science & Methodology ─── */}
+      <ScienceSection />
 
       {/* ─── Wellness Dimensions ─── */}
       <section className="py-20 md:py-28 bg-bg-surface">
@@ -163,6 +173,12 @@ export default function Home() {
       </section>
 
 
+      {/* ─── Privacy ─── */}
+      <PrivacyCallout />
+
+      {/* ─── FAQ ─── */}
+      <FAQSection />
+
       {/* ─── Final CTA ─── */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 bg-bg-dark" />
@@ -186,8 +202,8 @@ export default function Home() {
           </AnimatedEntrance>
           <AnimatedEntrance delay={0.15}>
             <p className="text-[16px] text-text-tertiary mb-8">
-              Join thousands building healthier habits with personalized
-              supplement plans.
+              Built on clinical research across 53 evidence-backed
+              supplements.
             </p>
           </AnimatedEntrance>
           <AnimatedEntrance delay={0.3}>

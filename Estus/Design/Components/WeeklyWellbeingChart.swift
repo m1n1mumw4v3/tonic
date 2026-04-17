@@ -33,7 +33,14 @@ struct WeeklyWellbeingChart: View {
 
     private let maxTotal: CGFloat = 50 // 5 dimensions × 10 max each
     private let barAreaHeight: CGFloat = 160
-    private let barWidth: CGFloat = 28
+
+    private var barWidth: CGFloat {
+        weeklyData.count <= 7 ? 28 : 7
+    }
+
+    private var barSpacing: CGFloat {
+        weeklyData.count <= 7 ? DesignTokens.spacing8 : 2
+    }
 
     var body: some View {
         VStack(spacing: DesignTokens.spacing16) {
@@ -67,19 +74,30 @@ struct WeeklyWellbeingChart: View {
     // MARK: - Bar Chart
 
     private var barChart: some View {
-        HStack(alignment: .bottom, spacing: DesignTokens.spacing8) {
+        let isCompact = weeklyData.count > 7
+
+        return HStack(alignment: .bottom, spacing: barSpacing) {
             ForEach(Array(weeklyData.enumerated()), id: \.element.id) { index, day in
-                VStack(spacing: DesignTokens.spacing4) {
+                let showLabel = !isCompact
+                    || index == 0
+                    || index == weeklyData.count - 1
+                    || index % 7 == 0
+                    || selectedIndex == index
+
+                VStack(spacing: isCompact ? 2 : DesignTokens.spacing4) {
                     barColumn(for: day, at: index)
                         .frame(height: barAreaHeight)
 
                     Text(day.dayLabel)
-                        .font(.custom("GeistMono-Regular", size: 10))
+                        .font(.custom("GeistMono-Regular", size: isCompact ? 8 : 10))
+                        .lineLimit(1)
+                        .fixedSize()
                         .foregroundStyle(
                             day.isToday ? DesignTokens.textPrimary :
                             selectedIndex == index ? DesignTokens.textPrimary :
                             DesignTokens.textTertiary
                         )
+                        .opacity(showLabel ? 1 : 0)
                 }
                 .frame(maxWidth: .infinity)
                 .contentShape(Rectangle())
@@ -166,7 +184,7 @@ struct DailyOverviewCard: View {
 
     private var leftSide: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
-            Text(dayData.isToday ? "TODAY" : dayData.dayLabel)
+            Text(dayData.isToday ? "TODAY" : dayData.date.formatted(.dateTime.month(.abbreviated).day()).uppercased())
                 .font(DesignTokens.sectionHeader)
                 .tracking(1.5)
                 .foregroundStyle(DesignTokens.textSecondary)

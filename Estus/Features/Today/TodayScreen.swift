@@ -123,6 +123,10 @@ struct TodayScreen: View {
                 viewModel.updateStreakIfDayComplete(appState: appState)
             }
         }
+        .onChange(of: viewModel.chartRange) { _, _ in
+            selectedDayIndex = nil
+            viewModel.loadWeeklyData(appState: appState)
+        }
     }
 
     // MARK: - Phase Timer
@@ -194,6 +198,40 @@ struct TodayScreen: View {
         .animation(.easeInOut(duration: 0.4), value: dayComplete)
     }
 
+    // MARK: - Chart Range Toggle
+
+    private var chartRangeToggle: some View {
+        HStack(spacing: 0) {
+            ForEach(TodayViewModel.ChartRange.allCases) { range in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        viewModel.chartRange = range
+                    }
+                } label: {
+                    Text(range.rawValue)
+                        .font(DesignTokens.labelMono)
+                        .foregroundStyle(
+                            viewModel.chartRange == range
+                                ? DesignTokens.textPrimary
+                                : DesignTokens.textTertiary
+                        )
+                        .padding(.horizontal, DesignTokens.spacing8)
+                        .padding(.vertical, DesignTokens.spacing4)
+                        .background(
+                            viewModel.chartRange == range
+                                ? DesignTokens.bgSurface
+                                : Color.clear
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(2)
+        .background(DesignTokens.bgDeepest)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
+    }
+
     // MARK: - Variance Helpers
 
     private func computeOverallVariance(for checkIn: DailyCheckIn) -> Double? {
@@ -231,6 +269,15 @@ struct TodayScreen: View {
             : nil
 
         VStack(spacing: 0) {
+            HStack {
+                Text("Wellbeing Score")
+                    .font(DesignTokens.titleFont)
+                    .foregroundStyle(DesignTokens.textPrimary)
+                Spacer()
+                chartRangeToggle
+            }
+            .padding(.bottom, DesignTokens.spacing8)
+
             WeeklyWellbeingChart(
                 weeklyData: viewModel.weeklyData,
                 selectedIndex: displayIndex,
@@ -240,6 +287,7 @@ struct TodayScreen: View {
                     }
                 }
             )
+            .id(viewModel.chartRange)
 
             if let day = selectedDay {
                 Rectangle()

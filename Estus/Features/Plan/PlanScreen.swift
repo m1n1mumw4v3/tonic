@@ -69,9 +69,9 @@ struct PlanScreen: View {
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 48)
                                     .background(DesignTokens.positive.opacity(0.08))
-                                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                    .clipShape(Capsule())
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                        Capsule()
                                             .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
                                     )
                                 }

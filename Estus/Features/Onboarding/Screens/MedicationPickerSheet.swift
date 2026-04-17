@@ -393,7 +393,7 @@ struct MedicationPickerSheet: View {
                     }
                     .padding(.horizontal, DesignTokens.spacing12)
                     .padding(.vertical, DesignTokens.spacing8)
-                    .background(DesignTokens.accentLongevity)
+                    .background(Color(hex: "#C25D93"))
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
                 }
             }
@@ -405,7 +405,7 @@ struct MedicationPickerSheet: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(DesignTokens.sectionHeader)
-            .foregroundStyle(DesignTokens.accentLongevity)
+            .foregroundStyle(Color(hex: "#C25D93"))
             .tracking(1)
             .padding(.horizontal, DesignTokens.spacing20)
             .padding(.top, DesignTokens.spacing16)
@@ -452,11 +452,11 @@ struct MedicationPickerSheet: View {
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22))
-                    .foregroundStyle(isSelected ? DesignTokens.accentLongevity : DesignTokens.textTertiary)
+                    .foregroundStyle(isSelected ? DesignTokens.onboardingSelected : DesignTokens.textTertiary)
             }
             .padding(.horizontal, DesignTokens.spacing20)
             .padding(.vertical, DesignTokens.spacing12)
-            .background(isSelected ? DesignTokens.accentLongevity.opacity(0.08) : Color.clear)
+            .background(isSelected ? DesignTokens.onboardingSelected.opacity(0.08) : Color.clear)
         }
     }
 
@@ -502,11 +502,11 @@ struct MedicationPickerSheet: View {
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22))
-                    .foregroundStyle(isSelected ? DesignTokens.accentLongevity : DesignTokens.textTertiary)
+                    .foregroundStyle(isSelected ? DesignTokens.onboardingSelected : DesignTokens.textTertiary)
             }
             .padding(.horizontal, DesignTokens.spacing20)
             .padding(.vertical, DesignTokens.spacing12)
-            .background(isSelected ? DesignTokens.accentLongevity.opacity(0.08) : Color.clear)
+            .background(isSelected ? DesignTokens.onboardingSelected.opacity(0.08) : Color.clear)
         }
     }
 
@@ -524,12 +524,12 @@ struct MedicationPickerSheet: View {
                     HStack(spacing: DesignTokens.spacing8) {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 20))
-                            .foregroundStyle(DesignTokens.accentLongevity)
+                            .foregroundStyle(Color(hex: "#C25D93"))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Add \"\(trimmed)\" as custom medication")
                                 .font(DesignTokens.bodyFont)
-                                .foregroundStyle(DesignTokens.accentLongevity)
+                                .foregroundStyle(Color(hex: "#C25D93"))
 
                             Text("Won't be checked for interactions")
                                 .font(DesignTokens.captionFont)
@@ -663,7 +663,7 @@ struct MedicationPickerSheet: View {
         + Text(match)
             .font(DesignTokens.bodyFont)
             .fontWeight(.semibold)
-            .foregroundStyle(DesignTokens.accentLongevity)
+            .foregroundStyle(Color(hex: "#C25D93"))
         + Text(after)
             .font(DesignTokens.bodyFont)
             .foregroundStyle(DesignTokens.textPrimary)

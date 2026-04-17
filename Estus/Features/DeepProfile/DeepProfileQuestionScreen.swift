@@ -77,9 +77,9 @@ struct DeepProfileQuestionScreen: View {
                         .frame(height: 56)
                         .padding(.horizontal, DesignTokens.spacing16)
                         .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                        .clipShape(Capsule())
                         .overlay(
-                            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                            Capsule()
                                 .stroke(
                                     isSelected ? accentColor : DesignTokens.borderDefault,
                                     lineWidth: isSelected ? 1.5 : 1
@@ -115,9 +115,9 @@ struct DeepProfileQuestionScreen: View {
                     .frame(height: 56)
                     .padding(.horizontal, DesignTokens.spacing16)
                     .background(isSelected ? DesignTokens.bgElevated : DesignTokens.bgSurface)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                    .clipShape(Capsule())
                     .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                        Capsule()
                             .stroke(
                                 isSelected ? accentColor : DesignTokens.borderDefault,
                                 lineWidth: isSelected ? 1.5 : 1

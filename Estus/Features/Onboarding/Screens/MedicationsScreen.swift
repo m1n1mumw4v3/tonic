@@ -84,14 +84,14 @@ struct MedicationsScreen: View {
                                     }
                                     .font(DesignTokens.bodyFont)
                                     .fontWeight(.medium)
-                                    .foregroundStyle(DesignTokens.accentLongevity)
+                                    .foregroundStyle(Color(hex: "#C25D93"))
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 48)
                                     .background(Color.clear)
-                                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                    .clipShape(Capsule())
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                                            .stroke(DesignTokens.accentLongevity, lineWidth: 1.5)
+                                        Capsule()
+                                            .stroke(Color(hex: "#C25D93"), lineWidth: 1.5)
                                     )
                                 }
                             }
@@ -175,11 +175,11 @@ struct MedicationsScreen: View {
                 .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textSecondary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                .background(DesignTokens.bgSurface)
+                .clipShape(Capsule())
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
+                    Capsule()
+                        .stroke(isActive ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
                 )
         }
     }

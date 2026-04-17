@@ -81,7 +81,7 @@ export function HeroOrbBackground() {
   }, [colorCycle]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-bg-dark rounded-[inherit]">
+    <div className="absolute inset-0 z-0 overflow-hidden bg-bg-dark rounded-[inherit]">
       <OrbLayer
         colors={{ inner: "#E0B23D", outer: "#96953F" }}
         sizeFactor={1}

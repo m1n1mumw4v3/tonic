@@ -92,15 +92,15 @@ struct OnboardingFlow: View {
                     case 21:
                         NotificationReminderScreen(viewModel: viewModel, onContinue: nextScreen)
                     case 22:
-                        AccountCreationScreen(viewModel: viewModel, onContinue: nextScreen)
-                    case 23:
                         MedicalDisclaimerScreen(viewModel: viewModel, onContinue: nextScreen)
-                    case 24:
+                    case 23:
                         AIInterstitialScreen(viewModel: viewModel, onComplete: onInterstitialComplete)
-                    case 25:
+                    case 24:
                         PaywallScreen(viewModel: viewModel, onSubscribe: nextScreen, onDismiss: dismissPaywall)
+                    case 25:
+                        PlanRevealScreen(viewModel: viewModel, onConfirm: nextScreen)
                     case 26:
-                        PlanRevealScreen(viewModel: viewModel, onConfirm: completeOnboarding)
+                        AccountCreationScreen(viewModel: viewModel, onContinue: completeOnboarding)
                     default:
                         EmptyView()
                     }

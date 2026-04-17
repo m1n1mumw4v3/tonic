@@ -32,23 +32,10 @@ struct DeficiencyRingView: View {
             Circle()
                 .trim(
                     from: 0,
-                    to: (negativeFraction - gapFraction) * animationProgress
+                    to: negativeFraction * animationProgress
                 )
                 .stroke(
                     DesignTokens.negative,
-                    style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
-                )
-                .frame(width: size, height: size)
-                .rotationEffect(.degrees(-90))
-
-            // Positive (green) segment — 8%
-            Circle()
-                .trim(
-                    from: (negativeFraction + gapFraction) * animationProgress,
-                    to: animationProgress
-                )
-                .stroke(
-                    DesignTokens.accentGut,
                     style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
                 )
                 .frame(width: size, height: size)

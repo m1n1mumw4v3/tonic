@@ -60,23 +60,6 @@ struct WellbeingScoreRing: View {
                             )
                     )
 
-                // Segment glow layers (behind the ring)
-                ForEach(Array(dimensions.enumerated()), id: \.0) { index, item in
-                    let (dimension, _) = item
-                    let startAngle = segmentStartAngle(for: index)
-                    let endAngle = segmentEndAngle(for: index)
-
-                    Circle()
-                        .trim(from: startAngle, to: startAngle + (endAngle - startAngle) * animationProgress)
-                        .stroke(
-                            dimension.color.opacity(0.35),
-                            style: StrokeStyle(lineWidth: lineWidth + 4, lineCap: .butt)
-                        )
-                        .frame(width: size, height: size)
-                        .rotationEffect(.degrees(-90))
-                        .blur(radius: 8)
-                }
-
                 // Dimension segments (butt caps for flush joins)
                 ForEach(Array(dimensions.enumerated()), id: \.0) { index, item in
                     let (dimension, _) = item

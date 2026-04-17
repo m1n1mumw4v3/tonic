@@ -32,8 +32,6 @@ enum DesignTokens {
     static let accentMuscle    = Color(hex: "#F2A150")
     static let accentHeart     = Color(hex: "#E66363")
     static let accentImmunity  = Color(hex: "#1A6B6A")
-    static let accentTerracotta = Color(hex: "#B07156")
-    static let warmStone        = Color(hex: "#8C7E6A")
 
     // MARK: - Gradients
     static let spectrumGradient = LinearGradient(
@@ -42,6 +40,9 @@ enum DesignTokens {
     )
 
     static let spectrumColors: [Color] = [accentSleep, accentEnergy, accentClarity, accentMood, accentGut]
+
+    // MARK: - Onboarding
+    static let onboardingSelected = Color(hex: "#A19D37")
 
     // MARK: - Functional
     static let positive = Color(hex: "#2E9E9E")

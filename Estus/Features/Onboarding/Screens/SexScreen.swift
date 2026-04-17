@@ -48,12 +48,13 @@ struct SexScreen: View {
                 .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 56)
-                .padding(.horizontal, DesignTokens.spacing16)
-                .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                .padding(.leading, 26)
+                .padding(.trailing, DesignTokens.spacing16)
+                .background(DesignTokens.bgSurface)
+                .clipShape(Capsule())
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
+                    Capsule()
+                        .stroke(isSelected ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
                 )
         }
     }

@@ -215,7 +215,8 @@ struct PaywallScreen: View {
                 SupplementCardView(
                     supplement: peek,
                     trailingAccessory: .goalChips(Array(viewModel.healthGoals)),
-                    expansionMode: .none
+                    expansionMode: .none,
+                    inlineGoals: sortedGoals(for: peek)
                 )
                     .mask(
                         LinearGradient(

@@ -67,14 +67,13 @@ struct DietScreen: View {
             Text(option.label)
                 .font(DesignTokens.bodyFont)
                 .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(DesignTokens.spacing12)
-                .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
-                .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(DesignTokens.bgSurface)
+                .clipShape(Capsule())
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
+                    Capsule()
+                        .stroke(isSelected ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
                 )
         }
     }
@@ -105,13 +104,12 @@ struct DietScreen: View {
                     Text("✏️")
                         .font(.system(size: 20))
 
-                    Text("Other")
+                    Text("Other diet")
                         .font(DesignTokens.bodyFont)
                         .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(DesignTokens.spacing12)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
             }
 
             if isExpanded {
@@ -129,16 +127,16 @@ struct DietScreen: View {
                         .font(DesignTokens.captionFont)
                         .foregroundStyle(DesignTokens.textTertiary)
                 }
-                .padding(.horizontal, DesignTokens.spacing12)
+                .padding(.horizontal, DesignTokens.spacing16)
                 .padding(.bottom, DesignTokens.spacing12)
             }
         }
         .frame(maxWidth: .infinity)
-        .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .background(DesignTokens.bgSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 26))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
+            RoundedRectangle(cornerRadius: 26)
+                .stroke(isActive ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
         )
     }
 }

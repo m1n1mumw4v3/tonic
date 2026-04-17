@@ -75,7 +75,13 @@ export function Footer() {
 
         {/* Bottom row */}
         <div className="mt-16 pt-6 border-t border-white/10 text-[13px] text-text-tertiary">
-          &copy; {new Date().getFullYear()} Estus. All rights reserved.
+          <p>&copy; {new Date().getFullYear()} Estus. All rights reserved.</p>
+          <p className="mt-3 leading-relaxed max-w-3xl">
+            These statements have not been evaluated by the Food and Drug
+            Administration. This app is not intended to diagnose, treat, cure,
+            or prevent any disease. Consult your healthcare provider before
+            starting any supplement regimen.
+          </p>
         </div>
       </div>
     </footer>

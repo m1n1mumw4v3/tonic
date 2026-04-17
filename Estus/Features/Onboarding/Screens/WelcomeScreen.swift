@@ -127,9 +127,9 @@ private struct WelcomeOrbBackground: View {
     @State private var pinkScale: CGFloat = 1.0
     @State private var showPink = false
 
-    private let yellowInner = Color(hex: "#E0B23D")
+    private let yellowInner = Color(hex: "#FAC655")
     private let yellowOuter = Color(hex: "#96953F")
-    private let pinkInner = Color(hex: "#C25D93")
+    private let pinkInner = Color(hex: "#DE62A4")
     private let pinkOuter = Color(hex: "#8F3B43")
 
     var body: some View {

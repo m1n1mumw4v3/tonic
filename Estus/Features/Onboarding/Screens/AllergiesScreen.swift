@@ -106,32 +106,22 @@ struct AllergiesScreen: View {
                 }
             }
         } label: {
-            VStack(spacing: DesignTokens.spacing8) {
-                HStack {
-                    Text(icon)
-                        .font(.system(size: 20))
-
-                    Spacer()
-
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 18))
-                        .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
-                }
+            HStack(spacing: DesignTokens.spacing8) {
+                Text(icon)
+                    .font(.system(size: 20))
 
                 Text(allergy)
                     .font(DesignTokens.bodyFont)
                     .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
             }
-            .padding(DesignTokens.spacing12)
-            .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
-            .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(DesignTokens.bgSurface)
+            .clipShape(Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
+                Capsule()
+                    .stroke(isSelected ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
         }
     }
@@ -154,27 +144,18 @@ struct AllergiesScreen: View {
             }
         } label: {
             HStack(spacing: DesignTokens.spacing8) {
-                Image(systemName: "checkmark.shield.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(isSelected ? DesignTokens.positive : DesignTokens.textTertiary)
-
                 Text("No known allergies")
                     .font(DesignTokens.bodyFont)
                     .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-
-                Spacer()
-
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18))
-                    .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textTertiary)
             }
-            .padding(DesignTokens.spacing12)
+            .padding(.horizontal, DesignTokens.spacing16)
             .frame(maxWidth: .infinity)
-            .background(isSelected ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .frame(height: 52)
+            .background(DesignTokens.bgSurface)
+            .clipShape(Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(isSelected ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
+                Capsule()
+                    .stroke(isSelected ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
         }
     }
@@ -204,14 +185,9 @@ struct AllergiesScreen: View {
                     Text("Other allergies")
                         .font(DesignTokens.bodyFont)
                         .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-
-                    Spacer()
-
-                    Image(systemName: isActive ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 18))
-                        .foregroundStyle(isActive ? DesignTokens.textPrimary : DesignTokens.textTertiary)
                 }
-                .padding(DesignTokens.spacing12)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
             }
 
             if isOtherExpanded {
@@ -229,16 +205,16 @@ struct AllergiesScreen: View {
                         .font(DesignTokens.captionFont)
                         .foregroundStyle(DesignTokens.textTertiary)
                 }
-                .padding(.horizontal, DesignTokens.spacing12)
+                .padding(.horizontal, DesignTokens.spacing16)
                 .padding(.bottom, DesignTokens.spacing12)
             }
         }
         .frame(maxWidth: .infinity)
-        .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .background(DesignTokens.bgSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 26))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
+            RoundedRectangle(cornerRadius: 26)
+                .stroke(isActive ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
         )
     }
 }

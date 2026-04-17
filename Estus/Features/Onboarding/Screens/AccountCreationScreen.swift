@@ -143,9 +143,9 @@ struct AccountCreationScreen: View {
                             .frame(height: 52)
                             .background(Color.white)
                             .foregroundStyle(DesignTokens.textPrimary)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                            .clipShape(Capsule())
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                Capsule()
                                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
                             )
                         }
@@ -165,9 +165,9 @@ struct AccountCreationScreen: View {
                             .frame(height: 52)
                             .background(Color.white)
                             .foregroundStyle(DesignTokens.textPrimary)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                            .clipShape(Capsule())
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                Capsule()
                                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
                             )
                         }
@@ -176,34 +176,29 @@ struct AccountCreationScreen: View {
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
 
-                    Spacer(minLength: DesignTokens.spacing16)
+                    // Sign in link
+                    VStack(spacing: DesignTokens.spacing12) {
+                        Button(action: { showSignInSheet = true }) {
+                            HStack(spacing: DesignTokens.spacing4) {
+                                Text("Already have an account?")
+                                    .foregroundStyle(DesignTokens.textTertiary)
+                                Text("Sign in")
+                                    .underline()
+                                    .foregroundStyle(DesignTokens.accentClarity)
+                            }
+                            .font(DesignTokens.captionFont)
+                        }
+
+                        Text(termsAttributedString)
+                            .font(DesignTokens.captionFont)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, DesignTokens.spacing24)
+                    }
+                    .padding(.top, DesignTokens.spacing8)
+                    .padding(.bottom, DesignTokens.spacing24)
                 }
             }
             .scrollDismissesKeyboard(.interactively)
-            .safeAreaInset(edge: .bottom) {
-                VStack(spacing: DesignTokens.spacing12) {
-                    // Sign in link
-                    Button(action: { showSignInSheet = true }) {
-                        HStack(spacing: DesignTokens.spacing4) {
-                            Text("Already have an account?")
-                                .foregroundStyle(DesignTokens.textTertiary)
-                            Text("Sign in")
-                                .underline()
-                                .foregroundStyle(DesignTokens.accentClarity)
-                        }
-                        .font(DesignTokens.captionFont)
-                    }
-
-                    Text(termsAttributedString)
-                        .font(DesignTokens.captionFont)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, DesignTokens.spacing24)
-                }
-                .padding(.top, DesignTokens.spacing12)
-                .padding(.bottom, DesignTokens.spacing16)
-                .frame(maxWidth: .infinity)
-                .background(DesignTokens.bgDeepest)
-            }
             .onAppear {
                 withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
                     showPreview = true
@@ -557,9 +552,9 @@ struct SignInSheet: View {
                                 .frame(height: 52)
                                 .background(Color.white)
                                 .foregroundStyle(DesignTokens.textPrimary)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                                .clipShape(Capsule())
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                                    Capsule()
                                         .stroke(DesignTokens.borderDefault, lineWidth: 1)
                                 )
                             }
@@ -752,7 +747,7 @@ private struct AppleSignInButton: View {
             // Hidden native button to trigger Apple Sign In
             SignInWithAppleButton(.continue, onRequest: onRequest, onCompletion: onCompletion)
                 .frame(height: 52)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                .clipShape(Capsule())
                 .opacity(0.011) // Nearly invisible but still tappable
 
             // Custom visual overlay
@@ -767,7 +762,7 @@ private struct AppleSignInButton: View {
             .frame(height: 52)
             .background(DesignTokens.textPrimary)
             .foregroundStyle(DesignTokens.bgDeepest)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(Capsule())
             .allowsHitTesting(false)
         }
         .buttonStyle(CTAPressStyle())

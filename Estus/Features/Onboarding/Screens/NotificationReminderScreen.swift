@@ -38,7 +38,7 @@ struct NotificationReminderScreen: View {
                             timeSlotCard(
                                 label: "MORNING",
                                 icon: "sun.max.fill",
-                                tint: DesignTokens.accentEnergy,
+                                tint: Color(hex: "#FAC655"),
                                 time: Bindable(viewModel).morningReminderTime,
                                 enabled: Bindable(viewModel).morningReminderEnabled,
                                 expanded: $morningExpanded
@@ -156,7 +156,7 @@ struct NotificationReminderScreen: View {
                     .foregroundStyle(DesignTokens.textPrimary)
             }
             .padding(DesignTokens.spacing16)
-            .background(DesignTokens.bgElevated)
+            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .padding(.horizontal, 12)
 
@@ -177,39 +177,34 @@ struct NotificationReminderScreen: View {
         )
         .shadow(color: .black.opacity(0.15), radius: 12, y: 2)
         // Extend the side lines down to meet the morning card
-        .padding(.bottom, DesignTokens.spacing24)
+        .padding(.bottom, DesignTokens.spacing48)
         .overlay(
             PhoneFrameShape(cornerRadius: 28)
-                .stroke(DesignTokens.borderDefault, lineWidth: 1.5)
+                .stroke(DesignTokens.textTertiary.opacity(0.5), lineWidth: 1.5)
         )
-        .padding(.bottom, -DesignTokens.spacing24)
+        .padding(.bottom, -DesignTokens.spacing48)
     }
 
     // MARK: - Encouragement Tip
 
     private var encouragementTip: some View {
-        HStack(spacing: DesignTokens.spacing12) {
-            Image(systemName: "lightbulb.fill")
-                .font(.system(size: 18))
-                .foregroundStyle(DesignTokens.accentEnergy)
+        VStack(spacing: 2) {
+            (Text(Image(systemName: "lightbulb.fill"))
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(Color(hex: "#FAC655"))
+            + Text(" Daily reminders make you")
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(DesignTokens.textSecondary)
+            + Text(" 2x more likely")
+                .font(DesignTokens.captionFont.bold())
+                .foregroundStyle(DesignTokens.textPrimary))
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Daily reminders make you")
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
-                + Text(" 2x more likely")
-                    .font(DesignTokens.captionFont.bold())
-                    .foregroundStyle(DesignTokens.textPrimary)
-
-                Text("to stay consistent with your routine.")
-                    .font(DesignTokens.captionFont)
-                    .foregroundStyle(DesignTokens.textSecondary)
-            }
+            Text("to stay consistent with your routine.")
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(DesignTokens.textSecondary)
         }
-        .padding(DesignTokens.spacing16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Time Slot Card
@@ -255,7 +250,7 @@ struct NotificationReminderScreen: View {
                 // Right: toggle
                 Toggle("", isOn: enabled)
                     .labelsHidden()
-                    .tint(DesignTokens.accentGut)
+                    .tint(DesignTokens.onboardingSelected)
                     .accessibilityLabel("\(label) reminder")
                     .accessibilityValue(enabled.wrappedValue ? "On" : "Off")
                     .onChange(of: enabled.wrappedValue) { _, newValue in
@@ -267,7 +262,9 @@ struct NotificationReminderScreen: View {
                         }
                     }
             }
-            .padding(DesignTokens.spacing16)
+            .padding(.leading, 26)
+            .padding(.trailing, DesignTokens.spacing16)
+            .padding(.vertical, DesignTokens.spacing16)
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.25)) {
@@ -297,10 +294,10 @@ struct NotificationReminderScreen: View {
             }
         }
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: 26))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(enabled.wrappedValue ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 26)
+                .stroke(enabled.wrappedValue ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: 1)
         )
     }
 }

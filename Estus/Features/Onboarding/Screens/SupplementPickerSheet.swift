@@ -96,7 +96,7 @@ struct SupplementPickerSheet: View {
                             // Section header
                             Text(group.label.uppercased())
                                 .font(DesignTokens.sectionHeader)
-                                .foregroundStyle(DesignTokens.accentLongevity)
+                                .foregroundStyle(Color(hex: "#C25D93"))
                                 .tracking(1)
                                 .padding(.horizontal, DesignTokens.spacing20)
                                 .padding(.top, DesignTokens.spacing16)
@@ -111,7 +111,7 @@ struct SupplementPickerSheet: View {
                         if showOtherRow {
                             Text("OTHER")
                                 .font(DesignTokens.sectionHeader)
-                                .foregroundStyle(DesignTokens.accentLongevity)
+                                .foregroundStyle(Color(hex: "#C25D93"))
                                 .tracking(1)
                                 .padding(.horizontal, DesignTokens.spacing20)
                                 .padding(.top, DesignTokens.spacing16)
@@ -177,11 +177,11 @@ struct SupplementPickerSheet: View {
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22))
-                    .foregroundStyle(isSelected ? DesignTokens.accentClarity : DesignTokens.textTertiary)
+                    .foregroundStyle(isSelected ? DesignTokens.onboardingSelected : DesignTokens.textTertiary)
             }
             .padding(.horizontal, DesignTokens.spacing20)
             .padding(.vertical, DesignTokens.spacing12)
-            .background(isSelected ? DesignTokens.bgElevated : Color.clear)
+            .background(isSelected ? DesignTokens.onboardingSelected.opacity(0.08) : Color.clear)
         }
     }
 
@@ -208,11 +208,11 @@ struct SupplementPickerSheet: View {
 
                     Image(systemName: isOtherSelected ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 22))
-                        .foregroundStyle(isOtherSelected ? DesignTokens.accentClarity : DesignTokens.textTertiary)
+                        .foregroundStyle(isOtherSelected ? DesignTokens.onboardingSelected : DesignTokens.textTertiary)
                 }
                 .padding(.horizontal, DesignTokens.spacing20)
                 .padding(.vertical, DesignTokens.spacing12)
-                .background(isOtherSelected ? DesignTokens.bgElevated : Color.clear)
+                .background(isOtherSelected ? DesignTokens.onboardingSelected.opacity(0.08) : Color.clear)
             }
 
             // Custom text field (always visible so tapping Other focuses it)

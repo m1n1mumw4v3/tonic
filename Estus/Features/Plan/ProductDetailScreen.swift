@@ -208,7 +208,7 @@ struct ProductDetailScreen: View {
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(Color(red: 1.0, green: 0.72, blue: 0.17))
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }
@@ -231,7 +231,7 @@ struct ProductDetailScreen: View {
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(Color.black)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }

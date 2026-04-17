@@ -27,7 +27,7 @@ export function CTAButton({
     hero: "bg-white/20 text-white border border-white/60 backdrop-blur-sm font-medium",
   };
 
-  const base = `inline-flex items-center justify-center h-[52px] rounded-md px-8 text-[16px] tracking-[0.32px] transition-transform ${variants[variant]}`;
+  const base = `inline-flex items-center justify-center h-[52px] rounded-full px-8 text-[16px] tracking-[0.32px] transition-transform ${variants[variant]}`;
 
   const Component = href ? motion(Link) : motion.button;
 
@@ -35,7 +35,7 @@ export function CTAButton({
     <Component
       href={href || ""}
       onClick={onClick}
-      className={`${base} ${variant === "hero" ? "rounded-full" : ""} ${className}`}
+      className={`${base} ${className}`}
       whileHover={{ scale: 0.97 }}
       whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.15 }}

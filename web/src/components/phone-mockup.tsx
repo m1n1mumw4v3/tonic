@@ -7,8 +7,8 @@ export function PhoneMockup() {
     <div
       className="relative mx-auto w-[280px] md:w-[320px] max-h-[440px] md:max-h-[500px] overflow-hidden"
       style={{
-        maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)",
-        WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)",
+        maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
       }}
     >
       {/* Outer clip to ensure clean rounded shape, no square corners */}

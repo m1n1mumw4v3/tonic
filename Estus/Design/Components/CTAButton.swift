@@ -26,7 +26,7 @@ struct CTAButton: View {
                 .frame(height: 52)
                 .background(background)
                 .foregroundStyle(foregroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                .clipShape(Capsule())
                 .overlay(border)
         }
         .buttonStyle(CTAPressStyle())
@@ -58,7 +58,7 @@ struct CTAButton: View {
     @ViewBuilder
     private var border: some View {
         if spectrumBorder {
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            Capsule()
                 .stroke(
                     LinearGradient(
                         colors: [
@@ -80,7 +80,7 @@ struct CTAButton: View {
             case .ghost:
                 EmptyView()
             case .secondary:
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                Capsule()
                     .stroke(DesignTokens.textPrimary, lineWidth: 1.5)
             }
         }

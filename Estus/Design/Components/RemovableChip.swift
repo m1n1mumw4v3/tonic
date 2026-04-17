@@ -23,11 +23,11 @@ struct RemovableChip: View {
         .padding(.leading, DesignTokens.spacing16)
         .padding(.trailing, DesignTokens.spacing12)
         .padding(.vertical, DesignTokens.spacing12)
-        .background(DesignTokens.bgElevated)
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.radiusFull)
-                .stroke(DesignTokens.borderDefault, lineWidth: 1)
+                .stroke(DesignTokens.textPrimary, lineWidth: 1)
         )
     }
 }

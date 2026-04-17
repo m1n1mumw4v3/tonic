@@ -5,8 +5,6 @@ struct ValuePropProblemScreen: View {
 
     @State private var showHeadline = false
     @State private var showPoints: [Bool] = [false, false, false, false]
-    @State private var showGlow = false
-
     private let symptoms: [(color: Color, label: String, attribution: String)] = [
         (DesignTokens.accentEnergy, "Hit a wall every afternoon?", "It could be a Vitamin D deficiency."),
         (DesignTokens.accentMood, "Anxious for no clear reason?", "B Vitamins help regulate your stress response."),
@@ -19,25 +17,10 @@ struct ValuePropProblemScreen: View {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Hero ring with radial glow
-                ZStack {
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [DesignTokens.negative.opacity(0.2), .clear],
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 120
-                            )
-                        )
-                        .frame(width: 240, height: 240)
-                        .blur(radius: 40)
-                        .opacity(showGlow ? 1 : 0)
-
-                    DeficiencyRingView()
-                        .frame(width: 160, height: 160)
-                }
-                .padding(.bottom, 8)
+                DeficiencyRingView()
+                    .frame(width: 160, height: 160)
+                    .padding(.top, DesignTokens.spacing32)
+                    .padding(.bottom, DesignTokens.spacing32)
 
                 // Headline
                 VStack(alignment: .leading, spacing: DesignTokens.spacing32) {
@@ -51,14 +34,9 @@ struct ValuePropProblemScreen: View {
                     .offset(y: showHeadline ? 0 : 12)
 
                     // Symptom cards
-                    VStack(spacing: DesignTokens.spacing8) {
+                    VStack(spacing: 0) {
                         ForEach(Array(symptoms.enumerated()), id: \.0) { index, symptom in
                             HStack(spacing: 0) {
-                                RoundedRectangle(cornerRadius: 1.5)
-                                    .fill(symptom.color)
-                                    .frame(width: 3)
-                                    .padding(.vertical, 4)
-
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(symptom.label)
                                         .font(DesignTokens.captionFont.bold())
@@ -68,21 +46,20 @@ struct ValuePropProblemScreen: View {
                                         .font(.custom("Geist-Regular", size: 12))
                                         .foregroundStyle(DesignTokens.textSecondary)
                                 }
-                                .padding(.leading, DesignTokens.spacing16)
 
                                 Spacer()
                             }
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, DesignTokens.spacing16)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .background(
-                                RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                                    .fill(DesignTokens.bgElevated)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                                            .stroke(DesignTokens.borderSubtle, lineWidth: 1)
-                                    )
-                            )
+                            .padding(.leading, 26 + DesignTokens.spacing12)
+                            .padding(.trailing, DesignTokens.spacing24)
+                            .frame(height: 52)
+                            .background(Color.white)
+                            .clipShape(Capsule())
+                            .overlay(alignment: .leading) {
+                                Rectangle()
+                                    .fill(symptom.color)
+                                    .frame(width: 26)
+                            }
+                            .clipShape(Capsule())
                             .opacity(showPoints[index] ? 1 : 0)
                             .offset(y: showPoints[index] ? 0 : 8)
                         }
@@ -100,13 +77,6 @@ struct ValuePropProblemScreen: View {
             }
         }
         .onAppear {
-            // Glow fades in with ring fill
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                withAnimation(.easeOut(duration: 0.8)) {
-                    showGlow = true
-                }
-            }
-
             // Headline slides up after ring starts
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 withAnimation(.easeOut(duration: 0.5)) {

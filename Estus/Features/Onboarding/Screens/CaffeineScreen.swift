@@ -111,13 +111,14 @@ struct CaffeineScreen: View {
                 .font(DesignTokens.bodyFont)
                 .foregroundStyle(isNone ? DesignTokens.textPrimary : DesignTokens.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 56)
-                .padding(.horizontal, DesignTokens.spacing16)
-                .background(isNone ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                .frame(height: 52)
+                .padding(.leading, 26)
+                .padding(.trailing, DesignTokens.spacing16)
+                .background(DesignTokens.bgSurface)
+                .clipShape(Capsule())
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                        .stroke(isNone ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isNone ? 1.5 : 1)
+                    Capsule()
+                        .stroke(isNone ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isNone ? 1.5 : 1)
                 )
         }
     }
@@ -148,22 +149,22 @@ struct CaffeineScreen: View {
                         .foregroundStyle(count > 0 ? DesignTokens.textPrimary : DesignTokens.textTertiary)
                         .frame(width: 32, height: 32)
                         .background(DesignTokens.bgSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+                        .clipShape(Circle())
                         .overlay(
-                            RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+                            Circle()
                                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
                         )
                 }
                 .disabled(count == 0)
 
                 // Count + unit
-                VStack(spacing: 2) {
+                VStack(spacing: 1) {
                     Text("\(count)")
-                        .font(DesignTokens.bodyFont)
+                        .font(.custom("Geist-Medium", size: 18))
                         .foregroundStyle(DesignTokens.textPrimary)
                     Text(unit)
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textSecondary)
+                        .font(.custom("Geist-Regular", size: 10))
+                        .foregroundStyle(DesignTokens.textTertiary)
                 }
                 .frame(width: 40)
 
@@ -174,21 +175,22 @@ struct CaffeineScreen: View {
                         .foregroundStyle(DesignTokens.textPrimary)
                         .frame(width: 32, height: 32)
                         .background(DesignTokens.bgSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+                        .clipShape(Circle())
                         .overlay(
-                            RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+                            Circle()
                                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
                         )
                 }
             }
         }
-        .frame(height: 56)
-        .padding(.horizontal, DesignTokens.spacing16)
-        .background(isActive ? DesignTokens.accentGut.opacity(0.15) : DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .frame(height: 52)
+        .padding(.leading, 26)
+        .padding(.trailing, DesignTokens.spacing16)
+        .background(DesignTokens.bgSurface)
+        .clipShape(Capsule())
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(isActive ? DesignTokens.accentGut : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
+            Capsule()
+                .stroke(isActive ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: isActive ? 1.5 : 1)
         )
     }
 }

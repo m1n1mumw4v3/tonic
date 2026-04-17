@@ -239,7 +239,7 @@ enum DietType: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .omnivore: return "No specific diet (Omnivore)"
+        case .omnivore: return "No specific diet"
         case .vegetarian: return "Vegetarian"
         case .vegan: return "Vegan"
         case .keto: return "Keto"

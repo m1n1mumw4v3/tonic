@@ -12,6 +12,19 @@ class TodayViewModel {
         case complete // all supplements logged + wellbeing submitted
     }
 
+    enum ChartRange: String, CaseIterable, Identifiable {
+        case week = "7D"
+        case month = "30D"
+
+        var id: String { rawValue }
+        var dayCount: Int {
+            switch self {
+            case .week: return 7
+            case .month: return 30
+            }
+        }
+    }
+
     // MARK: - Greeting / Date
 
     var greeting: String = ""
@@ -42,6 +55,7 @@ class TodayViewModel {
     var gutScore: Double = 5
     var trailingAverages: [WellnessDimension: Double] = [:]
     var trailingCheckInCount: Int = 0
+    var chartRange: ChartRange = .week
     var weeklyData: [WeeklyDayData] = []
 
     var trailingOverallAverage: Double? {
@@ -310,9 +324,11 @@ class TodayViewModel {
         let today = calendar.startOfDay(for: Date())
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "EEE"
+        formatter.dateFormat = chartRange == .week ? "EEE" : "d"
 
-        weeklyData = (0..<7).reversed().map { daysBack in
+        let dayCount = chartRange.dayCount
+
+        weeklyData = (0..<dayCount).reversed().map { daysBack in
             let date = calendar.date(byAdding: .day, value: -daysBack, to: today)!
             let dayLabel = formatter.string(from: date).uppercased()
             let isToday = daysBack == 0
