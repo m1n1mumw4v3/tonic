@@ -18,6 +18,10 @@ struct WellnessSlider: View {
     private let detentInterval: Double = 1
     @State private var lastDetent: Int = -1
 
+    @State private var splashScale: CGFloat = 0.4
+    @State private var splashOpacity: Double = 0
+    @State private var thumbLanding: Bool = false
+
     private let trackHeightIdle: CGFloat = 6
     private let trackHeightActive: CGFloat = 8
     private let springCurve = Animation.spring(duration: 0.3, bounce: 0.4)
@@ -92,13 +96,23 @@ struct WellnessSlider: View {
                         .offset(x: thumbX - 16)
                         .animation(springCurve, value: isDragging)
 
+                    // Landing splash ring
+                    Circle()
+                        .stroke(accentColor, lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                        .scaleEffect(splashScale)
+                        .opacity(splashOpacity)
+                        .offset(x: thumbX - 12)
+                        .allowsHitTesting(false)
+
                     // Thumb
                     Circle()
                         .fill(accentColor)
                         .frame(width: 24, height: 24)
                         .shadow(color: accentColor.opacity(isDragging ? 0.5 : 0.2), radius: isDragging ? 8 : 4)
-                        .scaleEffect(isDragging ? 1.35 : 1.0)
+                        .scaleEffect(isDragging ? 1.35 : (thumbLanding ? 0.85 : 1.0))
                         .animation(springCurve, value: isDragging)
+                        .animation(.spring(response: 0.35, dampingFraction: 0.55), value: thumbLanding)
                         .offset(x: thumbX - 12)
                         .gesture(
                             DragGesture(minimumDistance: 0)
@@ -119,6 +133,7 @@ struct WellnessSlider: View {
                                     // Snap to nearest whole number
                                     value = round(value)
                                     HapticManager.impact(.light)
+                                    triggerLandingSplash()
                                 }
                         )
                 }
@@ -149,6 +164,24 @@ struct WellnessSlider: View {
             @unknown default:
                 break
             }
+        }
+    }
+
+    private func triggerLandingSplash() {
+        // Reset to initial state
+        splashScale = 0.4
+        splashOpacity = 0.8
+        thumbLanding = true
+
+        // Ring expands outward and fades
+        withAnimation(.easeOut(duration: 0.55)) {
+            splashScale = 2.0
+            splashOpacity = 0
+        }
+
+        // Thumb squish then spring back
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+            thumbLanding = false
         }
     }
 }
