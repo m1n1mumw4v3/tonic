@@ -13,9 +13,8 @@ struct HealthKitScreen: View {
     private let dataPoints: [(icon: String, label: String, color: Color)] = [
         ("bed.double.fill", "Sleep duration & quality", DesignTokens.accentSleep),
         ("heart.fill", "Heart rate", DesignTokens.accentHeart),
-        ("waveform.path.ecg", "Heart rate variability (HRV)", DesignTokens.accentLongevity),
-        ("figure.walk", "Daily steps", DesignTokens.accentGut),
-        ("figure.run", "Workouts & activity", DesignTokens.accentMuscle)
+        ("figure.run", "Workouts & activity", DesignTokens.accentImmunity),
+        ("waveform.path.ecg", "Heart rate variability (HRV)", DesignTokens.accentLongevity)
     ]
 
     var body: some View {
@@ -49,7 +48,7 @@ struct HealthKitScreen: View {
                             Text("Estus can read your Apple health data to personalize recommendations even further.")
                                 .font(DesignTokens.bodyFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
-                                .lineSpacing(4)
+                                .lineSpacing(0)
                         }
                         .padding(.horizontal, DesignTokens.spacing24)
 
@@ -90,12 +89,12 @@ struct HealthKitScreen: View {
                         HStack(alignment: .top, spacing: DesignTokens.spacing8) {
                             Image(systemName: "lock.shield.fill")
                                 .font(.system(size: 14))
-                                .foregroundStyle(DesignTokens.positive)
+                                .foregroundStyle(DesignTokens.textSecondary)
                                 .padding(.top, 2)
 
                             Text("Your data stays on-device and is never shared. You can disconnect at any time in Settings.")
                                 .font(DesignTokens.captionFont)
-                                .foregroundStyle(DesignTokens.textTertiary)
+                                .foregroundStyle(DesignTokens.textSecondary)
                                 .lineSpacing(2)
                         }
                         .padding(.horizontal, DesignTokens.spacing24)

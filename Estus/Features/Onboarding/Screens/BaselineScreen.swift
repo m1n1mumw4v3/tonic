@@ -15,7 +15,7 @@ struct BaselineScreen: View {
 
             VStack(alignment: .leading, spacing: DesignTokens.spacing20) {
                 // Header
-                HeadlineText(text: "Rate your typical\nwellness levels")
+                HeadlineText(text: "How have you been lately?")
                     .opacity(showHeadline ? 1 : 0)
                     .offset(y: showHeadline ? 0 : 12)
                     .padding(.horizontal, DesignTokens.spacing24)

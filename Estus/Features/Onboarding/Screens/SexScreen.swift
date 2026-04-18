@@ -9,7 +9,7 @@ struct SexScreen: View {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                HeadlineText(text: "What's your biological sex?")
+                HeadlineText(text: "What sex were you assigned at birth?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
@@ -35,7 +35,7 @@ struct SexScreen: View {
         Button {
             HapticManager.selection()
             viewModel.sex = option
-            if option != .female {
+            if option == .male {
                 viewModel.isPregnant = false
                 viewModel.isBreastfeeding = false
             }

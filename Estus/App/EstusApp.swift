@@ -13,6 +13,10 @@ struct EstusApp: App {
                 .environment(knowledgeBase)
                 .preferredColorScheme(.light)
                 .task {
+                    #if DEBUG
+                    resetOnboardingForSimulator()
+                    #endif
+
                     Task { await appState.authService.startListening() }
 
                     // Restore local data first — UserDefaults reads are instant
@@ -37,4 +41,25 @@ struct EstusApp: App {
                 }
         }
     }
+
+    #if DEBUG
+    /// Wipes locally-stored onboarding state so simulator launches always land on the welcome screen.
+    private func resetOnboardingForSimulator() {
+        #if targetEnvironment(simulator)
+        let defaults = UserDefaults.standard
+        let keys = [
+            "estus_onboarding_complete",
+            "estus_user_profile",
+            "estus_active_plan",
+            "estus_check_ins",
+            "estus_streak",
+            "estus_insights",
+            "estus_deep_profile"
+        ]
+        for key in keys {
+            defaults.removeObject(forKey: key)
+        }
+        #endif
+    }
+    #endif
 }

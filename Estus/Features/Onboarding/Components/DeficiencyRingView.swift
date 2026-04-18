@@ -42,14 +42,13 @@ struct DeficiencyRingView: View {
                 .rotationEffect(.degrees(-90))
 
             // Center label
-            VStack(spacing: 2) {
+            VStack(spacing: -4) {
                 Text("\(displayedPercentage)%")
-                    .font(.custom("GeistMono-Medium", size: 44))
+                    .font(.custom("Geist-Regular", size: 44))
                     .foregroundStyle(DesignTokens.textPrimary)
 
-                Text("DEFICIENT")
-                    .font(.custom("GeistMono-Regular", size: 10))
-                    .tracking(1.2)
+                Text("Deficient")
+                    .font(.custom("Geist-Regular", size: 14))
                     .foregroundStyle(DesignTokens.textSecondary)
             }
         }

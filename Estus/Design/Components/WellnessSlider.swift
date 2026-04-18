@@ -18,9 +18,11 @@ struct WellnessSlider: View {
     private let detentInterval: Double = 1
     @State private var lastDetent: Int = -1
 
-    @State private var splashScale: CGFloat = 0.4
+    @State private var splashProgress: CGFloat = 0
     @State private var splashOpacity: Double = 0
     @State private var thumbLanding: Bool = false
+    @State private var droplets: [SplashDroplet] = []
+    @State private var showPrompt = false
 
     private let trackHeightIdle: CGFloat = 6
     private let trackHeightActive: CGFloat = 8
@@ -38,6 +40,25 @@ struct WellnessSlider: View {
                     Text(dimension.label)
                         .font(DesignTokens.bodyFont)
                         .foregroundStyle(accentColor)
+
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 12))
+                        .foregroundStyle(accentColor.opacity(0.6))
+                        .onTapGesture {
+                            showPrompt.toggle()
+                        }
+                        .popover(isPresented: $showPrompt, arrowEdge: .top) {
+                            Text(dimension.prompt)
+                                .font(DesignTokens.captionFont)
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(nil)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(width: 240, alignment: .leading)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
+                                .presentationCompactAdaptation(.popover)
+                        }
                 }
                 .scaleEffect(isDragging ? 1.05 : 1.0)
                 .animation(.easeInOut(duration: 0.2), value: isDragging)
@@ -96,14 +117,33 @@ struct WellnessSlider: View {
                         .offset(x: thumbX - 16)
                         .animation(springCurve, value: isDragging)
 
-                    // Landing splash ring
-                    Circle()
-                        .stroke(accentColor, lineWidth: 2)
-                        .frame(width: 24, height: 24)
-                        .scaleEffect(splashScale)
-                        .opacity(splashOpacity)
-                        .offset(x: thumbX - 12)
-                        .allowsHitTesting(false)
+                    // Landing splash — soft core blob + droplets
+                    ZStack {
+                        // Soft core blob
+                        Circle()
+                            .fill(accentColor)
+                            .frame(width: 24, height: 24)
+                            .blur(radius: 3)
+                            .scaleEffect(0.5 + splashProgress * 0.9)
+                            .opacity(splashOpacity * 0.55)
+
+                        // Droplets radiating outward
+                        ForEach(droplets) { droplet in
+                            Circle()
+                                .fill(accentColor)
+                                .frame(width: droplet.size, height: droplet.size)
+                                .blur(radius: 0.6)
+                                .offset(
+                                    x: cos(droplet.angle) * droplet.distance * splashProgress,
+                                    y: sin(droplet.angle) * droplet.distance * splashProgress
+                                )
+                                .scaleEffect(1.0 - splashProgress * 0.4)
+                                .opacity(splashOpacity)
+                        }
+                    }
+                    .frame(width: 24, height: 24)
+                    .offset(x: thumbX - 12)
+                    .allowsHitTesting(false)
 
                     // Thumb
                     Circle()
@@ -168,14 +208,28 @@ struct WellnessSlider: View {
     }
 
     private func triggerLandingSplash() {
-        // Reset to initial state
-        splashScale = 0.4
-        splashOpacity = 0.8
+        // Seed fresh droplets with randomized angle jitter, distance, size
+        let baseCount = 7
+        let angleStep = (2 * .pi) / Double(baseCount)
+        droplets = (0..<baseCount).map { i in
+            SplashDroplet(
+                angle: Double(i) * angleStep + Double.random(in: -0.35...0.35),
+                distance: CGFloat.random(in: 18...30),
+                size: CGFloat.random(in: 4...8)
+            )
+        }
+
+        splashProgress = 0
+        splashOpacity = 1.0
         thumbLanding = true
 
-        // Ring expands outward and fades
-        withAnimation(.easeOut(duration: 0.55)) {
-            splashScale = 2.0
+        // Squishy outward burst — spring gives the bounce/overshoot feel
+        withAnimation(.spring(response: 0.55, dampingFraction: 0.58)) {
+            splashProgress = 1.0
+        }
+
+        // Fade out on a slightly longer curve so the blobs linger
+        withAnimation(.easeOut(duration: 0.65)) {
             splashOpacity = 0
         }
 
@@ -184,6 +238,13 @@ struct WellnessSlider: View {
             thumbLanding = false
         }
     }
+}
+
+private struct SplashDroplet: Identifiable {
+    let id = UUID()
+    let angle: Double
+    let distance: CGFloat
+    let size: CGFloat
 }
 
 #Preview {

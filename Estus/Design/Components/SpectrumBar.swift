@@ -5,11 +5,8 @@ struct SpectrumBar: View {
     var progress: CGFloat = 1.0 // 0.0 to 1.0
 
     private let colors: [Color] = [
-        DesignTokens.accentSleep,
         DesignTokens.accentEnergy,
-        DesignTokens.accentClarity,
-        DesignTokens.accentMood,
-        DesignTokens.accentGut
+        DesignTokens.accentMood
     ]
 
     var body: some View {

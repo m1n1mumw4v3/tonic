@@ -71,9 +71,9 @@ struct PlanRevealScreen: View {
         return supplements.first(where: { $0.id == id })
     }
 
-    private var userName: String {
+    private var planTitle: String {
         let name = viewModel.firstName.trimmingCharacters(in: .whitespaces)
-        return name.isEmpty ? "Your" : name
+        return name.isEmpty ? "Your Supplement Plan" : "\(name)'s Supplement Plan"
     }
 
     // MARK: - Body
@@ -90,9 +90,10 @@ struct PlanRevealScreen: View {
                             .padding(.top, DesignTokens.spacing40)
 
                         // AI reasoning as flowing text
-                        if let summary = viewModel.generatedPlan?.aiReasoning {
-                            summaryBlurb(summary)
-                        }
+                        // Temporarily hidden
+                        // if let summary = viewModel.generatedPlan?.aiReasoning {
+                        //     summaryBlurb(summary)
+                        // }
 
                         // Goal chips
                         goalChipsSection
@@ -174,7 +175,7 @@ struct PlanRevealScreen: View {
 
     private var headerSection: some View {
         VStack(spacing: DesignTokens.spacing8) {
-            Text("\(userName)'s Supplement Plan")
+            Text(planTitle)
                 .font(.custom("Geist-Light", size: 28))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(DesignTokens.textPrimary)
@@ -845,7 +846,7 @@ private struct OneShotShimmerModifier: ViewModifier {
     return PlanRevealScreen(
         viewModel: {
             let vm = OnboardingViewModel()
-            vm.firstName = "Matt"
+            vm.firstName = ""
             vm.healthGoals = [.sleep, .energy, .focus, .stressAnxiety]
 
             let engine = RecommendationEngine(catalog: appState.supplementCatalog)

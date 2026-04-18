@@ -17,7 +17,7 @@ struct AgeScreen: View {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                HeadlineText(text: "What's your date of birth?")
+                HeadlineText(text: "When were you born?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)

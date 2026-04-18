@@ -12,7 +12,7 @@ struct OnboardingFlow: View {
     private var skippedScreens: Set<Int> {
         var skipped = Set<Int>()
         if viewModel.healthKitProvidedSex { skipped.insert(7) }
-        if viewModel.sex != .female { skipped.insert(8) }
+        if viewModel.sex == .male { skipped.insert(8) }
         return skipped
     }
 
@@ -30,7 +30,7 @@ struct OnboardingFlow: View {
 
             VStack(spacing: 0) {
                 // Back button + progress bar
-                if currentScreen > 0 && currentScreen < totalScreens - 3 {
+                if currentScreen > 0 && currentScreen < totalScreens - 3 && currentScreen != 23 {
                     HStack(spacing: DesignTokens.spacing12) {
                         Button(action: previousScreen) {
                             Image(systemName: "chevron.left")

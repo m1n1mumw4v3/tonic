@@ -41,7 +41,7 @@ struct WellbeingScoreRing: View {
     }
 
     var body: some View {
-        VStack(spacing: DesignTokens.spacing24) {
+        VStack(spacing: DesignTokens.spacing32) {
             // Ring
             ZStack {
                 // Background ring with recessed inner shadow
@@ -108,7 +108,7 @@ struct WellbeingScoreRing: View {
                 // Center score
                 VStack(spacing: 2) {
                     Text(String(format: "%.1f", wellbeingScore))
-                        .font(.custom("Geist-Medium", size: size * 0.25))
+                        .font(.custom("Geist-Regular", size: size * 0.25))
                         .foregroundStyle(DesignTokens.textPrimary)
 
                     if centerLabel != "OVERALL", !centerLabel.isEmpty {
@@ -167,7 +167,7 @@ struct WellbeingScoreRing: View {
                 .font(.custom("Geist-Medium", size: 22))
                 .foregroundStyle(.black)
 
-            Text(dimension.label.uppercased())
+            Text(dimension.label)
                 .font(DesignTokens.captionFont)
                 .foregroundStyle(DesignTokens.textSecondary)
         }
@@ -231,12 +231,12 @@ private struct DimensionCardBackground: ViewModifier {
             content
                 .glassEffect(
                     .clear,
-                    in: RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                    in: RoundedRectangle(cornerRadius: 26)
                 )
         } else {
             content
                 .background(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                    RoundedRectangle(cornerRadius: 26)
                         .fill(
                             LinearGradient(
                                 colors: [color.opacity(0.2), color.opacity(0.04)],
@@ -246,7 +246,7 @@ private struct DimensionCardBackground: ViewModifier {
                         )
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                    RoundedRectangle(cornerRadius: 26)
                         .stroke(color.opacity(0.15), lineWidth: 1)
                 )
         }

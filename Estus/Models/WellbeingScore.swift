@@ -70,6 +70,21 @@ enum WellnessDimension: String, CaseIterable, Codable, Identifiable, Hashable {
         case .gut:     return "Settled"
         }
     }
+
+    var prompt: String {
+        switch self {
+        case .sleep:
+            return "Think about how rested you typically feel when you wake up — not just the hours you sleep, but how restorative it feels."
+        case .energy:
+            return "How steady is your energy through a typical day — vibrant and sustained, or drained and fatigued?"
+        case .clarity:
+            return "How sharp does your mind usually feel — focused and locked in, or foggy and scattered?"
+        case .mood:
+            return "What's your emotional baseline most days — balanced and positive, or low and flat?"
+        case .gut:
+            return "How does your digestion usually feel — smooth and settled, or uncomfortable and off?"
+        }
+    }
 }
 
 // MARK: - Wellbeing Score Calculator

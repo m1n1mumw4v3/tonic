@@ -131,7 +131,7 @@ extension UserProfile {
 enum Sex: String, Codable, CaseIterable, Identifiable {
     case male
     case female
-    case other
+    case intersex
     case preferNotToSay = "prefer_not_to_say"
 
     var id: String { rawValue }
@@ -140,7 +140,7 @@ enum Sex: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .male: return "Male"
         case .female: return "Female"
-        case .other: return "Non-binary"
+        case .intersex: return "Intersex"
         case .preferNotToSay: return "Prefer not to say"
         }
     }

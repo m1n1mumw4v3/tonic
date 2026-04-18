@@ -11,13 +11,11 @@ struct NameScreen: View {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
             VStack(spacing: DesignTokens.spacing32) {
-                Spacer()
-                    .frame(height: DesignTokens.spacing40)
-
                 // Header
                 HeadlineText(text: "What's your first name?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
+                    .padding(.top, DesignTokens.spacing24)
 
                 // Text field
                 TextField("", text: Bindable(viewModel).firstName, prompt: Text("First name").foregroundStyle(DesignTokens.textSecondary))

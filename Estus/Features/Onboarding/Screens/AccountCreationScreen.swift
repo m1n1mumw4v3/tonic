@@ -53,15 +53,10 @@ struct AccountCreationScreen: View {
             ScrollView {
                 VStack(spacing: DesignTokens.spacing24) {
                     // Header
-                    VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                        HeadlineText(text: "Ready to build your plan")
-                        Text("Create an account and we'll get started.")
-                            .font(DesignTokens.bodyFont)
-                            .foregroundStyle(DesignTokens.textSecondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, DesignTokens.spacing24)
-                    .padding(.top, DesignTokens.spacing16)
+                    HeadlineText(text: "Create your account")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, DesignTokens.spacing24)
+                        .padding(.top, DesignTokens.spacing16)
 
                     // Wellbeing preview
                     VStack(spacing: DesignTokens.spacing24) {
@@ -186,11 +181,11 @@ struct AccountCreationScreen: View {
                                     .underline()
                                     .foregroundStyle(DesignTokens.accentClarity)
                             }
-                            .font(DesignTokens.captionFont)
+                            .font(.custom("Geist-Regular", size: 13))
                         }
 
                         Text(termsAttributedString)
-                            .font(DesignTokens.captionFont)
+                            .font(.custom("Geist-Regular", size: 13))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, DesignTokens.spacing24)
                     }
@@ -223,21 +218,17 @@ struct AccountCreationScreen: View {
 
     @ViewBuilder
     private func goalPill(for goal: HealthGoal) -> some View {
-        HStack(spacing: DesignTokens.spacing4) {
-            Image(systemName: goal.icon)
-                .font(.system(size: 11))
-            Text(goal.shortLabel)
-                .font(DesignTokens.captionFont)
-        }
-        .foregroundStyle(goal.accentColor)
-        .padding(.horizontal, DesignTokens.spacing12)
-        .padding(.vertical, DesignTokens.spacing8)
-        .background(goal.accentColor.opacity(0.12))
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .stroke(goal.accentColor.opacity(0.25), lineWidth: 1)
-        )
+        Text(goal.shortLabel)
+            .font(DesignTokens.captionFont)
+            .foregroundStyle(goal.accentColor)
+            .padding(.horizontal, DesignTokens.spacing12)
+            .padding(.vertical, DesignTokens.spacing8)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 26))
+            .overlay(
+                RoundedRectangle(cornerRadius: 26)
+                    .stroke(goal.accentColor, lineWidth: 1)
+            )
     }
 
     // MARK: - Terms Attributed String

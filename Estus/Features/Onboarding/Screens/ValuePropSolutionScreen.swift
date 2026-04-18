@@ -37,18 +37,18 @@ struct ValuePropSolutionScreen: View {
                         // Phone mockup
                         phoneMockup
                             .padding(.horizontal, DesignTokens.spacing32)
+                            .padding(.top, DesignTokens.spacing16)
                             .padding(.bottom, -24)
                             .opacity(showPhone ? 1 : 0)
                             .offset(y: showPhone ? 0 : 20)
                             .zIndex(0)
 
                         // Steps card
-                        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+                        VStack(alignment: .leading, spacing: DesignTokens.spacing20) {
                             // Section header
-                            Text("HOW IT WORKS")
-                                .font(.custom("GeistMono-Medium", size: 11))
-                                .tracking(1.2)
-                                .foregroundStyle(DesignTokens.textSecondary)
+                            Text("How it works")
+                                .font(.custom("Geist-Regular", size: 16))
+                                .foregroundStyle(DesignTokens.textPrimary)
 
                             // Timeline steps
                             VStack(alignment: .leading, spacing: 0) {
@@ -67,16 +67,16 @@ struct ValuePropSolutionScreen: View {
 
                                             // Opaque background to mask the connector line
                                             Circle()
-                                                .fill(DesignTokens.bgSurface)
+                                                .fill(Color.white)
                                                 .frame(width: 24, height: 24)
-
-                                            Circle()
-                                                .fill(DesignTokens.accentImmunity)
-                                                .frame(width: 24, height: 24)
+                                                .overlay(
+                                                    Circle()
+                                                        .stroke(DesignTokens.accentMood, lineWidth: 1)
+                                                )
 
                                             Text(step.number)
                                                 .font(.custom("GeistMono-Medium", size: 12))
-                                                .foregroundStyle(.white)
+                                                .foregroundStyle(DesignTokens.accentMood)
                                                 .frame(width: 24, height: 24)
                                         }
                                         .frame(width: 24)
@@ -84,7 +84,7 @@ struct ValuePropSolutionScreen: View {
                                         // Title + description
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(step.title)
-                                                .font(.custom("Geist-Medium", size: 14))
+                                                .font(.custom("Geist-Regular", size: 14))
                                                 .foregroundStyle(DesignTokens.textPrimary)
 
                                             Text(step.description)
@@ -93,7 +93,7 @@ struct ValuePropSolutionScreen: View {
                                                 .fixedSize(horizontal: false, vertical: true)
                                         }
                                         .padding(.top, 2)
-                                        .padding(.bottom, index < steps.count - 1 ? DesignTokens.spacing12 : 0)
+                                        .padding(.bottom, index < steps.count - 1 ? DesignTokens.spacing20 : 0)
                                     }
                                     .opacity(showSteps[index] ? 1 : 0)
                                     .offset(y: showSteps[index] ? 0 : 8)
@@ -116,6 +116,7 @@ struct ValuePropSolutionScreen: View {
                 // CTA pinned outside scroll
                 CTAButton(title: "Let's Design Your Plan", style: .primary, action: onContinue)
                 .padding(.horizontal, DesignTokens.spacing24)
+                .padding(.top, DesignTokens.spacing16)
 
                 // Affiliate disclosure
                 HStack(alignment: .top, spacing: 4) {
@@ -163,14 +164,12 @@ struct ValuePropSolutionScreen: View {
     // MARK: - Phone Mockup
 
     private var phoneMockup: some View {
-        VStack(spacing: 0) {
-            // Dynamic Island
-            Capsule()
-                .fill(Color.black)
-                .frame(width: 76, height: 22)
-                .padding(.top, 10)
+        let bezelWidth: CGFloat = 6
+        let outerRadius: CGFloat = 44
+        let innerRadius = outerRadius - bezelWidth
 
-            // Status bar
+        return VStack(spacing: 0) {
+            // Status bar — clears the floating dynamic island
             HStack {
                 Text("9:41")
                     .font(.system(size: 13, weight: .semibold))
@@ -189,148 +188,62 @@ struct ValuePropSolutionScreen: View {
                 .foregroundStyle(DesignTokens.textSecondary)
             }
             .padding(.horizontal, 20)
-            .padding(.top, 6)
+            .padding(.top, 14)
+            .padding(.bottom, 20)
 
-            // Plan header
-            Text("YOUR PLAN")
-                .font(.custom("GeistMono-Medium", size: 9))
-                .tracking(1.2)
-                .foregroundStyle(DesignTokens.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 14)
-                .padding(.top, 14)
-                .padding(.bottom, 6)
-
-            // Goal chips
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 5) {
-                    mockGoalChip(icon: "moon.fill", label: "Sleep", color: DesignTokens.accentSleep)
-                    mockGoalChip(icon: "bolt.fill", label: "Energy", color: DesignTokens.accentEnergy)
-                    mockGoalChip(icon: "brain.head.profile", label: "Focus", color: DesignTokens.accentClarity)
-                    mockGoalChip(icon: "figure.mind.and.body", label: "Stress", color: DesignTokens.accentMood)
-                }
-                .padding(.horizontal, 14)
-            }
-            .padding(.bottom, 10)
-
-            // Mock supplement cards
-            VStack(spacing: 6) {
-                mockSupplementRow(name: "Magnesium Glycinate", dosage: "400 mg", timing: "Bedtime", accent: DesignTokens.accentSleep)
-                mockSupplementRow(name: "Ashwagandha KSM-66", dosage: "600 mg", timing: "Morning", accent: DesignTokens.accentMood)
-                mockSupplementRow(name: "Omega-3 Fish Oil", dosage: "1000 mg", timing: "With Food", accent: DesignTokens.accentClarity)
-            }
-            .padding(.horizontal, 14)
-            .padding(.bottom, 32)
+            Image("PlanRevealMockup")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .background(
-            DesignTokens.bgElevated
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 28))
-        )
-        .shadow(color: .black.opacity(0.12), radius: 24, y: 8)
-        .overlay(
-            SolutionPhoneFrameShape(cornerRadius: 28)
-                .stroke(DesignTokens.textTertiary.opacity(0.4), lineWidth: 2)
-        )
-        .overlay(
-            // Inner top highlight for depth
-            UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 28)
+            .background(DesignTokens.bgDeepest)
+            .clipShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: innerRadius,
+                    bottomLeadingRadius: 0,
+                    bottomTrailingRadius: 0,
+                    topTrailingRadius: innerRadius,
+                    style: .continuous
+                )
+            )
+            .padding(.horizontal, bezelWidth)
+            .padding(.top, bezelWidth)
+            .background(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: outerRadius,
+                    bottomLeadingRadius: 0,
+                    bottomTrailingRadius: 0,
+                    topTrailingRadius: outerRadius,
+                    style: .continuous
+                )
+                .fill(Color.black)
+            )
+            .overlay(alignment: .top) {
+                // Dynamic Island floats over the screen
+                Capsule()
+                    .fill(Color.black)
+                    .frame(width: 100, height: 28)
+                    .padding(.top, bezelWidth + 8)
+            }
+            .overlay(
+                // Subtle top highlight on the bezel for depth
+                UnevenRoundedRectangle(
+                    topLeadingRadius: outerRadius,
+                    bottomLeadingRadius: 0,
+                    bottomTrailingRadius: 0,
+                    topTrailingRadius: outerRadius,
+                    style: .continuous
+                )
                 .stroke(
                     LinearGradient(
-                        colors: [Color.white.opacity(0.6), Color.white.opacity(0)],
+                        colors: [Color.white.opacity(0.22), Color.white.opacity(0)],
                         startPoint: .top,
                         endPoint: .center
                     ),
                     lineWidth: 1
                 )
-                .padding(2)
-        )
-    }
-
-    private func mockSupplementRow(name: String, dosage: String, timing: String, accent: Color) -> some View {
-        HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 1.5)
-                .fill(accent)
-                .frame(width: 3, height: 32)
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text(name)
-                    .font(.custom("Geist-Medium", size: 11))
-                    .foregroundStyle(DesignTokens.textPrimary)
-
-                HStack(spacing: 4) {
-                    Text(dosage)
-                        .font(.custom("GeistMono-Medium", size: 9))
-                        .foregroundStyle(DesignTokens.info)
-
-                    Text("·")
-                        .font(.system(size: 8))
-                        .foregroundStyle(DesignTokens.textTertiary)
-
-                    Text(timing)
-                        .font(.custom("GeistMono-Medium", size: 9))
-                        .foregroundStyle(DesignTokens.textSecondary)
-                }
-            }
-
-            Spacer()
-
-            HStack(spacing: 2) {
-                Text("More")
-                    .font(.custom("Geist-Regular", size: 9))
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 7, weight: .semibold))
-            }
-            .foregroundStyle(DesignTokens.textTertiary)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(DesignTokens.bgDeepest)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private func mockGoalChip(icon: String, label: String, color: Color) -> some View {
-        HStack(spacing: 3) {
-            Image(systemName: icon)
-                .font(.system(size: 8))
-            Text(label)
-                .font(.custom("GeistMono-Medium", size: 9))
-        }
-        .foregroundStyle(color)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(color.opacity(0.18))
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(color.opacity(0.4), lineWidth: 0.5))
-    }
-}
-
-// MARK: - Phone Frame Shape (open bottom)
-
-private struct SolutionPhoneFrameShape: Shape {
-    let cornerRadius: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + cornerRadius))
-        path.addArc(
-            center: CGPoint(x: rect.minX + cornerRadius, y: rect.minY + cornerRadius),
-            radius: cornerRadius,
-            startAngle: .degrees(180),
-            endAngle: .degrees(270),
-            clockwise: false
-        )
-        path.addLine(to: CGPoint(x: rect.maxX - cornerRadius, y: rect.minY))
-        path.addArc(
-            center: CGPoint(x: rect.maxX - cornerRadius, y: rect.minY + cornerRadius),
-            radius: cornerRadius,
-            startAngle: .degrees(270),
-            endAngle: .degrees(0),
-            clockwise: false
-        )
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        return path
+            )
+            .shadow(color: .black.opacity(0.18), radius: 28, y: 10)
     }
 }
 

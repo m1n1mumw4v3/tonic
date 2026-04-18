@@ -110,6 +110,7 @@ struct PaywallScreen: View {
 
                         // C. Trial Timeline
                         trialTimelineSection
+                            .padding(.top, DesignTokens.spacing16)
 
                         // D. Pricing Section
                         pricingSection
@@ -133,12 +134,6 @@ struct PaywallScreen: View {
 
     private var topBar: some View {
         HStack {
-            Button("Not now") {
-                onDismiss()
-            }
-            .font(DesignTokens.captionFont)
-            .foregroundStyle(DesignTokens.textSecondary)
-
             Spacer()
 
             Button("Restore") {
@@ -172,10 +167,9 @@ struct PaywallScreen: View {
 
     private var supplementTeaserSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-            Text("YOUR PLAN")
-                .font(DesignTokens.sectionHeader)
+            Text("Your Plan")
+                .font(.custom("Geist-Regular", size: 16))
                 .foregroundStyle(DesignTokens.textPrimary)
-                .tracking(1.2)
                 .opacity(visibleTeaserCards > 0 ? 1 : 0)
 
             ForEach(Array(teaserSupplements.enumerated()), id: \.element.id) { index, supplement in
@@ -291,16 +285,22 @@ struct PaywallScreen: View {
     // MARK: - Trial Timeline
 
     private var trialTimelineSection: some View {
-        VStack(spacing: 0) {
-            TrialTimelineView(visibleNodes: visibleTimelineNodes, reduceMotion: reduceMotion)
+        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+            Text("What to expect")
+                .font(.custom("Geist-Regular", size: 16))
+                .foregroundStyle(DesignTokens.textPrimary)
+
+            VStack(spacing: 0) {
+                TrialTimelineView(visibleNodes: visibleTimelineNodes, reduceMotion: reduceMotion)
+            }
+            .padding(DesignTokens.spacing16)
+            .background(DesignTokens.bgSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 26))
+            .overlay(
+                RoundedRectangle(cornerRadius: 26)
+                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
+            )
         }
-        .padding(DesignTokens.spacing16)
-        .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 26))
-        .overlay(
-            RoundedRectangle(cornerRadius: 26)
-                .stroke(DesignTokens.borderDefault, lineWidth: 1)
-        )
         .opacity(showTimeline ? 1 : 0)
         .offset(y: showTimeline || reduceMotion ? 0 : 8)
     }
@@ -309,7 +309,7 @@ struct PaywallScreen: View {
 
     private var pricingSection: some View {
         VStack(spacing: DesignTokens.spacing16) {
-            Text("Choose the plan that works best for you")
+            Text("Choose the plan that works best for you.")
                 .font(.custom("Geist-Regular", size: 16))
                 .foregroundStyle(DesignTokens.textPrimary)
                 .padding(.top, DesignTokens.spacing8)
@@ -600,9 +600,9 @@ private struct TrialTimelineView: View {
     let reduceMotion: Bool
 
     private let nodes: [(day: String, title: String, subtitle: String)] = [
-        ("TODAY", "FREE", "Get instant access to all premium features"),
-        ("DAY 5", "", "We'll send you a friendly reminder"),
-        ("DAY 7", "", "Billing begins — cancel anytime prior with no charge")
+        ("Today", "Free", "Get instant access to all premium features"),
+        ("Day 5", "", "We'll send you a friendly reminder"),
+        ("Day 7", "", "Billing begins — cancel anytime prior with no charge")
     ]
 
     var body: some View {
@@ -627,13 +627,12 @@ private struct TrialTimelineView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: DesignTokens.spacing8) {
                             Text(node.day)
-                                .font(DesignTokens.sectionHeader)
+                                .font(.custom("Geist-Regular", size: 16))
                                 .foregroundStyle(DesignTokens.textPrimary)
-                                .tracking(1.0)
 
                             if !node.title.isEmpty {
                                 Text(node.title)
-                                    .font(.custom("GeistMono-Medium", size: 10))
+                                    .font(.custom("Geist-Regular", size: 10))
                                     .foregroundStyle(Color(hex: "#C25D93"))
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 2)

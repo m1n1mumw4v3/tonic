@@ -32,9 +32,9 @@ struct ValuePropComplexityScreen: View {
                 VStack(alignment: .leading, spacing: DesignTokens.spacing20) {
                     // Stat
                     Text("\(formattedCount)+")
-                        .font(.custom("Geist-SemiBold", size: 56))
+                        .font(.custom("Geist-Regular", size: 56))
                         .foregroundStyle(DesignTokens.textPrimary)
-                        .padding(.bottom, -20)
+                        .padding(.bottom, -28)
 
                     HeadlineText(
                         text: "supplements on the market",

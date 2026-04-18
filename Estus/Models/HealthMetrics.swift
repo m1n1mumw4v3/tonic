@@ -34,7 +34,7 @@ enum BiologicalSex: String, Codable {
         switch self {
         case .male: return .male
         case .female: return .female
-        case .other: return .other
+        case .other: return .intersex
         }
     }
 }

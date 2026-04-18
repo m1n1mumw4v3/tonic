@@ -32,6 +32,7 @@ struct NotificationReminderScreen: View {
                         // Notification preview bubble
                         notificationPreview
                             .padding(.horizontal, DesignTokens.spacing32)
+                            .padding(.bottom, -DesignTokens.spacing24)
 
                         // Time slot cards
                         VStack(spacing: DesignTokens.spacing12) {
@@ -96,14 +97,12 @@ struct NotificationReminderScreen: View {
     // MARK: - Notification Preview (Phone Mockup)
 
     private var notificationPreview: some View {
-        VStack(spacing: 0) {
-            // Dynamic Island
-            Capsule()
-                .fill(Color.black)
-                .frame(width: 76, height: 22)
-                .padding(.top, 10)
+        let bezelWidth: CGFloat = 6
+        let outerRadius: CGFloat = 44
+        let innerRadius = outerRadius - bezelWidth
 
-            // Status bar
+        return VStack(spacing: 0) {
+            // Status bar — padded down to clear the floating dynamic island
             HStack {
                 Text("9:41")
                     .font(.system(size: 13, weight: .semibold))
@@ -122,7 +121,7 @@ struct NotificationReminderScreen: View {
                 .foregroundStyle(DesignTokens.textSecondary)
             }
             .padding(.horizontal, 20)
-            .padding(.top, 6)
+            .padding(.top, 44)
 
             Spacer()
                 .frame(height: 20)
@@ -151,9 +150,11 @@ struct NotificationReminderScreen: View {
                         .foregroundStyle(DesignTokens.textTertiary)
                 }
 
-                Text("Time to take your AM supplements!")
+                Text("☀️ Time to take your AM supplements!")
                     .font(DesignTokens.bodyFont)
                     .foregroundStyle(DesignTokens.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
             .padding(DesignTokens.spacing16)
             .background(Color.white)
@@ -161,28 +162,70 @@ struct NotificationReminderScreen: View {
             .padding(.horizontal, 12)
 
             Spacer()
-                .frame(height: 10)
+                .frame(height: 60)
         }
         .frame(maxWidth: .infinity)
-        .background(
-            LinearGradient(
-                colors: [
-                    DesignTokens.bgSurface.opacity(0.6),
-                    Color.clear
-                ],
-                startPoint: .top,
-                endPoint: .bottom
+        .background(DesignTokens.bgDeepest)
+        .clipShape(
+            UnevenRoundedRectangle(
+                topLeadingRadius: innerRadius,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: innerRadius,
+                style: .continuous
             )
-            .clipShape(UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 28))
         )
-        .shadow(color: .black.opacity(0.15), radius: 12, y: 2)
-        // Extend the side lines down to meet the morning card
-        .padding(.bottom, DesignTokens.spacing48)
+        .padding(.horizontal, bezelWidth)
+        .padding(.top, bezelWidth)
+        .background(
+            UnevenRoundedRectangle(
+                topLeadingRadius: outerRadius,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: outerRadius,
+                style: .continuous
+            )
+            .fill(Color.black)
+        )
+        .overlay(alignment: .top) {
+            // Dynamic Island floats over the screen
+            Capsule()
+                .fill(Color.black)
+                .frame(width: 100, height: 28)
+                .padding(.top, bezelWidth + 8)
+        }
         .overlay(
-            PhoneFrameShape(cornerRadius: 28)
-                .stroke(DesignTokens.textTertiary.opacity(0.5), lineWidth: 1.5)
+            // Subtle top highlight on the bezel for depth
+            UnevenRoundedRectangle(
+                topLeadingRadius: outerRadius,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: outerRadius,
+                style: .continuous
+            )
+            .stroke(
+                LinearGradient(
+                    colors: [Color.white.opacity(0.22), Color.white.opacity(0)],
+                    startPoint: .top,
+                    endPoint: .center
+                ),
+                lineWidth: 1
+            )
         )
-        .padding(.bottom, -DesignTokens.spacing48)
+        // Side bezel extensions — slide behind the morning card below
+        .overlay(alignment: .bottomLeading) {
+            Rectangle()
+                .fill(Color.black)
+                .frame(width: bezelWidth, height: 60)
+                .offset(y: 60)
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Rectangle()
+                .fill(Color.black)
+                .frame(width: bezelWidth, height: 60)
+                .offset(y: 60)
+        }
+        .shadow(color: .black.opacity(0.18), radius: 28, y: 10)
     }
 
     // MARK: - Encouragement Tip
@@ -224,7 +267,7 @@ struct NotificationReminderScreen: View {
                 VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
                     HStack(spacing: 6) {
                         Image(systemName: icon)
-                            .font(.system(size: 12))
+                            .font(.system(size: 14))
                             .foregroundStyle(tint)
 
                         Text(label)
@@ -299,40 +342,6 @@ struct NotificationReminderScreen: View {
             RoundedRectangle(cornerRadius: 26)
                 .stroke(enabled.wrappedValue ? DesignTokens.onboardingSelected : DesignTokens.borderDefault, lineWidth: 1)
         )
-    }
-}
-
-// MARK: - Phone Frame Shape (open bottom)
-
-private struct PhoneFrameShape: Shape {
-    let cornerRadius: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        // Start at bottom-left, draw up the left side
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + cornerRadius))
-        // Top-left corner
-        path.addArc(
-            center: CGPoint(x: rect.minX + cornerRadius, y: rect.minY + cornerRadius),
-            radius: cornerRadius,
-            startAngle: .degrees(180),
-            endAngle: .degrees(270),
-            clockwise: false
-        )
-        // Top edge
-        path.addLine(to: CGPoint(x: rect.maxX - cornerRadius, y: rect.minY))
-        // Top-right corner
-        path.addArc(
-            center: CGPoint(x: rect.maxX - cornerRadius, y: rect.minY + cornerRadius),
-            radius: cornerRadius,
-            startAngle: .degrees(270),
-            endAngle: .degrees(0),
-            clockwise: false
-        )
-        // Down the right side
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        return path
     }
 }
 

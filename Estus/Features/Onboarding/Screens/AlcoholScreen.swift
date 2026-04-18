@@ -16,7 +16,7 @@ struct AlcoholScreen: View {
             .padding(.horizontal, DesignTokens.spacing24)
 
             VStack {
-                HeadlineText(text: "How much alcohol\ndo you drink weekly?")
+                HeadlineText(text: "How much alcohol do you drink on average?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
