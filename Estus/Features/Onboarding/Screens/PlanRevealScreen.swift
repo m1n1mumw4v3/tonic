@@ -37,6 +37,7 @@ struct PlanRevealScreen: View {
     @State private var shopProduct: RankedProduct?
     @State private var productsBySupplementId: [UUID: [RankedProduct]] = [:]
     @State private var loadingProductIds: Set<UUID> = []
+    @State private var pendingRemovalId: UUID?
 
     private let reduceMotion = UIAccessibility.isReduceMotionEnabled
 
@@ -57,8 +58,17 @@ struct PlanRevealScreen: View {
     }
 
     private var tiers: [SupplementTier] {
-        let present = Set(supplements.map(\.tier))
+        let present = Set(supplements.filter(\.isIncluded).map(\.tier))
         return SupplementTier.allCases.filter { present.contains($0) }
+    }
+
+    private var removedSupplements: [PlanSupplement] {
+        supplements.filter { !$0.isIncluded }
+    }
+
+    private var pendingRemovalSupplement: PlanSupplement? {
+        guard let id = pendingRemovalId else { return nil }
+        return supplements.first(where: { $0.id == id })
     }
 
     private var userName: String {
@@ -131,6 +141,33 @@ struct PlanRevealScreen: View {
                 pricing: rankedProduct.pricing
             )
         }
+        .confirmationDialog(
+            "Remove \(pendingRemovalSupplement?.name ?? "supplement") from your plan?",
+            isPresented: Binding(
+                get: { pendingRemovalId != nil },
+                set: { if !$0 { pendingRemovalId = nil } }
+            ),
+            titleVisibility: .visible,
+            presenting: pendingRemovalId
+        ) { id in
+            Button("Remove", role: .destructive) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    if let index = viewModel.generatedPlan?.supplements.firstIndex(where: { $0.id == id }) {
+                        viewModel.generatedPlan?.supplements[index].isIncluded = false
+                    }
+                    if expandedCardId == id {
+                        expandedCardId = nil
+                    }
+                }
+                HapticManager.notification(.success)
+                pendingRemovalId = nil
+            }
+            Button("Cancel", role: .cancel) {
+                pendingRemovalId = nil
+            }
+        } message: { _ in
+            Text("You can add it back later by toggling it on.")
+        }
     }
 
     // MARK: - Header Section
@@ -138,7 +175,7 @@ struct PlanRevealScreen: View {
     private var headerSection: some View {
         VStack(spacing: DesignTokens.spacing8) {
             Text("\(userName)'s Supplement Plan")
-                .font(.custom("Geist-Regular", size: 28))
+                .font(.custom("Geist-Light", size: 28))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(DesignTokens.textPrimary)
             .opacity(showHeadline ? 1 : 0)
@@ -229,7 +266,7 @@ struct PlanRevealScreen: View {
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 28, height: 28)
+                    .frame(width: 22, height: 22)
                     .foregroundStyle(DesignTokens.textPrimary)
 
                 Text("Plan Overview")
@@ -263,7 +300,7 @@ struct PlanRevealScreen: View {
     private var supplementSections: some View {
         VStack(spacing: DesignTokens.spacing32) {
             ForEach(tiers) { tier in
-                let tierSupplements = supplements.filter { $0.tier == tier }
+                let tierSupplements = supplements.filter { $0.tier == tier && $0.isIncluded }
                 if !tierSupplements.isEmpty {
                     VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
                         // Tier header
@@ -307,6 +344,10 @@ struct PlanRevealScreen: View {
                                         name: supplement.name
                                     )
                                 } : nil,
+                                onRemoveTapped: {
+                                    HapticManager.selection()
+                                    pendingRemovalId = supplement.id
+                                },
                                 onTap: {
                                     HapticManager.selection()
                                     withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
@@ -325,6 +366,81 @@ struct PlanRevealScreen: View {
                         }
                     }
                 }
+            }
+
+            if !removedSupplements.isEmpty {
+                removedSection
+            }
+        }
+    }
+
+    private var removedSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+            HStack(spacing: 6) {
+                Text("Removed")
+                    .font(.custom("Geist-Regular", size: 16))
+                    .foregroundStyle(DesignTokens.textPrimary)
+
+                Text("\(removedSupplements.count)")
+                    .font(DesignTokens.labelMono)
+                    .foregroundStyle(DesignTokens.textTertiary)
+            }
+
+            ForEach(removedSupplements) { supplement in
+                SupplementCardView(
+                    supplement: supplement,
+                    trailingAccessory: .toggle(isOn: supplement.isIncluded, action: {
+                        HapticManager.selection()
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            toggleSupplement(supplement.id)
+                        }
+                    }),
+                    inlineGoals: sortedGoals(for: supplement),
+                    isIncluded: true,
+                    isExpanded: expandedCardId == supplement.id,
+                    showBottomLearnMore: false,
+                    products: supplement.supplementId.flatMap { productsBySupplementId[$0] },
+                    productsLoading: supplement.supplementId.map { loadingProductIds.contains($0) } ?? false,
+                    onEvidenceInfoTapped: { level in
+                        showEvidenceInfo = level
+                    },
+                    onShopTapped: supplement.supplementId != nil ? {
+                        shopSupplement = PlanRevealShopItem(
+                            id: supplement.supplementId!,
+                            name: supplement.name
+                        )
+                    } : nil,
+                    onProductTapped: { rankedProduct in
+                        shopProduct = rankedProduct
+                    },
+                    onSeeAllProductsTapped: supplement.supplementId != nil ? {
+                        shopSupplement = PlanRevealShopItem(
+                            id: supplement.supplementId!,
+                            name: supplement.name
+                        )
+                    } : nil,
+                    onRestoreTapped: {
+                        HapticManager.selection()
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            if let index = viewModel.generatedPlan?.supplements.firstIndex(where: { $0.id == supplement.id }) {
+                                viewModel.generatedPlan?.supplements[index].isIncluded = true
+                            }
+                        }
+                    },
+                    onTap: {
+                        HapticManager.selection()
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            let isExpanding = expandedCardId != supplement.id
+                            expandedCardId = isExpanding ? supplement.id : nil
+                            if isExpanding {
+                                loadProducts(for: supplement)
+                            }
+                        }
+                    }
+                )
+                .opacity(expandedCardId == supplement.id ? 1.0 : 0.55)
+                .scaleEffect(expandedCardId == supplement.id ? 1.0 : 0.97)
+                .animation(.easeInOut(duration: 0.25), value: removedSupplements.count)
             }
         }
     }

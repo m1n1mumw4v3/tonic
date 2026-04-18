@@ -53,21 +53,21 @@ enum WellnessDimension: String, CaseIterable, Codable, Identifiable, Hashable {
 
     var lowLabel: String {
         switch self {
-        case .sleep:   return "Restless / Broken"
-        case .energy:  return "Drained / Fatigued"
-        case .clarity: return "Foggy / Scattered"
-        case .mood:    return "Low / Flat"
-        case .gut:     return "Uncomfortable / Off"
+        case .sleep:   return "Restless"
+        case .energy:  return "Drained"
+        case .clarity: return "Foggy"
+        case .mood:    return "Poor"
+        case .gut:     return "Uncomfortable"
         }
     }
 
     var highLabel: String {
         switch self {
-        case .sleep:   return "Deep & Restorative"
-        case .energy:  return "Vibrant & Sustained"
-        case .clarity: return "Sharp & Locked In"
-        case .mood:    return "Positive & Balanced"
-        case .gut:     return "Smooth & Settled"
+        case .sleep:   return "Restorative"
+        case .energy:  return "Vibrant"
+        case .clarity: return "Sharp"
+        case .mood:    return "Balanced"
+        case .gut:     return "Settled"
         }
     }
 }

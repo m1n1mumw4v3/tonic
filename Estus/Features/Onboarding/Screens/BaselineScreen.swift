@@ -15,40 +15,31 @@ struct BaselineScreen: View {
 
             VStack(alignment: .leading, spacing: DesignTokens.spacing20) {
                 // Header
-                VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                    HeadlineText(text: "Rate your typical\nwellness levels")
-                        .opacity(showHeadline ? 1 : 0)
-                        .offset(y: showHeadline ? 0 : 12)
-
-                    Text("Be honest — this helps establish a true baseline.")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textSecondary)
-                        .opacity(showSubtitle ? 1 : 0)
-                        .offset(y: showSubtitle ? 0 : 8)
-                }
-                .padding(.horizontal, DesignTokens.spacing24)
-                .padding(.top, DesignTokens.spacing8)
+                HeadlineText(text: "Rate your typical\nwellness levels")
+                    .opacity(showHeadline ? 1 : 0)
+                    .offset(y: showHeadline ? 0 : 12)
+                    .padding(.horizontal, DesignTokens.spacing24)
+                    .padding(.top, DesignTokens.spacing8)
 
                 // Wellness Sliders
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: DesignTokens.spacing20) {
+                    VStack(spacing: 0) {
                         WellnessSlider(
                             dimension: .sleep,
                             value: Bindable(viewModel).baselineSleep,
                             lowLabel: WellnessDimension.sleep.lowLabel,
                             highLabel: WellnessDimension.sleep.highLabel
                         )
-                        .opacity(sliderVisible[0] ? 1 : 0)
-                        .offset(y: sliderVisible[0] ? 0 : 16)
+                        .modifier(SliderCardStyle(visible: sliderVisible[0]))
 
                         WellnessSlider(
                             dimension: .energy,
                             value: Bindable(viewModel).baselineEnergy,
                             lowLabel: WellnessDimension.energy.lowLabel,
-                            highLabel: WellnessDimension.energy.highLabel
+                            highLabel: WellnessDimension.energy.highLabel,
+                            accentOverride: DesignTokens.accentEnergyDark
                         )
-                        .opacity(sliderVisible[1] ? 1 : 0)
-                        .offset(y: sliderVisible[1] ? 0 : 16)
+                        .modifier(SliderCardStyle(visible: sliderVisible[1]))
 
                         WellnessSlider(
                             dimension: .clarity,
@@ -56,8 +47,7 @@ struct BaselineScreen: View {
                             lowLabel: WellnessDimension.clarity.lowLabel,
                             highLabel: WellnessDimension.clarity.highLabel
                         )
-                        .opacity(sliderVisible[2] ? 1 : 0)
-                        .offset(y: sliderVisible[2] ? 0 : 16)
+                        .modifier(SliderCardStyle(visible: sliderVisible[2]))
 
                         WellnessSlider(
                             dimension: .mood,
@@ -65,8 +55,7 @@ struct BaselineScreen: View {
                             lowLabel: WellnessDimension.mood.lowLabel,
                             highLabel: WellnessDimension.mood.highLabel
                         )
-                        .opacity(sliderVisible[3] ? 1 : 0)
-                        .offset(y: sliderVisible[3] ? 0 : 16)
+                        .modifier(SliderCardStyle(visible: sliderVisible[3]))
 
                         WellnessSlider(
                             dimension: .gut,
@@ -74,8 +63,7 @@ struct BaselineScreen: View {
                             lowLabel: WellnessDimension.gut.lowLabel,
                             highLabel: WellnessDimension.gut.highLabel
                         )
-                        .opacity(sliderVisible[4] ? 1 : 0)
-                        .offset(y: sliderVisible[4] ? 0 : 16)
+                        .modifier(SliderCardStyle(visible: sliderVisible[4]))
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.bottom, 100)
@@ -125,6 +113,21 @@ struct BaselineScreen: View {
                 showCTA = true
             }
         }
+    }
+}
+
+private struct SliderCardStyle: ViewModifier {
+    let visible: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, DesignTokens.spacing16)
+            .padding(.vertical, DesignTokens.spacing12)
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 26))
+            .opacity(visible ? 1 : 0)
+            .offset(y: visible ? 0 : 16)
     }
 }
 

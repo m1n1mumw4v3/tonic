@@ -49,6 +49,8 @@ struct SupplementCardView: View {
     var onShopTapped: (() -> Void)? = nil
     var onProductTapped: ((RankedProduct) -> Void)? = nil
     var onSeeAllProductsTapped: (() -> Void)? = nil
+    var onRemoveTapped: (() -> Void)? = nil
+    var onRestoreTapped: (() -> Void)? = nil
     var onTap: (() -> Void)? = nil
 
     private var matchedHealthGoals: [HealthGoal] {
@@ -294,7 +296,42 @@ struct SupplementCardView: View {
 
             // Product carousel or shop button
             productSection
+
+            // Remove or restore
+            if let onRestoreTapped {
+                planActionButton(
+                    icon: "plus.circle",
+                    title: "Add back to my plan",
+                    tint: DesignTokens.positive,
+                    action: onRestoreTapped
+                )
+            } else if let onRemoveTapped {
+                planActionButton(
+                    icon: "trash",
+                    title: "Remove from plan",
+                    tint: DesignTokens.negative,
+                    action: onRemoveTapped
+                )
+            }
         }
+    }
+
+    private func planActionButton(icon: String, title: String, tint: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 13))
+                Text(title)
+                    .font(.custom("Geist-Regular", size: 14))
+            }
+            .foregroundStyle(tint)
+            .frame(maxWidth: .infinity)
+            .padding(.top, DesignTokens.spacing4)
+            .padding(.bottom, DesignTokens.spacing12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.top, -DesignTokens.spacing4)
     }
 
     // MARK: - Evidence Section

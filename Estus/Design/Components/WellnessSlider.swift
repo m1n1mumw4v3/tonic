@@ -6,6 +6,11 @@ struct WellnessSlider: View {
     let lowLabel: String
     let highLabel: String
     var averageValue: Double? = nil
+    var accentOverride: Color? = nil
+
+    private var accentColor: Color {
+        accentOverride ?? dimension.color
+    }
 
     @State private var isDragging = false
     @GestureState private var dragOffset: CGFloat = 0
@@ -24,11 +29,11 @@ struct WellnessSlider: View {
                 HStack(spacing: DesignTokens.spacing4) {
                     Image(systemName: dimension.icon)
                         .font(.system(size: 14))
-                        .foregroundStyle(dimension.color)
+                        .foregroundStyle(accentColor)
 
                     Text(dimension.label)
                         .font(DesignTokens.bodyFont)
-                        .foregroundStyle(dimension.color)
+                        .foregroundStyle(accentColor)
                 }
                 .scaleEffect(isDragging ? 1.05 : 1.0)
                 .animation(.easeInOut(duration: 0.2), value: isDragging)
@@ -37,7 +42,7 @@ struct WellnessSlider: View {
 
                 Text("\(Int(value))")
                     .font(DesignTokens.dataMono)
-                    .foregroundStyle(dimension.color)
+                    .foregroundStyle(accentColor)
                     .contentTransition(.numericText())
                     .animation(.snappy(duration: 0.15), value: Int(value))
             }
@@ -55,16 +60,9 @@ struct WellnessSlider: View {
                         .frame(height: trackHeight)
                         .animation(springCurve, value: isDragging)
 
-                    // Track glow (blurred copy behind fill)
-                    Capsule()
-                        .fill(dimension.color.opacity(0.3))
-                        .frame(width: max(0, thumbX), height: trackHeight)
-                        .blur(radius: 6)
-                        .animation(springCurve, value: isDragging)
-
                     // Filled track
                     Capsule()
-                        .fill(dimension.color.opacity(0.6))
+                        .fill(accentColor.opacity(0.6))
                         .frame(width: max(0, thumbX), height: trackHeight)
                         .animation(springCurve, value: isDragging)
 
@@ -74,20 +72,20 @@ struct WellnessSlider: View {
 
                         Text("7D avg")
                             .font(.system(size: 9, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(dimension.color.opacity(0.55))
+                            .foregroundStyle(accentColor.opacity(0.55))
                             .position(x: avgX, y: -1)
                             .allowsHitTesting(false)
 
                         Image(systemName: "arrowtriangle.down.fill")
                             .font(.system(size: 8))
-                            .foregroundStyle(dimension.color.opacity(0.55))
+                            .foregroundStyle(accentColor.opacity(0.55))
                             .position(x: avgX, y: 8)
                             .allowsHitTesting(false)
                     }
 
                     // Thumb glow bloom
                     Circle()
-                        .fill(dimension.color)
+                        .fill(accentColor)
                         .frame(width: 32, height: 32)
                         .blur(radius: 16)
                         .opacity(isDragging ? 0.5 : 0)
@@ -96,9 +94,9 @@ struct WellnessSlider: View {
 
                     // Thumb
                     Circle()
-                        .fill(dimension.color)
+                        .fill(accentColor)
                         .frame(width: 24, height: 24)
-                        .shadow(color: dimension.color.opacity(isDragging ? 0.5 : 0.2), radius: isDragging ? 8 : 4)
+                        .shadow(color: accentColor.opacity(isDragging ? 0.5 : 0.2), radius: isDragging ? 8 : 4)
                         .scaleEffect(isDragging ? 1.35 : 1.0)
                         .animation(springCurve, value: isDragging)
                         .offset(x: thumbX - 12)

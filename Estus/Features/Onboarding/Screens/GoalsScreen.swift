@@ -20,10 +20,10 @@ struct GoalsScreen: View {
                     VStack(spacing: DesignTokens.spacing24) {
                         // Header
                         VStack(spacing: DesignTokens.spacing8) {
-                            HeadlineText(text: "What are your top health goals?")
+                            HeadlineText(text: "What are your health goals?")
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Text("Please select up to \(HealthGoal.maxSelection).")
+                            Text("Select up to \(HealthGoal.maxSelection) goals.")
                                 .font(DesignTokens.captionFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,16 +94,17 @@ struct GoalsScreen: View {
                     .font(.system(size: 20))
                     .foregroundStyle(isSelected ? accent : DesignTokens.textSecondary)
 
-                Text(goal.label)
-                    .font(DesignTokens.bodyFont)
-                    .foregroundStyle(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                TightLineLabel(
+                    text: goal.label,
+                    font: UIFont(name: "Geist-Regular", size: 16) ?? .systemFont(ofSize: 16),
+                    color: UIColor(isSelected ? DesignTokens.textPrimary : DesignTokens.textSecondary),
+                    lineHeightMultiple: 0.85
+                )
+                .frame(maxWidth: .infinity)
             }
             .padding(.horizontal, DesignTokens.spacing12)
             .frame(maxWidth: .infinity)
-            .frame(height: 96)
+            .frame(height: 88)
             .background(DesignTokens.bgSurface)
             .clipShape(RoundedRectangle(cornerRadius: 26))
             .overlay(
@@ -112,6 +113,55 @@ struct GoalsScreen: View {
             )
             .opacity(!isSelected && viewModel.isAtGoalLimit ? 0.4 : 1.0)
         }
+    }
+
+}
+
+private final class AutoWrappingLabel: UILabel {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if preferredMaxLayoutWidth != bounds.width {
+            preferredMaxLayoutWidth = bounds.width
+            setNeedsUpdateConstraints()
+        }
+    }
+}
+
+private struct TightLineLabel: UIViewRepresentable {
+    let text: String
+    let font: UIFont
+    let color: UIColor
+    let lineHeightMultiple: CGFloat
+
+    func makeUIView(context: Context) -> AutoWrappingLabel {
+        let label = AutoWrappingLabel()
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return label
+    }
+
+    func updateUIView(_ label: AutoWrappingLabel, context: Context) {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineHeightMultiple = lineHeightMultiple
+        paragraph.alignment = .center
+        paragraph.lineBreakMode = .byWordWrapping
+        label.attributedText = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: font,
+                .foregroundColor: color,
+                .paragraphStyle: paragraph
+            ]
+        )
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: AutoWrappingLabel, context: Context) -> CGSize? {
+        let width = proposal.width.flatMap { $0.isFinite ? $0 : nil } ?? .greatestFiniteMagnitude
+        let fit = uiView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        return CGSize(width: proposal.width ?? fit.width, height: fit.height)
     }
 }
 
