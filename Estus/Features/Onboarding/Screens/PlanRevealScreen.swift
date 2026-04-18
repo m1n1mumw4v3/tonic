@@ -32,6 +32,7 @@ struct PlanRevealScreen: View {
     @State private var showEvidenceInfo: EvidenceLevel? = nil
     @State private var isSummaryExpanded: Bool = false
     @State private var showShimmer: Bool = true
+    @State private var showTierInfo: SupplementTier? = nil
     @State private var shopSupplement: PlanRevealShopItem?
     @State private var shopProduct: RankedProduct?
     @State private var productsBySupplementId: [UUID: [RankedProduct]] = [:]
@@ -62,7 +63,7 @@ struct PlanRevealScreen: View {
 
     private var userName: String {
         let name = viewModel.firstName.trimmingCharacters(in: .whitespaces)
-        return name.isEmpty ? "friend" : name
+        return name.isEmpty ? "Your" : name
     }
 
     // MARK: - Body
@@ -111,6 +112,7 @@ struct PlanRevealScreen: View {
                 .transition(.opacity)
                 .zIndex(10)
             }
+
         }
         .animation(.easeOut(duration: 0.2), value: showEvidenceInfo != nil)
         .task {
@@ -135,7 +137,7 @@ struct PlanRevealScreen: View {
 
     private var headerSection: some View {
         VStack(spacing: DesignTokens.spacing8) {
-            Text("Your plan is ready, \(userName).")
+            Text("\(userName)'s Supplement Plan")
                 .font(.custom("Geist-Regular", size: 28))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(DesignTokens.textPrimary)
@@ -328,22 +330,28 @@ struct PlanRevealScreen: View {
     }
 
     private func tierHeader(for tier: SupplementTier, count: Int) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: DesignTokens.spacing8) {
-                HStack(spacing: 4) {
-                    Text(tier.label)
-                        .font(.custom("Geist-Regular", size: 16))
-                        .foregroundStyle(DesignTokens.textPrimary)
+        HStack(spacing: 6) {
+            Text(tier.label)
+                .font(.custom("Geist-Regular", size: 16))
+                .foregroundStyle(DesignTokens.textPrimary)
 
-                    Text("(\(count))")
-                        .font(.custom("Geist-Regular", size: 16))
-                        .foregroundStyle(DesignTokens.textTertiary)
+            Image(systemName: "info.circle")
+                .font(.system(size: 13))
+                .foregroundStyle(DesignTokens.textTertiary)
+                .onTapGesture {
+                    showTierInfo = showTierInfo == tier ? nil : tier
                 }
-            }
-
-            Text(tier.description)
-                .font(DesignTokens.captionFont)
-                .foregroundStyle(DesignTokens.textSecondary)
+                .popover(isPresented: Binding(
+                    get: { showTierInfo == tier },
+                    set: { if !$0 { showTierInfo = nil } }
+                ), arrowEdge: .top) {
+                    Text(tier.description)
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .presentationCompactAdaptation(.popover)
+                }
         }
     }
 
@@ -487,17 +495,6 @@ struct PlanRevealScreen: View {
         }
         await startCountAnimation()
 
-        // Goal chips staggered
-        let chipInterval: Double = reduceMotion ? 0.03 : 0.08
-        try? await Task.sleep(for: .seconds(reduceMotion ? 0.02 : 0.3))
-        for i in 0..<userGoals.count {
-            guard !Task.isCancelled else { return }
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                visibleGoalChips = i + 1
-            }
-            try? await Task.sleep(for: .seconds(chipInterval))
-        }
-
         // Plan summary
         try? await Task.sleep(for: .seconds(reduceMotion ? 0.05 : 0.2))
         guard !Task.isCancelled else { return }
@@ -514,6 +511,17 @@ struct PlanRevealScreen: View {
                     showShimmer = false
                 }
             }
+        }
+
+        // Goal chips staggered
+        let chipInterval: Double = reduceMotion ? 0.03 : 0.08
+        try? await Task.sleep(for: .seconds(reduceMotion ? 0.02 : 0.3))
+        for i in 0..<userGoals.count {
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: fadeDuration)) {
+                visibleGoalChips = i + 1
+            }
+            try? await Task.sleep(for: .seconds(chipInterval))
         }
 
         // Tier headers + cards
@@ -632,62 +640,24 @@ private struct SpectrumFillButton: View {
     let disabled: Bool
     let action: () -> Void
 
-    @State private var fillProgress: CGFloat = 0
-    @State private var hasTriggered = false
-
-    private let spectrumGradient = LinearGradient(
-        colors: [
-            DesignTokens.accentSleep,
-            DesignTokens.accentEnergy,
-            DesignTokens.accentClarity,
-            DesignTokens.accentMood,
-            DesignTokens.accentGut
-        ],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
-
     var body: some View {
         Button {
-            guard !disabled, !hasTriggered else { return }
-            hasTriggered = true
+            guard !disabled else { return }
             HapticManager.impact(.light)
-
-            withAnimation(.easeInOut(duration: 0.5)) {
-                fillProgress = 1
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
-                HapticManager.notification(.success)
-                action()
-            }
+            HapticManager.notification(.success)
+            action()
         } label: {
             Text(title)
                 .font(DesignTokens.ctaFont)
                 .tracking(0.32)
-                .foregroundStyle(fillProgress > 0.5 ? .white : DesignTokens.bgDeepest)
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(
-                    ZStack {
-                        // Spectrum fill from outline inward
-                        spectrumGradient
-
-                        // Shrinking dark center that reveals the gradient beneath
-                        DesignTokens.textPrimary
-                            .clipShape(Capsule())
-                            .scaleEffect(1 - fillProgress)
-                    }
-                )
+                .background(DesignTokens.textPrimary)
                 .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(spectrumGradient, lineWidth: 1.5)
-                )
         }
         .buttonStyle(CTAPressStyle())
         .disabled(disabled)
-        .animation(.easeInOut(duration: 0.3), value: fillProgress > 0.5)
     }
 }
 

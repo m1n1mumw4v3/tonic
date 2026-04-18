@@ -81,7 +81,7 @@ enum DesignTokens {
     static let headlineFont  = Font.custom("Geist-Regular", size: 28)
     static let titleFont     = Font.custom("Geist-SemiBold", size: 20)
     static let ctaFont       = Font.custom("Geist-SemiBold", size: 16)
-    static let captionFont   = Font.custom("Geist-Regular", size: 13)
+    static let captionFont   = Font.custom("Geist-Regular", size: 14)
     static let smallMono     = Font.custom("Geist-Regular", size: 11)
 
     // MARK: - Spacing

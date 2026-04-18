@@ -203,7 +203,7 @@ struct SupplementCardView: View {
         HStack(spacing: 6) {
             ForEach(inlineGoals) { goal in
                 Text(goal.shortLabel)
-                    .font(DesignTokens.smallMono)
+                    .font(DesignTokens.labelMono)
                     .fixedSize()
                     .foregroundStyle(goal.chipColor)
                     .padding(.horizontal, 8)
@@ -261,11 +261,8 @@ struct SupplementCardView: View {
     // MARK: - Expanded Content
 
     private var expandedContent: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing16) {
             Spacer().frame(height: 0)
-
-            // Evidence quality
-            evidenceChip
 
             // Why it's in your plan
             infoSection(icon: "person", label: "Why it's in your plan", text: supplement.whyInYourPlan)
@@ -292,18 +289,18 @@ struct SupplementCardView: View {
                 infoSection(icon: "arrow.triangle.2.circlepath", label: "Interactions & synergies", text: supplement.interactionNote)
             }
 
-            // Category badge
-            categoryBadge
+            // Research level
+            evidenceSection
 
             // Product carousel or shop button
             productSection
         }
     }
 
-    // MARK: - Evidence Chip
+    // MARK: - Evidence Section
 
     @ViewBuilder
-    private var evidenceChip: some View {
+    private var evidenceSection: some View {
         if let evidence = supplement.evidenceDisplay, !evidence.isEmpty {
             let level = supplement.evidenceLevel ?? .moderate
             let chipColor: Color = switch level {
@@ -311,31 +308,31 @@ struct SupplementCardView: View {
             case .moderate: DesignTokens.info
             case .emerging: DesignTokens.accentEnergy
             }
-            HStack(spacing: 6) {
-                Image(systemName: level.icon)
-                    .font(.system(size: 11))
-                    .foregroundStyle(chipColor)
-                Text(evidence)
-                    .font(DesignTokens.labelMono)
-                    .foregroundStyle(DesignTokens.textPrimary)
+            HStack(alignment: .firstTextBaseline, spacing: DesignTokens.spacing8) {
+                Image(systemName: "checkmark.shield")
+                    .font(.system(size: 14))
+                    .foregroundStyle(DesignTokens.textSecondary)
+                    .frame(width: 18, alignment: .center)
 
-                if let onEvidenceInfoTapped {
-                    Button {
-                        HapticManager.selection()
-                        onEvidenceInfoTapped(level)
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .font(.system(size: 12))
-                            .foregroundStyle(DesignTokens.textTertiary)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Research level")
+                        .font(.custom("Geist-Regular", size: 16))
+                        .foregroundStyle(DesignTokens.textPrimary)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: level.icon)
+                            .font(.system(size: 10))
+                            .foregroundStyle(chipColor)
+                        Text(evidence)
+                            .font(DesignTokens.labelMono)
+                            .foregroundStyle(chipColor)
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Learn about \(evidence)")
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(chipColor.opacity(0.08))
+                    .clipShape(Capsule())
                 }
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(chipColor.opacity(0.08))
-            .clipShape(Capsule())
         }
     }
 
@@ -344,21 +341,20 @@ struct SupplementCardView: View {
     @ViewBuilder
     private func infoSection(icon: String, label: String, text: String?) -> some View {
         if let text = text, !text.isEmpty {
-            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+            HStack(alignment: .firstTextBaseline, spacing: DesignTokens.spacing8) {
                 Image(systemName: icon)
                     .font(.system(size: 14))
                     .foregroundStyle(DesignTokens.textSecondary)
-                    .frame(width: 18, height: 18, alignment: .center)
+                    .frame(width: 18, alignment: .center)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
-                        .font(DesignTokens.captionFont)
-                        .fontWeight(.semibold)
+                        .font(.custom("Geist-Regular", size: 16))
                         .foregroundStyle(DesignTokens.textPrimary)
 
                     Text(text)
                         .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
+                        .foregroundStyle(DesignTokens.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -368,16 +364,15 @@ struct SupplementCardView: View {
     // MARK: - How and When Section
 
     private var howAndWhenSection: some View {
-        HStack(alignment: .top, spacing: DesignTokens.spacing8) {
+        HStack(alignment: .firstTextBaseline, spacing: DesignTokens.spacing8) {
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 14))
                 .foregroundStyle(DesignTokens.textSecondary)
-                .frame(width: 18, height: 18, alignment: .center)
+                .frame(width: 18, alignment: .center)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("How and when to take it")
-                    .font(DesignTokens.captionFont)
-                    .fontWeight(.semibold)
+                    .font(.custom("Geist-Regular", size: 16))
                     .foregroundStyle(DesignTokens.textPrimary)
 
                 HStack(spacing: 6) {
@@ -433,43 +428,19 @@ struct SupplementCardView: View {
         )
     }
 
-    // MARK: - Category Badge
-
-    private var categoryBadge: some View {
-        HStack(spacing: DesignTokens.spacing8) {
-            Image(systemName: "tag")
-                .font(.system(size: 12))
-                .foregroundStyle(DesignTokens.textSecondary)
-                .frame(width: 18, alignment: .center)
-
-            Text(SupplementCatalog.categoryLabel(for: supplement.category))
-                .font(DesignTokens.labelMono)
-                .foregroundStyle(DesignTokens.textSecondary)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(DesignTokens.bgElevated)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(DesignTokens.borderDefault, lineWidth: 1)
-                )
-        }
-    }
-
     // MARK: - Product Section
 
     @ViewBuilder
     private var productSection: some View {
         if let products, !products.isEmpty {
             VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                HStack(spacing: DesignTokens.spacing8) {
+                HStack(alignment: .firstTextBaseline, spacing: DesignTokens.spacing8) {
                     Image(systemName: "bag")
                         .font(.system(size: 14))
                         .foregroundStyle(DesignTokens.textSecondary)
-                        .frame(width: 18, height: 18, alignment: .center)
+                        .frame(width: 18, alignment: .center)
                     Text("Top products")
-                        .font(DesignTokens.captionFont)
-                        .fontWeight(.semibold)
+                        .font(.custom("Geist-Regular", size: 16))
                         .foregroundStyle(DesignTokens.textPrimary)
                 }
 
@@ -521,29 +492,19 @@ struct SupplementCardView: View {
             HapticManager.selection()
             action()
         } label: {
-            HStack(spacing: DesignTokens.spacing8) {
+            HStack(spacing: 6) {
                 Image(systemName: "bag")
                     .font(.system(size: 14))
-                    .foregroundStyle(DesignTokens.positive)
-                    .frame(width: 18, alignment: .center)
-
-                Text("SHOP PRODUCTS")
-                    .font(DesignTokens.sectionHeader)
-                    .tracking(1.2)
-                    .foregroundStyle(DesignTokens.positive)
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(DesignTokens.positive)
+                Text("Shop Products")
+                    .font(.custom("Geist-Regular", size: 16))
             }
-            .padding(DesignTokens.spacing12)
-            .background(DesignTokens.positive.opacity(0.06))
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+            .foregroundStyle(DesignTokens.textPrimary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .clipShape(Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                    .stroke(DesignTokens.positive.opacity(0.2), lineWidth: 1)
+                Capsule()
+                    .stroke(DesignTokens.textPrimary, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

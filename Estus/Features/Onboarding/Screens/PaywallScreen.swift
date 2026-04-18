@@ -61,20 +61,7 @@ struct PaywallScreen: View {
     }
 
     private var hiddenGoalsCopy: String {
-        let count = remainingCount
-        let labels = hiddenGoalLabels
-        let goalText: String
-        if labels.count > 2 {
-            let allButLast = labels.dropLast().joined(separator: ", ")
-            goalText = "\(allButLast), and \(labels.last!)"
-        } else if labels.count == 2 {
-            goalText = "\(labels[0]) and \(labels[1])"
-        } else if let single = labels.first {
-            goalText = single
-        } else {
-            return "Start your free trial to view \(count) more supplements"
-        }
-        return "Start your free trial to view \(count) more supplements targeting your \(goalText) goals"
+        "Start your free trial to view \(remainingCount) more supplements targeting your specific goals."
     }
 
     @Environment(AppState.self) private var appState
@@ -91,9 +78,9 @@ struct PaywallScreen: View {
     private var ctaSubtext: String {
         switch selectedPlan {
         case .annual:
-            return "7-day free trial, then $79.99/year. Cancel anytime."
+            return "7-day free trial, then $29.99/year. Cancel anytime."
         case .monthly:
-            return "7-day free trial, then $12.99/month. Cancel anytime."
+            return "7-day free trial, then $4.99/month. Cancel anytime."
         }
     }
 
@@ -124,10 +111,7 @@ struct PaywallScreen: View {
                         // C. Trial Timeline
                         trialTimelineSection
 
-                        // D. Value Proposition Checklist
-                        benefitsSection
-
-                        // E. Pricing Section
+                        // D. Pricing Section
                         pricingSection
 
                         // F. Bottom spacer for CTA clearance
@@ -232,19 +216,20 @@ struct PaywallScreen: View {
             }
 
             if remainingCount > 0 {
-                VStack(spacing: DesignTokens.spacing4) {
+                HStack(spacing: DesignTokens.spacing12) {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 18))
+                        .font(.system(size: 22))
 
                     Text(hiddenGoalsCopy)
                         .font(DesignTokens.captionFont)
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
                         .lineSpacing(0)
                 }
                 .foregroundStyle(Color(hex: "#C25D93"))
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity)
+                .padding(.leading, 18)
+                .padding(.trailing, 20)
+                .padding(.vertical, 14)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .clipShape(RoundedRectangle(cornerRadius: 26))
                 .overlay(
                     RoundedRectangle(cornerRadius: 26)
@@ -294,9 +279,9 @@ struct PaywallScreen: View {
         .padding(DesignTokens.spacing16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: 26))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: 26)
                 .stroke(accent.opacity(0.2), lineWidth: 1)
         )
     }
@@ -311,9 +296,9 @@ struct PaywallScreen: View {
         }
         .padding(DesignTokens.spacing16)
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusLarge))
+        .clipShape(RoundedRectangle(cornerRadius: 26))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
+            RoundedRectangle(cornerRadius: 26)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
         .opacity(showTimeline ? 1 : 0)
@@ -324,10 +309,11 @@ struct PaywallScreen: View {
 
     private var pricingSection: some View {
         VStack(spacing: DesignTokens.spacing16) {
-            Text("Choose the plan that works for you")
-                .font(.custom("Geist-SemiBold", size: 15))
+            Text("Choose the plan that works best for you")
+                .font(.custom("Geist-Regular", size: 16))
                 .foregroundStyle(DesignTokens.textPrimary)
                 .padding(.top, DesignTokens.spacing8)
+                .padding(.bottom, DesignTokens.spacing8)
 
         HStack(alignment: .top, spacing: DesignTokens.spacing8) {
             PricingCardView(plan: .monthly, isSelected: selectedPlan == .monthly) {
@@ -436,16 +422,6 @@ struct PaywallScreen: View {
             try? await Task.sleep(for: .seconds(stagger))
         }
 
-        // Benefit rows stagger
-        let benefitStagger: Double = reduceMotion ? 0.03 : 0.1
-        for i in 0..<Self.benefits.count {
-            guard !Task.isCancelled else { return }
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                visibleBenefitRows = i + 1
-            }
-            try? await Task.sleep(for: .seconds(benefitStagger))
-        }
-
         // Timeline card appears
         try? await Task.sleep(for: .seconds(reduceMotion ? 0.02 : 0.1))
         guard !Task.isCancelled else { return }
@@ -488,15 +464,15 @@ private enum PricingPlan: String, CaseIterable {
 
     var label: String {
         switch self {
-        case .monthly: return "MONTHLY"
-        case .annual: return "ANNUAL"
+        case .monthly: return "Monthly"
+        case .annual: return "Annual"
         }
     }
 
     var price: String {
         switch self {
-        case .monthly: return "$12.99"
-        case .annual: return "$79.99"
+        case .monthly: return "$4.99"
+        case .annual: return "$29.99"
         }
     }
 
@@ -509,8 +485,8 @@ private enum PricingPlan: String, CaseIterable {
 
     var perWeek: String {
         switch self {
-        case .monthly: return "$3.00 per week"
-        case .annual: return "$1.54 per week"
+        case .monthly: return "$1.15 per week"
+        case .annual: return "$0.58 per week"
         }
     }
 
@@ -522,7 +498,7 @@ private enum PricingPlan: String, CaseIterable {
     var savingsPercent: Int? {
         switch self {
         case .monthly: return nil
-        case .annual: return 49
+        case .annual: return 50
         }
     }
 
@@ -530,7 +506,7 @@ private enum PricingPlan: String, CaseIterable {
     var monthlyEquivalentPrice: String? {
         switch self {
         case .monthly: return nil
-        case .annual: return "$155.88"
+        case .annual: return "$59.88"
         }
     }
 }
@@ -546,12 +522,11 @@ private struct PricingCardView: View {
         Button(action: onSelect) {
             VStack(spacing: DesignTokens.spacing4) {
                 Text(plan.label)
-                    .font(DesignTokens.sectionHeader)
+                    .font(.custom("Geist-Regular", size: 14))
                     .foregroundStyle(DesignTokens.textPrimary)
-                    .tracking(1.0)
 
                 Text(plan.price)
-                    .font(DesignTokens.titleFont)
+                    .font(.custom("Geist-Regular", size: 20))
                     .foregroundStyle(DesignTokens.textPrimary)
 
                 if let baseline = plan.monthlyEquivalentPrice,
@@ -562,9 +537,9 @@ private struct PricingCardView: View {
                             .foregroundStyle(DesignTokens.textTertiary)
                             .strikethrough(color: DesignTokens.textTertiary)
 
-                        Text("\(savings)% off")
+                        Text("\(savings)% OFF")
                             .font(.custom("GeistMono-Medium", size: 10))
-                            .foregroundStyle(DesignTokens.negative)
+                            .foregroundStyle(Color(hex: "#C25D93"))
                     }
                 }
 
@@ -581,9 +556,9 @@ private struct PricingCardView: View {
             .padding(.vertical, DesignTokens.spacing16)
             .padding(.horizontal, DesignTokens.spacing4)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusLarge))
+            .clipShape(RoundedRectangle(cornerRadius: 26))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
+                RoundedRectangle(cornerRadius: 26)
                     .stroke(
                         isSelected
                             ? AnyShapeStyle(LinearGradient(
@@ -604,19 +579,13 @@ private struct PricingCardView: View {
             .overlay(alignment: .top) {
                 if plan.isBestValue {
                     Text("Best value")
-                        .font(.custom("GeistMono-Medium", size: 9))
-                        .foregroundStyle(DesignTokens.bgDeepest)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(
-                            LinearGradient(
-                                colors: [DesignTokens.accentEnergy, DesignTokens.accentClarity],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .font(.custom("Geist-Regular", size: 12))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .background(Color(hex: "#C25D93"))
                         .clipShape(Capsule())
-                        .offset(y: -9)
+                        .offset(y: -11)
                 }
             }
         }
@@ -665,11 +634,14 @@ private struct TrialTimelineView: View {
                             if !node.title.isEmpty {
                                 Text(node.title)
                                     .font(.custom("GeistMono-Medium", size: 10))
-                                    .foregroundStyle(DesignTokens.positive)
+                                    .foregroundStyle(Color(hex: "#C25D93"))
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 2)
-                                    .background(DesignTokens.positive.opacity(0.15))
                                     .clipShape(Capsule())
+                                    .overlay(
+                                        Capsule()
+                                            .stroke(Color(hex: "#C25D93"), lineWidth: 1)
+                                    )
                             }
                         }
 

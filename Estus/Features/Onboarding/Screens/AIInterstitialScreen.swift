@@ -9,6 +9,11 @@ struct AIInterstitialScreen: View {
     @State private var displayPercent: Int = 0
     @State private var hasCompleted = false
 
+    @State private var showContent = false
+    @State private var showHeadline = false
+    @State private var showDots = false
+    @State private var showStageText = false
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let stages: [String] = [
@@ -18,131 +23,117 @@ struct AIInterstitialScreen: View {
         "Building your personalized plan..."
     ]
 
-    private let stageDuration: UInt64 = 3_375_000_000 // 3.375 seconds in nanoseconds
-    private let totalDuration: Double = 13.5
+    private var userName: String {
+        let name = viewModel.firstName.trimmingCharacters(in: .whitespaces)
+        return name.isEmpty ? "friend" : name
+    }
 
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { geo in
             ZStack {
-                DesignTokens.bgDeepest.ignoresSafeArea()
+                // Full-screen orb background
+                OrbBackground()
+                    .ignoresSafeArea()
 
-                GradientFlowBackground(fullScreen: true)
-                GrainOverlay()
+                VStack(spacing: 0) {
+                    Spacer()
 
-                // Braille + greeting + step copy — vertically centered group
-                VStack(spacing: DesignTokens.spacing24) {
-                    BrailleThinkingIndicator()
+                    // Breathing dots
+                    BreathingDots(isActive: showDots, reduceMotion: reduceMotion)
+                        .padding(.bottom, DesignTokens.spacing24)
 
+                    // Headline
                     HeadlineText(
-                        text: "Hang tight, \(viewModel.firstName.trimmingCharacters(in: .whitespaces).isEmpty ? "friend" : viewModel.firstName).",
+                        text: "Hang tight, \(userName).",
                         alignment: .center,
                         color: .white
                     )
+                    .opacity(showHeadline ? 1 : 0)
+                    .offset(y: showHeadline || reduceMotion ? 0 : 8)
+                    .padding(.horizontal, DesignTokens.spacing32)
 
+                    // Stage text
                     ZStack(alignment: .top) {
                         ForEach(Array(stages.enumerated()), id: \.offset) { index, message in
                             Text(message)
-                                .font(DesignTokens.headlineFont)
-                                .foregroundStyle(.white)
+                                .font(DesignTokens.bodyFont)
+                                .foregroundStyle(.white.opacity(0.7))
                                 .multilineTextAlignment(.center)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .frame(maxWidth: .infinity, alignment: .top)
-                                .modifier(ShimmerModifier(isActive: !reduceMotion && index == currentStage))
                                 .opacity(index == currentStage ? 1 : 0)
-                                .animation(.easeInOut(duration: 1.4), value: currentStage)
+                                .offset(y: index == currentStage ? 0 : 6)
+                                .animation(.easeInOut(duration: 0.8), value: currentStage)
                         }
                     }
-                    .frame(width: geometry.size.width - DesignTokens.spacing32 * 2)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .offset(y: -DesignTokens.spacing32)
+                    .padding(.top, DesignTokens.spacing16)
+                    .padding(.horizontal, DesignTokens.spacing32)
+                    .opacity(showStageText ? 1 : 0)
 
-                // Progress bar with embedded % — near the bottom
-                ZStack {
-                    // Background track + muted text
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.white.opacity(0.08))
-                    RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
-                    Text("\(displayPercent)%")
-                        .font(.custom("GeistMono-Medium", size: 13))
-                        .foregroundStyle(Color.white.opacity(0.3))
+                    Spacer()
 
-                    // Glass fill + white text, both masked to progress
-                    GeometryReader { barGeo in
-                        let fillWidth = barGeo.size.width * min(max(progress, 0), 1)
+                    // Progress bar
+                    VStack(spacing: DesignTokens.spacing8) {
+                        GeometryReader { barGeo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color.white.opacity(0.15))
 
-                        ZStack {
-                            // Glass body — saturated aqua-blue tint
-                            RoundedRectangle(cornerRadius: 14)
-                                .fill(
-                                    LinearGradient(
-                                        stops: [
-                                            .init(color: Color(red: 0.55, green: 0.78, blue: 0.98).opacity(0.55), location: 0),
-                                            .init(color: Color(red: 0.65, green: 0.85, blue: 1.0).opacity(0.45), location: 0.35),
-                                            .init(color: Color.white.opacity(0.6), location: 0.52),
-                                            .init(color: Color(red: 0.58, green: 0.80, blue: 0.98).opacity(0.5), location: 0.7),
-                                            .init(color: Color(red: 0.50, green: 0.72, blue: 0.95).opacity(0.45), location: 1.0)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-
-                            // Top specular highlight — bright caustic line
-                            VStack(spacing: 0) {
-                                Rectangle()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color.white.opacity(0.85),
-                                                Color.white.opacity(0.25)
-                                            ],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(height: 1)
-                                    .padding(.horizontal, 4)
-                                Spacer()
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color.white.opacity(0.6))
+                                    .frame(width: barGeo.size.width * min(max(progress, 0), 1))
                             }
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-
-                            // Bright edge border — refraction rim
-                            RoundedRectangle(cornerRadius: 14)
-                                .strokeBorder(
-                                    LinearGradient(
-                                        stops: [
-                                            .init(color: Color.white.opacity(0.9), location: 0),
-                                            .init(color: Color.white.opacity(0.25), location: 0.5),
-                                            .init(color: Color.white.opacity(0.45), location: 1.0)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 0.8
-                                )
-
-                            Text("\(displayPercent)%")
-                                .font(.custom("GeistMono-Medium", size: 13))
-                                .foregroundStyle(.white)
                         }
-                        .mask(
-                            HStack(spacing: 0) {
-                                Rectangle().frame(width: fillWidth)
-                                Spacer(minLength: 0)
-                            }
-                        )
+                        .frame(height: 4)
+
+                        Text("\(displayPercent)%")
+                            .font(.custom("GeistMono-Medium", size: 13))
+                            .foregroundStyle(.white.opacity(0.5))
                     }
+                    .padding(.horizontal, DesignTokens.spacing48)
+                    .padding(.bottom, DesignTokens.spacing48)
+                    .opacity(showContent ? 1 : 0)
                 }
-                .frame(height: 28)
-                .padding(.horizontal, DesignTokens.spacing48)
-                .position(x: geometry.size.width / 2, y: geometry.size.height - DesignTokens.spacing48 - 30)
             }
         }
         .ignoresSafeArea()
         .onAppear {
+            startEntranceAnimation()
             startSequence()
+        }
+    }
+
+    // MARK: - Entrance Animation
+
+    private func startEntranceAnimation() {
+        guard !reduceMotion else {
+            showContent = true
+            showHeadline = true
+            showDots = true
+            showStageText = true
+            return
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.easeInOut(duration: 0.8)) {
+                showContent = true
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            withAnimation(.easeInOut(duration: 0.6)) {
+                showHeadline = true
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            showDots = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            withAnimation(.easeInOut(duration: 0.6)) {
+                showStageText = true
+            }
         }
     }
 
@@ -150,14 +141,12 @@ struct AIInterstitialScreen: View {
 
     private func startSequence() {
         Task {
-            // 4 stages, 25% each, tick 1% at a time = 100 ticks total
-            // Each stage is 2.9s → each tick is 2.9s / 25 = 116ms
             let tickDuration: UInt64 = 135_000_000
 
             for stage in 0..<stages.count {
                 guard !Task.isCancelled else { return }
 
-                withAnimation(.easeInOut(duration: 1.4)) {
+                withAnimation(.easeInOut(duration: 0.8)) {
                     currentStage = stage
                 }
 
@@ -177,7 +166,6 @@ struct AIInterstitialScreen: View {
                 }
             }
 
-            // Small pause after completion
             try? await Task.sleep(nanoseconds: 500_000_000)
 
             guard !hasCompleted else { return }
@@ -188,171 +176,87 @@ struct AIInterstitialScreen: View {
             }
         }
     }
-
 }
 
-// MARK: - Braille Thinking Indicator
+// MARK: - Breathing Dots
 
-private struct BrailleThinkingIndicator: View {
-    private let cellCount = 8
-    private let dotSize: CGFloat = 7
-    private let innerSpacing: CGFloat = 5
-    private let cellGap: CGFloat = 10
-
-    // Glass palette
-    private let glassEdge    = Color.white.opacity(0.85)
-    private let glassBody    = Color(red: 0.85, green: 0.90, blue: 0.98)
-    private let glassShadow  = Color(red: 0.55, green: 0.62, blue: 0.75)
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+private struct BreathingDots: View {
+    let isActive: Bool
+    let reduceMotion: Bool
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 15, paused: reduceMotion)) { context in
-            let time = reduceMotion ? 0.0 : context.date.timeIntervalSinceReferenceDate
-
-            Canvas { ctx, size in
-                let cellWidth = 2 * dotSize + innerSpacing
-                let cellHeight = 3 * dotSize + 2 * innerSpacing
-                let totalWidth = CGFloat(cellCount) * cellWidth + CGFloat(cellCount - 1) * cellGap
-                let originX = (size.width - totalWidth) / 2
-                let originY = (size.height - cellHeight) / 2
-
-                for cell in 0..<cellCount {
-                    let cellX = originX + CGFloat(cell) * (cellWidth + cellGap)
-
-                    for row in 0..<3 {
-                        for col in 0..<2 {
-                            let cx = cellX + CGFloat(col) * (dotSize + innerSpacing) + dotSize / 2
-                            let cy = originY + CGFloat(row) * (dotSize + innerSpacing) + dotSize / 2
-
-                            let globalCol = cell * 2 + col
-                            let dotIndex = cell * 6 + row * 2 + col
-                            let opacity = Self.dotOpacity(col: globalCol, row: row, cell: cell, dotIndex: dotIndex, time: time)
-
-                            guard opacity > 0.05 else { continue }
-
-                            // Soft outer glow — diffused light around the bead
-                            let glowSize = dotSize * 3.0
-                            ctx.opacity = opacity * 0.12
-                            ctx.fill(
-                                Circle().path(in: CGRect(x: cx - glowSize / 2, y: cy - glowSize / 2, width: glowSize, height: glowSize)),
-                                with: .color(.white)
-                            )
-
-                            // Shadow rim — gives depth beneath the glass bead
-                            let rimSize = dotSize * 1.1
-                            ctx.opacity = opacity * 0.3
-                            ctx.fill(
-                                Circle().path(in: CGRect(x: cx - rimSize / 2, y: cy - rimSize / 2 + 0.5, width: rimSize, height: rimSize)),
-                                with: .color(glassShadow)
-                            )
-
-                            // Glass body — translucent cool-tinted fill
-                            ctx.opacity = opacity * 0.45
-                            ctx.fill(
-                                Circle().path(in: CGRect(x: cx - dotSize / 2, y: cy - dotSize / 2, width: dotSize, height: dotSize)),
-                                with: .color(glassBody)
-                            )
-
-                            // Edge ring — bright white border simulating refraction
-                            ctx.opacity = opacity * 0.55
-                            ctx.stroke(
-                                Circle().path(in: CGRect(x: cx - dotSize / 2, y: cy - dotSize / 2, width: dotSize, height: dotSize)),
-                                with: .color(glassEdge),
-                                lineWidth: 0.8
-                            )
-
-                            // Primary specular highlight — top-left caustic
-                            let hlSize = dotSize * 0.32
-                            ctx.opacity = opacity * 0.9
-                            ctx.fill(
-                                Circle().path(in: CGRect(x: cx - dotSize * 0.16 - hlSize / 2, y: cy - dotSize * 0.22 - hlSize / 2, width: hlSize, height: hlSize)),
-                                with: .color(.white)
-                            )
-
-                            // Tiny secondary highlight — bottom-right refracted glint
-                            let glintSize = dotSize * 0.18
-                            ctx.opacity = opacity * 0.35
-                            ctx.fill(
-                                Circle().path(in: CGRect(x: cx + dotSize * 0.1 - glintSize / 2, y: cy + dotSize * 0.15 - glintSize / 2, width: glintSize, height: glintSize)),
-                                with: .color(.white)
-                            )
-                        }
-                    }
-                }
+        HStack(spacing: DesignTokens.spacing12) {
+            ForEach(0..<5, id: \.self) { index in
+                BreathingDot(
+                    delay: Double(index) * 0.2,
+                    isActive: isActive && !reduceMotion
+                )
             }
         }
-        .frame(height: 3 * dotSize + 2 * innerSpacing + 20)
-        .accessibilityLabel("Processing animation")
-    }
-
-    // Chaotic opacity: mix of directional waves, counter-waves, random pulses, and flicker
-    private static func dotOpacity(col: Int, row: Int, cell: Int, dotIndex: Int, time: Double) -> Double {
-        // Wave moving right
-        let rightWave = sin(time * 2.6 + Double(col) * 0.5 + Double(row) * 1.1)
-        // Wave moving left (negative col coefficient)
-        let leftWave = sin(time * 3.1 - Double(col) * 0.7 + Double(row) * 0.6)
-        // Vertical pulse per column
-        let vertPulse = cos(time * 4.2 + Double(cell) * 2.3)
-        // Per-dot pseudo-random flicker using golden ratio hash
-        let hash = Double(dotIndex) * 1.618033988749895
-        let flicker = sin(time * 5.7 + hash * 6.283) * cos(time * 3.9 + hash * 3.7)
-        // Slow drift that changes which pattern dominates over time
-        let drift = sin(time * 0.4 + Double(cell) * 0.8)
-
-        // Blend: drift controls whether wave-based or flicker-based motion dominates
-        let wavePart = (rightWave + leftWave + vertPulse) / 3.0
-        let flickerWeight = (drift + 1.0) / 2.0 * 0.6 // 0…0.6
-        let combined = wavePart * (1.0 - flickerWeight) + flicker * flickerWeight
-
-        // Quantize with a bit of jitter at boundaries
-        let jitter = sin(hash * 11.3 + time * 7.1) * 0.08
-        let threshold = combined + jitter
-
-        if threshold > 0.3 { return 1.0 }
-        else if threshold > 0.0 { return 0.45 }
-        else if threshold > -0.3 { return 0.12 }
-        else { return 0.0 }
     }
 }
 
-// MARK: - Shimmer Effect Modifier
-
-private struct ShimmerModifier: ViewModifier {
+private struct BreathingDot: View {
+    let delay: Double
     let isActive: Bool
-    @State private var phase: CGFloat = 0
 
-    func body(content: Content) -> some View {
-        if isActive {
-            content
-                .opacity(0.85)
-                .overlay {
-                    GeometryReader { geometry in
-                        let width = geometry.size.width
-                        let bandWidth = width * 0.5
+    private let dotSize: CGFloat = 12
 
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0),
-                                .init(color: .white.opacity(0.7), location: 0.35),
-                                .init(color: .white.opacity(0.7), location: 0.65),
-                                .init(color: .clear, location: 1.0)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                        .frame(width: bandWidth)
-                        .offset(x: -bandWidth + phase * (width + bandWidth))
-                    }
-                    .mask(content)
-                }
-                .onAppear {
-                    withAnimation(.linear(duration: 3.45).repeatForever(autoreverses: false)) {
-                        phase = 1.5
-                    }
-                }
-        } else {
-            content
+    @State private var isAnimating = false
+
+    var body: some View {
+        ZStack {
+            // Soft outer glow
+            Circle()
+                .fill(Color.white.opacity(0.1))
+                .frame(width: dotSize * 1.6, height: dotSize * 1.6)
+                .blur(radius: 3)
+
+            // Glass body
+            Circle()
+                .fill(
+                    RadialGradient(
+                        stops: [
+                            .init(color: Color.white.opacity(0.6), location: 0),
+                            .init(color: Color.white.opacity(0.25), location: 0.5),
+                            .init(color: Color.white.opacity(0.1), location: 1.0)
+                        ],
+                        center: .init(x: 0.35, y: 0.3),
+                        startRadius: 0,
+                        endRadius: dotSize * 0.6
+                    )
+                )
+                .frame(width: dotSize, height: dotSize)
+
+            // Edge ring
+            Circle()
+                .stroke(Color.white.opacity(0.5), lineWidth: 0.8)
+                .frame(width: dotSize, height: dotSize)
+
+            // Specular highlight
+            Circle()
+                .fill(Color.white.opacity(0.9))
+                .frame(width: dotSize * 0.3, height: dotSize * 0.3)
+                .offset(x: -dotSize * 0.15, y: -dotSize * 0.18)
+        }
+        .frame(width: dotSize * 2.2, height: dotSize * 2.2)
+        .opacity(isAnimating ? 1.0 : 0.3)
+        .scaleEffect(isAnimating ? 1.0 : 0.8)
+        .animation(
+            isActive
+                ? .easeInOut(duration: 1.2).repeatForever(autoreverses: true).delay(delay)
+                : .default,
+            value: isAnimating
+        )
+        .onAppear {
+            if isActive {
+                isAnimating = true
+            }
+        }
+        .onChange(of: isActive) { _, active in
+            if active {
+                isAnimating = true
+            }
         }
     }
 }

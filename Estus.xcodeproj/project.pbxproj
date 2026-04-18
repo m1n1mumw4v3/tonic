@@ -142,6 +142,7 @@
 		AF06297F39604994CCD81B81 /* CaffeineScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113A3B4C3224ADDDEE82AA2C /* CaffeineScreen.swift */; };
 		B175519A23A234AD234981C4 /* Insight.swift in Sources */ = {isa = PBXBuildFile; fileRef = E853795621B97D5B6ED35C5A /* Insight.swift */; };
 		B36842BF9FB556FB89B44FB2 /* DiscoveryTip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 464B69B8E395E0EB88CC385F /* DiscoveryTip.swift */; };
+		B3C5FD713ECCAD7F31D53B7F /* OrbBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645BDFBA65ADA035D22D7D51 /* OrbBackground.swift */; };
 		B672878A342E8C2EBF6B72F4 /* ValuePropProblemScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F3605D9D4D1FFC788D6786 /* ValuePropProblemScreen.swift */; };
 		B6A2E28D8ADC71169B8F45DA /* RecommendationEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BC66D299AB13718F27AE94 /* RecommendationEngineTests.swift */; };
 		B75D58CFD5170479EBE90E11 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8148A4BF49E6631B0AD4C /* RecommendationEngine.swift */; };
@@ -299,6 +300,7 @@
 		633033AB209D0CE7DC58AF3E /* EstusTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = EstusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6384EA09BC0842776763623B /* DiscoveryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCard.swift; sourceTree = "<group>"; };
 		64537947A100FEF72B90C5AB /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		645BDFBA65ADA035D22D7D51 /* OrbBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrbBackground.swift; sourceTree = "<group>"; };
 		64BA715031328F37C28BFF31 /* BaselineScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineScreen.swift; sourceTree = "<group>"; };
 		659FD1F10EDB1B4E11C5808C /* CompactProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactProgressRing.swift; sourceTree = "<group>"; };
 		69B372E1C539D497678AD207 /* estus-logo-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "estus-logo-01.png"; sourceTree = "<group>"; };
@@ -818,6 +820,7 @@
 				BE15B284D437AD658B557801 /* InsightCard.swift */,
 				D29BCAC92B72D848C0175666 /* LockedOverlay.swift */,
 				AD4A8E1FD766544D824B33A7 /* MicroRewardCard.swift */,
+				645BDFBA65ADA035D22D7D51 /* OrbBackground.swift */,
 				2390903AB28340F351E06E77 /* PhaseCalloutRow.swift */,
 				CD5AE5ED3E6859C78692D7D0 /* PhaseProgressBar.swift */,
 				1A3DB18A2706C2C98734CD09 /* PillboxCompartment.swift */,
@@ -1070,6 +1073,7 @@
 				D5173043D91B2A43C3E7238E /* NotificationSettingsSheet.swift in Sources */,
 				86DD928CB2AE4C427EEB6643 /* OnboardingFlow.swift in Sources */,
 				D985C3457074B5CCC6D7FF8F /* OnboardingViewModel.swift in Sources */,
+				B3C5FD713ECCAD7F31D53B7F /* OrbBackground.swift in Sources */,
 				BEC531CB1F6867E59320F1A6 /* PaywallScreen.swift in Sources */,
 				B93598867FA2DAB0B9131ACE /* PersonalizationScorer.swift in Sources */,
 				C821396CEE5BAA0AA67ACB2B /* PhaseCalloutRow.swift in Sources */,

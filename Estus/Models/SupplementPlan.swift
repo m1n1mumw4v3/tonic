@@ -158,9 +158,9 @@ enum SupplementTier: String, Codable, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .core: return "Highest impact for your profile"
-        case .targeted: return "Strong support for your goals"
-        case .supporting: return "Complementary additions"
+        case .core: return "Strongest evidence match across your goals and profile"
+        case .targeted: return "Good evidence for one or more of your specific goals"
+        case .supporting: return "Lighter evidence, but may round out your plan"
         }
     }
 
