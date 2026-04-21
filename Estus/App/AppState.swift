@@ -80,14 +80,19 @@ class AppState {
         do {
             let service = SupplementService()
             let data = try await service.loadCatalog()
-            print("✅ [SupplementCatalog] Loaded \(data.supplements.count) supplements, \(data.goalMaps.count) goal maps, \(data.synergies.count) synergies, \(data.drugInteractions.count) drug interactions, \(data.personalizationSignals.count) personalization signals from Supabase")
-            supplementCatalog.populate(
-                supplements: data.supplements,
-                goalMaps: data.goalMaps,
-                synergyPairings: data.synergies,
-                personalizationSignals: data.personalizationSignals
-            )
-            drugInteractions = data.drugInteractions
+            if data.supplements.isEmpty {
+                print("⚠️ [SupplementCatalog] Supabase returned 0 supplements (likely RLS blocking anon). Falling back to static data.")
+                supplementCatalog.populateFromStatic()
+            } else {
+                print("✅ [SupplementCatalog] Loaded \(data.supplements.count) supplements, \(data.goalMaps.count) goal maps, \(data.synergies.count) synergies, \(data.drugInteractions.count) drug interactions, \(data.personalizationSignals.count) personalization signals from Supabase")
+                supplementCatalog.populate(
+                    supplements: data.supplements,
+                    goalMaps: data.goalMaps,
+                    synergyPairings: data.synergies,
+                    personalizationSignals: data.personalizationSignals
+                )
+                drugInteractions = data.drugInteractions
+            }
         } catch {
             catalogLoadError = error
             print("⚠️ [SupplementCatalog] Supabase fetch failed, falling back to static data: \(error)")

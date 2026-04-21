@@ -45,7 +45,7 @@ struct SupplementLogList: View {
                 sectionContainer(
                     icon: "sun.max.fill",
                     label: "AM",
-                    tint: DesignTokens.accentGut,
+                    tint: DesignTokens.accentEnergyDark,
                     progress: amProgress,
                     isComplete: amComplete,
                     isExpanded: $amExpanded,
@@ -95,28 +95,26 @@ struct SupplementLogList: View {
                     .foregroundStyle(tint)
                     .opacity(isComplete ? 1.0 : 0.7)
                 Text(label)
-                    .font(.custom("Geist-SemiBold", size: 16))
-                    .tracking(1.5)
-                    .foregroundStyle(DesignTokens.textSecondary)
-                if isCollapsed.wrappedValue {
-                    HStack(spacing: 4) {
-                        AnimatedCheckmark(isChecked: true, color: .white, size: 8)
-                        Text("COMPLETE")
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(.white)
-                    }
-                    .padding(.horizontal, DesignTokens.spacing8)
-                    .padding(.vertical, 3)
-                    .background(DesignTokens.textPrimary.opacity(0.5))
-                    .clipShape(Capsule())
-                    .transition(.opacity)
-                }
+                    .font(.custom("Geist-Regular", size: 16))
+                    .foregroundStyle(DesignTokens.textPrimary)
                 Spacer()
                 if isCollapsed.wrappedValue {
-                    HStack(spacing: DesignTokens.spacing4) {
-                        Text(isExpanded.wrappedValue ? "Edit" : "")
-                            .font(DesignTokens.captionFont)
-                            .foregroundStyle(DesignTokens.textTertiary)
+                    HStack(spacing: DesignTokens.spacing8) {
+                        HStack(spacing: 4) {
+                            AnimatedCheckmark(isChecked: true, color: DesignTokens.accentMood, size: 8)
+                            Text("Complete")
+                                .font(DesignTokens.labelMono)
+                                .foregroundStyle(DesignTokens.accentMood)
+                        }
+                        .padding(.horizontal, DesignTokens.spacing8)
+                        .padding(.vertical, 3)
+                        .background(Color.white)
+                        .overlay(
+                            Capsule()
+                                .stroke(DesignTokens.accentMood, lineWidth: 1)
+                        )
+                        .clipShape(Capsule())
+
                         Image(systemName: "chevron.down")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(DesignTokens.textTertiary)
@@ -138,9 +136,13 @@ struct SupplementLogList: View {
                         HapticManager.impact(.light)
                         onTakeAllSection?(supplements.map(\.id))
                     } label: {
-                        Text("TAKE ALL")
+                        Text("Take all")
                             .font(DesignTokens.captionFont)
-                            .foregroundStyle(DesignTokens.positive)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, DesignTokens.spacing12)
+                            .padding(.vertical, DesignTokens.spacing4)
+                            .background(DesignTokens.accentMood)
+                            .clipShape(Capsule())
                     }
                     .disabled(takeAllFired.wrappedValue)
                 }
@@ -183,7 +185,7 @@ struct SupplementLogList: View {
             ZStack {
                 // Spectrum glow (behind card)
                 if isCollapsed.wrappedValue {
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                    RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                         .stroke(
                             AngularGradient(
                                 colors: DesignTokens.spectrumColors + [DesignTokens.spectrumColors[0]],
@@ -196,17 +198,17 @@ struct SupplementLogList: View {
                         .transition(.opacity)
                 }
 
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                     .fill(DesignTokens.bgSurface)
             }
             .animation(reduceMotion ? .none : .easeInOut(duration: 0.6), value: isCollapsed.wrappedValue)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
         .overlay(
-            SpectrumProgressBorder(progress: progress, cornerRadius: DesignTokens.radiusMedium)
+            SpectrumProgressBorder(progress: progress, cornerRadius: DesignTokens.radiusCard)
                 .animation(
                     reduceMotion ? .none : .easeOut(duration: 0.5),
                     value: progress

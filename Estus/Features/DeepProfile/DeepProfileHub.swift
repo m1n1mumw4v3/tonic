@@ -108,7 +108,7 @@ struct DeepProfileHub: View {
         } label: {
             HStack(spacing: DesignTokens.spacing12) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+                    Circle()
                         .fill(DesignTokens.accentEnergy.opacity(0.15))
                         .frame(width: 40, height: 40)
 
@@ -124,20 +124,20 @@ struct DeepProfileHub: View {
 
                     Text("Completed")
                         .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.positive)
+                        .foregroundStyle(DesignTokens.textPrimary)
                 }
 
                 Spacer()
 
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 20))
-                    .foregroundStyle(DesignTokens.positive)
+                    .foregroundStyle(DesignTokens.textPrimary)
             }
             .padding(DesignTokens.spacing12)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
         }
@@ -204,7 +204,7 @@ struct DeepProfileHub: View {
             HStack(spacing: DesignTokens.spacing12) {
                 // Icon
                 ZStack {
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+                    Circle()
                         .fill(moduleType.accentColor.opacity(0.15))
                         .frame(width: 40, height: 40)
 
@@ -224,17 +224,21 @@ struct DeepProfileHub: View {
                         if isRecommended && !isCompleted {
                             Text("Recommended")
                                 .font(DesignTokens.smallMono)
-                                .foregroundStyle(DesignTokens.accentLongevity)
-                                .padding(.horizontal, DesignTokens.spacing4)
+                                .foregroundStyle(DesignTokens.accentMood)
+                                .padding(.horizontal, DesignTokens.spacing8)
                                 .padding(.vertical, 2)
-                                .background(DesignTokens.accentLongevity.opacity(0.15))
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                .background(Color.white)
+                                .overlay(
+                                    Capsule()
+                                        .stroke(DesignTokens.accentMood, lineWidth: 1)
+                                )
+                                .clipShape(Capsule())
                         }
                     }
 
-                    Text(isCompleted ? "Completed" : "\(moduleType.questionCount) questions \u{00B7} \(moduleType.estimatedTimeLabel)")
+                    Text(isCompleted ? "Completed" : "\(moduleType.questionCount) questions | \(moduleType.estimatedTimeLabel)")
                         .font(DesignTokens.captionFont)
-                        .foregroundStyle(isCompleted ? DesignTokens.positive : DesignTokens.textTertiary)
+                        .foregroundStyle(isCompleted ? DesignTokens.textPrimary : DesignTokens.textTertiary)
                 }
 
                 Spacer()
@@ -243,7 +247,7 @@ struct DeepProfileHub: View {
                 if isCompleted {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 20))
-                        .foregroundStyle(DesignTokens.positive)
+                        .foregroundStyle(DesignTokens.textPrimary)
                 } else {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .medium))
@@ -252,9 +256,9 @@ struct DeepProfileHub: View {
             }
             .padding(DesignTokens.spacing12)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
         }

@@ -1092,6 +1092,13 @@ struct RecommendationEngine {
     }
 
     func formatDosage(dosage: Double, supplement: Supplement) -> String {
+        // Prefer the curated display label from the DB / knowledge base when present —
+        // some supplements (B-Complex, probiotics, etc.) aren't dosed in mg and need
+        // a human-friendly string like "1x daily" or "30B CFU".
+        if let displayDose = supplement.displayDose,
+           !displayDose.trimmingCharacters(in: .whitespaces).isEmpty {
+            return displayDose
+        }
         if supplement.name == "Vitamin D3 + K2" {
             return "\(Int(dosage)) IU"
         }

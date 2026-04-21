@@ -30,7 +30,7 @@ struct PlanRevealScreen: View {
     @State private var selectedGoalFilter: HealthGoal? = nil
     @State private var animatedSupplementCount: Int = 0
     @State private var showEvidenceInfo: EvidenceLevel? = nil
-    @State private var isSummaryExpanded: Bool = false
+    @State private var isSummaryExpanded: Bool = true
     @State private var showShimmer: Bool = true
     @State private var showTierInfo: SupplementTier? = nil
     @State private var shopSupplement: PlanRevealShopItem?
@@ -73,7 +73,7 @@ struct PlanRevealScreen: View {
 
     private var planTitle: String {
         let name = viewModel.firstName.trimmingCharacters(in: .whitespaces)
-        return name.isEmpty ? "Your Supplement Plan" : "\(name)'s Supplement Plan"
+        return name.isEmpty ? "Your Plan" : "\(name)'s Plan"
     }
 
     // MARK: - Body
@@ -90,10 +90,9 @@ struct PlanRevealScreen: View {
                             .padding(.top, DesignTokens.spacing40)
 
                         // AI reasoning as flowing text
-                        // Temporarily hidden
-                        // if let summary = viewModel.generatedPlan?.aiReasoning {
-                        //     summaryBlurb(summary)
-                        // }
+                        if let summary = viewModel.generatedPlan?.aiReasoning {
+                            summaryBlurb(summary)
+                        }
 
                         // Goal chips
                         goalChipsSection
@@ -177,7 +176,8 @@ struct PlanRevealScreen: View {
         VStack(spacing: DesignTokens.spacing8) {
             Text(planTitle)
                 .font(.custom("Geist-Light", size: 28))
-                .multilineTextAlignment(.center)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundStyle(DesignTokens.textPrimary)
             .opacity(showHeadline ? 1 : 0)
             .offset(y: showHeadline || reduceMotion ? 0 : 12)
@@ -262,35 +262,56 @@ struct PlanRevealScreen: View {
     private func summaryBlurb(_ text: String) -> some View {
         VStack(spacing: 0) {
             // Header pill
-            HStack(spacing: DesignTokens.spacing8) {
-                Image("EstusAIIcon")
-                    .renderingMode(.template)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 22, height: 22)
-                    .foregroundStyle(DesignTokens.textPrimary)
+            Button {
+                HapticManager.selection()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    isSummaryExpanded.toggle()
+                }
+            } label: {
+                HStack(spacing: DesignTokens.spacing8) {
+                    Image("EstusAIIcon")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+                        .foregroundStyle(DesignTokens.textPrimary)
 
-                Text("Plan Overview")
-                    .font(.custom("Geist-Regular", size: 20))
-                    .foregroundStyle(DesignTokens.textPrimary)
-            }
-            .padding(.horizontal, DesignTokens.spacing20)
-            .padding(.vertical, DesignTokens.spacing16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
-            .clipShape(Capsule())
+                    Text("Plan Overview")
+                        .font(.custom("Geist-Regular", size: 20))
+                        .foregroundStyle(DesignTokens.textPrimary)
 
-            // Description card
-            Text(text)
-                .font(DesignTokens.bodyFont)
-                .foregroundStyle(DesignTokens.textSecondary)
-                .lineSpacing(2)
-                .multilineTextAlignment(.leading)
+                    Spacer()
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .rotationEffect(.degrees(isSummaryExpanded ? 0 : -90))
+                }
+                .padding(.horizontal, DesignTokens.spacing20)
+                .padding(.vertical, DesignTokens.spacing16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
-                .padding(DesignTokens.spacing20)
                 .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 26))
+                .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+
+            // Description card (clipped so collapse animation hides behind pill)
+            VStack(spacing: 0) {
+                if isSummaryExpanded {
+                    Text(text)
+                        .font(.custom("Geist-Regular", size: 14))
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .lineSpacing(2)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
+                        .padding(DesignTokens.spacing20)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 26))
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .clipped()
         }
         .opacity(showSummary ? 1 : 0)
         .offset(y: showSummary || reduceMotion ? 0 : 8)

@@ -3,8 +3,9 @@ import SwiftUI
 struct CTAButton: View {
     let title: String
     let style: Style
-    let action: () -> Void
     var spectrumBorder: Bool = false
+    var font: Font? = nil
+    let action: () -> Void
 
     enum Style {
         case primary
@@ -20,7 +21,7 @@ struct CTAButton: View {
             action()
         }) {
             Text(title)
-                .font(DesignTokens.ctaFont)
+                .font(font ?? DesignTokens.ctaFont)
                 .tracking(0.32)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)

@@ -215,7 +215,7 @@ struct InsightsScreen: View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
             HStack(alignment: .bottom) {
                 Text("Insights")
-                    .font(DesignTokens.headlineFont)
+                    .font(.custom("Geist-Regular", size: 28))
                     .foregroundStyle(DesignTokens.textPrimary)
 
                 Spacer()
@@ -238,7 +238,7 @@ struct InsightsScreen: View {
     private var timelineHeader: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing2) {
             Text("Your Timeline")
-                .font(DesignTokens.titleFont)
+                .font(.custom("Geist-Regular", size: 20))
                 .foregroundStyle(DesignTokens.textPrimary)
             Text("Where each supplement is in its biological journey")
                 .font(DesignTokens.captionFont)
@@ -256,28 +256,28 @@ struct InsightsScreen: View {
                 } label: {
                     Text(period.rawValue)
                         .font(DesignTokens.labelMono)
-                        .tracking(0.8)
                         .foregroundStyle(
                             selectedPeriod == period
                                 ? DesignTokens.textPrimary
                                 : DesignTokens.textTertiary
                         )
-                        .padding(.horizontal, DesignTokens.spacing12)
+                        .padding(.horizontal, DesignTokens.spacing8)
                         .padding(.vertical, DesignTokens.spacing4)
                         .background(
                             selectedPeriod == period
-                                ? DesignTokens.bgElevated
+                                ? DesignTokens.bgSurface
                                 : Color.clear
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
                 }
+                .buttonStyle(.plain)
             }
         }
         .padding(2)
-        .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusSmall))
+        .background(DesignTokens.bgDeepest)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusFull)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
     }
@@ -602,22 +602,11 @@ struct InsightsScreen: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, DesignTokens.spacing12)
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
-        .overlay(alignment: .top) {
-            // Accent top border
-            UnevenRoundedRectangle(
-                topLeadingRadius: DesignTokens.radiusMedium,
-                bottomLeadingRadius: 0,
-                bottomTrailingRadius: 0,
-                topTrailingRadius: DesignTokens.radiusMedium
-            )
-            .fill(color)
-            .frame(height: 2)
-        }
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 }

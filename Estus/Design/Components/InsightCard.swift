@@ -15,8 +15,10 @@ struct InsightCard: View {
                     .foregroundStyle(dimensionColor)
                     .padding(.horizontal, DesignTokens.spacing8)
                     .padding(.vertical, DesignTokens.spacing4)
-                    .background(dimensionColor.opacity(0.15))
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.radiusFull)
+                            .stroke(dimensionColor.opacity(0.5), lineWidth: 1)
+                    )
 
                 Spacer()
 
@@ -39,7 +41,6 @@ struct InsightCard: View {
             // Title
             Text(insight.title)
                 .font(DesignTokens.bodyFont)
-                .fontWeight(.semibold)
                 .foregroundStyle(DesignTokens.textPrimary)
 
             // Body preview
@@ -55,11 +56,7 @@ struct InsightCard: View {
         }
         .padding(DesignTokens.spacing16)
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                .stroke(dimensionColor.opacity(0.3), lineWidth: 1)
-        )
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 

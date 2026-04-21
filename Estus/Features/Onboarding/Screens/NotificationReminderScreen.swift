@@ -25,7 +25,7 @@ struct NotificationReminderScreen: View {
                             Text("Building a routine is easier with reminders. Set up daily nudges to stay on track.")
                                 .font(DesignTokens.bodyFont)
                                 .foregroundStyle(DesignTokens.textSecondary)
-                                .lineSpacing(3)
+                                .lineSpacing(0)
                         }
                         .padding(.horizontal, DesignTokens.spacing24)
 

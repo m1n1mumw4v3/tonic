@@ -14,6 +14,9 @@ struct UserProfile: Codable, Identifiable {
     var sex: Sex = .preferNotToSay
     var isPregnant: Bool = false
     var isBreastfeeding: Bool = false
+    var isPerimenopausal: Bool = false
+    var isOnHormonalBirthControl: Bool = false
+    var isOnHRT: Bool = false
     var heightInches: Int?
     var weightLbs: Int?
 
@@ -64,6 +67,7 @@ struct UserProfile: Codable, Identifiable {
     enum CodingKeys: String, CodingKey {
         case id, userId, createdAt, updatedAt
         case firstName, age, dateOfBirth, sex, isPregnant, isBreastfeeding
+        case isPerimenopausal, isOnHormonalBirthControl, isOnHRT
         case heightInches, weightLbs
         case healthGoals, currentSupplements, takingSupplements
         case allergies, medications, takingMedications
@@ -93,6 +97,9 @@ extension UserProfile {
         sex = try container.decodeIfPresent(Sex.self, forKey: .sex) ?? .preferNotToSay
         isPregnant = try container.decodeIfPresent(Bool.self, forKey: .isPregnant) ?? false
         isBreastfeeding = try container.decodeIfPresent(Bool.self, forKey: .isBreastfeeding) ?? false
+        isPerimenopausal = try container.decodeIfPresent(Bool.self, forKey: .isPerimenopausal) ?? false
+        isOnHormonalBirthControl = try container.decodeIfPresent(Bool.self, forKey: .isOnHormonalBirthControl) ?? false
+        isOnHRT = try container.decodeIfPresent(Bool.self, forKey: .isOnHRT) ?? false
         heightInches = try container.decodeIfPresent(Int.self, forKey: .heightInches)
         weightLbs = try container.decodeIfPresent(Int.self, forKey: .weightLbs)
         healthGoals = try container.decodeIfPresent([HealthGoal].self, forKey: .healthGoals) ?? []

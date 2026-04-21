@@ -84,6 +84,7 @@ struct AccountCreationScreen: View {
                                             goalPill(for: goal)
                                         }
                                     }
+                                    .padding(.vertical, 2)
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)

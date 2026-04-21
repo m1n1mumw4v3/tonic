@@ -12,6 +12,9 @@ class OnboardingViewModel {
     var sex: Sex? = nil
     var isPregnant: Bool = false
     var isBreastfeeding: Bool = false
+    var isPerimenopausal: Bool = false
+    var isOnHormonalBirthControl: Bool = false
+    var isOnHRT: Bool = false
     var heightFeet: Int = 5
     var heightInches: Int = 8
     var heightCm: Int = 173
@@ -91,6 +94,9 @@ class OnboardingViewModel {
         profile.sex = sex ?? .preferNotToSay
         profile.isPregnant = isPregnant
         profile.isBreastfeeding = isBreastfeeding
+        profile.isPerimenopausal = isPerimenopausal
+        profile.isOnHormonalBirthControl = isOnHormonalBirthControl
+        profile.isOnHRT = isOnHRT
         profile.heightInches = heightFeet * 12 + heightInches
         profile.weightLbs = weightLbs
         profile.healthGoals = Array(healthGoals)

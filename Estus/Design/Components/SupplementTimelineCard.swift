@@ -8,28 +8,24 @@ struct SupplementTimelineCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Accent top border (inside the clip)
-            card.accentColor
-                .frame(height: 2)
-
             collapsedContent
                 .padding(DesignTokens.spacing16)
 
             if isExpanded {
                 expandedContent
             }
-
-            // Drag handle
-            RoundedRectangle(cornerRadius: 2)
-                .fill(DesignTokens.textTertiary.opacity(0.3))
-                .frame(width: 32, height: 4)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, DesignTokens.spacing8)
+        }
+        .overlay(alignment: .topTrailing) {
+            Image(systemName: "chevron.down")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(DesignTokens.textTertiary)
+                .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                .padding(DesignTokens.spacing16)
         }
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(DesignTokens.borderSubtle, lineWidth: 1)
         )
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
@@ -45,24 +41,12 @@ struct SupplementTimelineCard: View {
 
     private var collapsedContent: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-            // Row 1: Name + Phase badge
-            HStack(alignment: .center) {
-                Text(card.supplementName)
-                    .font(.custom("Geist-SemiBold", size: 16))
-                    .foregroundStyle(DesignTokens.textPrimary)
-                    .lineLimit(1)
-
-                Spacer()
-
-                Text("PHASE \(card.phaseState.currentPhase.phaseNumber) OF 4")
-                    .font(DesignTokens.smallMono)
-                    .tracking(0.5)
-                    .foregroundStyle(DesignTokens.textSecondary)
-                    .padding(.horizontal, DesignTokens.spacing8)
-                    .padding(.vertical, DesignTokens.spacing2)
-                    .background(DesignTokens.bgElevated)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
-            }
+            // Row 1: Name
+            Text(card.supplementName)
+                .font(.custom("Geist-Regular", size: 16))
+                .foregroundStyle(DesignTokens.textPrimary)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             // Row 2: Dosage + Timing
             Text("\(card.dosage) · \(card.timing.label)")

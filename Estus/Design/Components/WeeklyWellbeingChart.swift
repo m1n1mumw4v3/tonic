@@ -30,6 +30,8 @@ struct WeeklyWellbeingChart: View {
     var onSelectDay: ((Int) -> Void)?
 
     @State private var animationProgress: CGFloat = 0
+    @State private var selectedDimension: WellnessDimension?
+    @State private var ridgelineReveal: CGFloat = 0
 
     private let maxTotal: CGFloat = 50 // 5 dimensions × 10 max each
     private let barAreaHeight: CGFloat = 160
@@ -44,12 +46,28 @@ struct WeeklyWellbeingChart: View {
 
     var body: some View {
         VStack(spacing: DesignTokens.spacing16) {
-            barChart
+            if let selectedDimension {
+                ridgelineChart(for: selectedDimension)
+            } else {
+                barChart
+            }
             legendRow
         }
         .onAppear {
-            withAnimation(.easeOut(duration: 0.6).delay(0.15)) {
+            withAnimation(.easeOut(duration: 0.9).delay(0.15)) {
                 animationProgress = 1
+            }
+        }
+        .onChange(of: weeklyData.count) { _, _ in
+            animationProgress = 0
+            withAnimation(.easeOut(duration: 0.9)) {
+                animationProgress = 1
+            }
+            if selectedDimension != nil {
+                ridgelineReveal = 0
+                withAnimation(.easeOut(duration: 0.7)) {
+                    ridgelineReveal = 1
+                }
             }
         }
     }
@@ -57,16 +75,29 @@ struct WeeklyWellbeingChart: View {
     // MARK: - Legend
 
     private var legendRow: some View {
-        HStack(spacing: DesignTokens.spacing12) {
+        HStack(spacing: DesignTokens.spacing4) {
             ForEach(WellnessDimension.allCases) { dim in
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(dim.color)
-                        .frame(width: 6, height: 6)
+                Button {
+                    HapticManager.selection()
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        selectedDimension = selectedDimension == dim ? nil : dim
+                    }
+                } label: {
+                    let isSelected = selectedDimension == dim
                     Text(dim.label)
-                        .font(DesignTokens.smallMono)
-                        .foregroundStyle(dim.color)
+                        .font(.custom("Geist-Regular", size: 11))
+                        .foregroundStyle(isSelected ? .white : dim.color)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
+                        .background(isSelected ? dim.color : Color.white)
+                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(dim.color, lineWidth: 1)
+                        )
+                        .opacity(selectedDimension == nil || isSelected ? 1 : 0.4)
                 }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -88,16 +119,7 @@ struct WeeklyWellbeingChart: View {
                     barColumn(for: day, at: index)
                         .frame(height: barAreaHeight)
 
-                    Text(day.dayLabel)
-                        .font(.custom("GeistMono-Regular", size: isCompact ? 8 : 10))
-                        .lineLimit(1)
-                        .fixedSize()
-                        .foregroundStyle(
-                            day.isToday ? DesignTokens.textPrimary :
-                            selectedIndex == index ? DesignTokens.textPrimary :
-                            DesignTokens.textTertiary
-                        )
-                        .opacity(showLabel ? 1 : 0)
+                    dayLabel(for: day, at: index, visible: showLabel, isCompact: isCompact)
                 }
                 .frame(maxWidth: .infinity)
                 .contentShape(Rectangle())
@@ -108,11 +130,153 @@ struct WeeklyWellbeingChart: View {
         }
     }
 
+    @ViewBuilder
+    private func dayLabel(for day: WeeklyDayData, at index: Int, visible: Bool, isCompact: Bool) -> some View {
+        if visible {
+            Text(day.dayLabel)
+                .font(.custom("Geist-Regular", size: isCompact ? 10 : 11))
+                .lineLimit(1)
+                .fixedSize()
+                .foregroundStyle(
+                    day.isToday ? DesignTokens.textPrimary :
+                    selectedIndex == index ? DesignTokens.textPrimary :
+                    DesignTokens.textTertiary
+                )
+        } else {
+            Color.clear.frame(height: isCompact ? 12 : 14)
+        }
+    }
+
+    // MARK: - Ridgeline Chart
+
+    private func ridgelineChart(for dim: WellnessDimension) -> some View {
+        let isCompact = weeklyData.count > 7
+
+        return HStack(alignment: .bottom, spacing: barSpacing) {
+            ForEach(Array(weeklyData.enumerated()), id: \.element.id) { index, day in
+                let showLabel = !isCompact
+                    || index == 0
+                    || index == weeklyData.count - 1
+                    || index % 7 == 0
+                    || selectedIndex == index
+
+                VStack(spacing: isCompact ? 2 : DesignTokens.spacing4) {
+                    Color.clear
+                        .frame(height: barAreaHeight)
+
+                    dayLabel(for: day, at: index, visible: showLabel, isCompact: isCompact)
+                }
+                .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onSelectDay?(index)
+                }
+            }
+        }
+        .overlay(alignment: .top) {
+            ridgelineOverlay(for: dim)
+                .frame(height: barAreaHeight)
+                .allowsHitTesting(false)
+        }
+        .task(id: dim) {
+            ridgelineReveal = 0
+            withAnimation(.easeOut(duration: 0.7)) {
+                ridgelineReveal = 1
+            }
+        }
+    }
+
+    private func ridgelineOverlay(for dim: WellnessDimension) -> some View {
+        GeometryReader { geo in
+            let width = geo.size.width
+            let count = max(CGFloat(weeklyData.count), 1)
+            let stepWidth = width / count
+
+            let points: [CGPoint] = weeklyData.enumerated().map { index, day in
+                let x = (CGFloat(index) + 0.5) * stepWidth
+                let score = CGFloat(day.scores?[dim] ?? 0)
+                let clampedScore = min(max(score, 0), 10)
+                let y = barAreaHeight - (clampedScore / 10.0) * barAreaHeight * animationProgress
+                return CGPoint(x: x, y: y)
+            }
+
+            ZStack {
+                // Baseline
+                Path { path in
+                    path.move(to: CGPoint(x: 0, y: barAreaHeight))
+                    path.addLine(to: CGPoint(x: width, y: barAreaHeight))
+                }
+                .stroke(DesignTokens.borderSubtle, lineWidth: 1)
+
+                // Area fill
+                smoothPath(points: points, closed: true)
+                    .fill(
+                        LinearGradient(
+                            colors: [dim.color.opacity(0.35), dim.color.opacity(0.05)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .opacity(Double(ridgelineReveal))
+
+                // Line
+                smoothPath(points: points, closed: false)
+                    .trim(from: 0, to: ridgelineReveal)
+                    .stroke(dim.color, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+
+                // Points (staggered along the line)
+                ForEach(Array(points.enumerated()), id: \.offset) { index, point in
+                    if weeklyData[index].hasData {
+                        let pointProgress = CGFloat(index) / max(CGFloat(points.count - 1), 1)
+                        let visible = ridgelineReveal >= pointProgress
+                        Circle()
+                            .fill(dim.color)
+                            .frame(width: 5, height: 5)
+                            .position(point)
+                            .scaleEffect(visible ? 1 : 0)
+                            .opacity(visible ? 1 : 0)
+                            .animation(.easeOut(duration: 0.25), value: visible)
+                    }
+                }
+            }
+        }
+    }
+
+    private func smoothPath(points: [CGPoint], closed: Bool) -> Path {
+        Path { path in
+            guard let first = points.first else { return }
+
+            if closed {
+                path.move(to: CGPoint(x: first.x, y: barAreaHeight))
+                path.addLine(to: first)
+            } else {
+                path.move(to: first)
+            }
+
+            for i in 1..<points.count {
+                let prev = points[i - 1]
+                let cur = points[i]
+                let midX = (prev.x + cur.x) / 2
+                path.addCurve(
+                    to: cur,
+                    control1: CGPoint(x: midX, y: prev.y),
+                    control2: CGPoint(x: midX, y: cur.y)
+                )
+            }
+
+            if closed, let last = points.last {
+                path.addLine(to: CGPoint(x: last.x, y: barAreaHeight))
+                path.closeSubpath()
+            }
+        }
+    }
+
     // MARK: - Single Bar Column
 
     @ViewBuilder
     private func barColumn(for day: WeeklyDayData, at index: Int) -> some View {
         let isSelected = selectedIndex == index
+        let columnProgress = staggeredProgress(for: index)
 
         if day.hasData, let scores = day.scores {
             VStack(spacing: 0) {
@@ -120,7 +284,7 @@ struct WeeklyWellbeingChart: View {
 
                 let dimensions: [WellnessDimension] = [.gut, .mood, .clarity, .energy, .sleep]
                 let total = CGFloat(day.totalScore)
-                let scaledHeight = (total / maxTotal) * barAreaHeight * animationProgress
+                let scaledHeight = (total / maxTotal) * barAreaHeight * columnProgress
 
                 VStack(spacing: 0) {
                     ForEach(Array(dimensions.enumerated()), id: \.offset) { segIndex, dim in
@@ -144,9 +308,18 @@ struct WeeklyWellbeingChart: View {
                 Spacer(minLength: 0)
                 RoundedRectangle(cornerRadius: 4)
                     .fill(DesignTokens.bgElevated)
-                    .frame(width: barWidth, height: 8 * animationProgress)
+                    .frame(width: barWidth, height: 8 * columnProgress)
             }
         }
+    }
+
+    private func staggeredProgress(for index: Int) -> CGFloat {
+        let count = max(CGFloat(weeklyData.count), 1)
+        let staggerWindow: CGFloat = 0.6
+        let perBarOffset = staggerWindow / count
+        let start = perBarOffset * CGFloat(index)
+        let duration = max(1 - staggerWindow, 0.01)
+        return max(0, min(1, (animationProgress - start) / duration))
     }
 }
 

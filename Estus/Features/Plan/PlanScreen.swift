@@ -396,7 +396,7 @@ struct PlanScreen: View {
         }
         .padding(DesignTokens.spacing16)
         .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 

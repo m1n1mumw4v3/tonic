@@ -4,48 +4,71 @@ struct PregnancyScreen: View {
     var viewModel: OnboardingViewModel
     let onContinue: () -> Void
 
-    @State private var selectedNo = false
+    @State private var selectedNone = false
 
     private var hasPositiveSelection: Bool {
-        viewModel.isPregnant || viewModel.isBreastfeeding
+        viewModel.isPregnant
+            || viewModel.isBreastfeeding
+            || viewModel.isPerimenopausal
+            || viewModel.isOnHormonalBirthControl
+            || viewModel.isOnHRT
     }
 
     var body: some View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                HeadlineText(text: "Are you currently pregnant or breastfeeding?")
+            VStack(spacing: DesignTokens.spacing12) {
+                optionCard(label: "Pregnant or trying to conceive", isSelected: viewModel.isPregnant) {
+                    HapticManager.selection()
+                    selectedNone = false
+                    viewModel.isPregnant.toggle()
+                }
+
+                optionCard(label: "Breastfeeding", isSelected: viewModel.isBreastfeeding) {
+                    HapticManager.selection()
+                    selectedNone = false
+                    viewModel.isBreastfeeding.toggle()
+                }
+
+                optionCard(label: "Perimenopause or menopause", isSelected: viewModel.isPerimenopausal) {
+                    HapticManager.selection()
+                    selectedNone = false
+                    viewModel.isPerimenopausal.toggle()
+                }
+
+                optionCard(label: "On hormonal birth control", isSelected: viewModel.isOnHormonalBirthControl) {
+                    HapticManager.selection()
+                    selectedNone = false
+                    viewModel.isOnHormonalBirthControl.toggle()
+                }
+
+                optionCard(label: "On hormone replacement therapy", isSelected: viewModel.isOnHRT) {
+                    HapticManager.selection()
+                    selectedNone = false
+                    viewModel.isOnHRT.toggle()
+                }
+
+                optionCard(label: "None of the above", isSelected: selectedNone) {
+                    HapticManager.selection()
+                    selectedNone = true
+                    viewModel.isPregnant = false
+                    viewModel.isBreastfeeding = false
+                    viewModel.isPerimenopausal = false
+                    viewModel.isOnHormonalBirthControl = false
+                    viewModel.isOnHRT = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        onContinue()
+                    }
+                }
+            }
+            .padding(.horizontal, DesignTokens.spacing24)
+
+            VStack {
+                HeadlineText(text: "Do any of these apply to you?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
-
-                Spacer()
-
-                VStack(spacing: DesignTokens.spacing12) {
-                    optionCard(label: "No", isSelected: selectedNo) {
-                        HapticManager.selection()
-                        selectedNo = true
-                        viewModel.isPregnant = false
-                        viewModel.isBreastfeeding = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                            onContinue()
-                        }
-                    }
-
-                    optionCard(label: "Pregnant", isSelected: viewModel.isPregnant) {
-                        HapticManager.selection()
-                        selectedNo = false
-                        viewModel.isPregnant.toggle()
-                    }
-
-                    optionCard(label: "Breastfeeding", isSelected: viewModel.isBreastfeeding) {
-                        HapticManager.selection()
-                        selectedNo = false
-                        viewModel.isBreastfeeding.toggle()
-                    }
-                }
-                .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
 

@@ -92,7 +92,7 @@ extension View {
         self
             .padding(DesignTokens.spacing16)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
     }
 
@@ -100,9 +100,9 @@ extension View {
         self
             .padding(DesignTokens.spacing16)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
             .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)

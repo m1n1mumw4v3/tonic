@@ -101,6 +101,7 @@ enum DesignTokens {
     static let radiusSmall:  CGFloat = 8
     static let radiusMedium: CGFloat = 12
     static let radiusLarge:  CGFloat = 16
+    static let radiusCard:   CGFloat = 26
     static let radiusFull:   CGFloat = 999
 
     // MARK: - Shadows

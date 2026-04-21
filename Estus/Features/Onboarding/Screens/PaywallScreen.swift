@@ -167,7 +167,7 @@ struct PaywallScreen: View {
 
     private var supplementTeaserSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-            Text("Your Plan")
+            Text("Your Custom Plan")
                 .font(.custom("Geist-Regular", size: 16))
                 .foregroundStyle(DesignTokens.textPrimary)
                 .opacity(visibleTeaserCards > 0 ? 1 : 0)
@@ -346,8 +346,8 @@ struct PaywallScreen: View {
                 CTAButton(
                     title: "Start My Free Trial",
                     style: .primary,
-                    action: onSubscribe,
-                    spectrumBorder: false
+                    spectrumBorder: false,
+                    action: onSubscribe
                 )
 
                 Text(ctaSubtext)

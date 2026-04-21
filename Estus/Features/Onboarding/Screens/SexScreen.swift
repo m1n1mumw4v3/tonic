@@ -8,20 +8,18 @@ struct SexScreen: View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: DesignTokens.spacing12) {
+                ForEach(Sex.allCases) { option in
+                    sexCard(for: option)
+                }
+            }
+            .padding(.horizontal, DesignTokens.spacing24)
+
+            VStack {
                 HeadlineText(text: "What sex were you assigned at birth?")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.top, DesignTokens.spacing24)
-
-                Spacer()
-
-                VStack(spacing: DesignTokens.spacing12) {
-                    ForEach(Sex.allCases) { option in
-                        sexCard(for: option)
-                    }
-                }
-                .padding(.horizontal, DesignTokens.spacing24)
 
                 Spacer()
             }

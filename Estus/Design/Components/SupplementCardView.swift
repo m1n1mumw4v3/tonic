@@ -123,12 +123,12 @@ struct SupplementCardView: View {
         .padding(DesignTokens.spacing16)
         .background(cardBackground)
         .opacity(isIncluded ? 1.0 : 0.5)
-        .clipShape(RoundedRectangle(cornerRadius: 26))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .overlay(
-            RoundedRectangle(cornerRadius: 26)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 26))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .overlay(alignment: .topTrailing) {
             if expansionMode == .inline && !showBottomLearnMore {
                 chevronHint
@@ -647,7 +647,7 @@ struct SupplementCardView: View {
                 startRadius: 0,
                 endRadius: 120
             )
-            .clipShape(RoundedRectangle(cornerRadius: 26))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .allowsHitTesting(false)
         }
     }

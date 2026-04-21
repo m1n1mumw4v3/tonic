@@ -98,6 +98,11 @@ enum KnowledgeBaseMapper {
             // Timeline text from onset description
             let timeline: String = s.onsetDescription ?? ""
 
+            // Display dose: prefer hardcoded KB's polished string, fall back to default dose
+            let displayDose: String? = SupplementKnowledgeBase.allSupplements
+                .first(where: { $0.name == s.name })?.displayDose
+                ?? s.defaultDose
+
             // Timing rationale as notes
             let notes: String = s.timingRationale ?? ""
 
@@ -121,6 +126,7 @@ enum KnowledgeBaseMapper {
                 category: s.category,
                 commonDosageRange: dosageRange,
                 recommendedDosageMg: dosageMg,
+                displayDose: displayDose,
                 recommendedTiming: timing,
                 benefits: benefits,
                 contraindications: contraindicationsList,

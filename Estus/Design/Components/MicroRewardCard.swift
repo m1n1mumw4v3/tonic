@@ -78,11 +78,11 @@ struct MicroRewardCard: View {
         }
         .padding(DesignTokens.spacing16)
         .background(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .fill(DesignTokens.bgSurface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(accentColor.opacity(0.3), lineWidth: 1)
         )
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)

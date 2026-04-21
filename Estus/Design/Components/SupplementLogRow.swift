@@ -8,12 +8,14 @@ struct SupplementLogRow: View {
     @State private var isPressed = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    private var iconConfig: SupplementIconConfig {
-        SupplementIconRegistry.config(for: supplement.name)
-    }
-
     private var shortName: String {
         SupplementIconRegistry.shortName(for: supplement.name)
+    }
+
+    private var accentColors: [Color] {
+        HealthGoal.allCases
+            .filter { supplement.matchedGoals.contains($0.rawValue) }
+            .map(\.accentColor)
     }
 
     var body: some View {
@@ -22,11 +24,21 @@ struct SupplementLogRow: View {
             HapticManager.impact(.light)
         } label: {
             HStack(spacing: DesignTokens.spacing12) {
-                SupplementIconView(
-                    config: iconConfig,
-                    size: DesignTokens.iconSizeSmall,
-                    isTaken: isTaken
-                )
+                Image("EstusSuppIcon")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
+                    .foregroundStyle(
+                        accentColors.count > 1
+                            ? AnyShapeStyle(LinearGradient(
+                                colors: accentColors,
+                                startPoint: .bottomLeading,
+                                endPoint: .topTrailing
+                              ))
+                            : AnyShapeStyle(accentColors.first ?? DesignTokens.textSecondary)
+                    )
+                    .opacity(isTaken ? 0.4 : 1.0)
 
                 // Name + dosage
                 VStack(alignment: .leading, spacing: 2) {

@@ -31,20 +31,6 @@ struct DeepProfileHomeCard: View {
             showHub = true
         } label: {
             VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
-                // Module icon strip
-                moduleIconStrip
-
-                // Title row
-                HStack(spacing: DesignTokens.spacing8) {
-                    Image(systemName: isComplete ? "checkmark.circle" : "sparkles")
-                        .font(.system(size: 16))
-                        .foregroundStyle(DesignTokens.positive)
-
-                    Text(isComplete ? "Profile Complete" : "Deep Dive Surveys")
-                        .font(DesignTokens.titleFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
-                }
-
                 // Subtitle
                 Text(subtitleText)
                     .font(DesignTokens.captionFont)
@@ -64,19 +50,28 @@ struct DeepProfileHomeCard: View {
                                 .foregroundStyle(DesignTokens.textTertiary)
                         }
                     }
+                    .padding(.top, DesignTokens.spacing8)
                 }
+
+                // Module icon strip
+                moduleIconStrip
 
                 // CTA
                 if !isComplete {
-                    CTAButton(title: "Enhance Your Profile", style: .secondary) {}
-                        .allowsHitTesting(false)
+                    CTAButton(
+                        title: "Enhance Your Profile",
+                        style: .secondary,
+                        font: .custom("Geist-Regular", size: 16),
+                        action: {}
+                    )
+                    .allowsHitTesting(false)
                 }
             }
             .padding(DesignTokens.spacing16)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusLarge))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusLarge)
+                RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
             .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
@@ -141,7 +136,7 @@ struct DeepProfileHomeCard: View {
             if completed {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 12))
-                    .foregroundStyle(DesignTokens.positive)
+                    .foregroundStyle(DesignTokens.textPrimary)
                     .background(
                         Circle()
                             .fill(DesignTokens.bgSurface)

@@ -60,7 +60,15 @@ struct TodayScreen: View {
                         }
 
                         // 7. Deep Profile Card
-                        DeepProfileHomeCard()
+                        VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
+                            Text("Deep Dive Surveys")
+                                .font(.custom("Geist-Regular", size: 20))
+                                .foregroundStyle(DesignTokens.textPrimary)
+                                .padding(.leading, DesignTokens.spacing4)
+                                .padding(.top, DesignTokens.spacing8)
+
+                            DeepProfileHomeCard()
+                        }
 
                         // 8. Feed Section
                         feedSection
@@ -191,7 +199,11 @@ struct TodayScreen: View {
         }
         .padding(.horizontal, DesignTokens.spacing8)
         .padding(.vertical, DesignTokens.spacing4)
-        .background(color.opacity(dayComplete ? 0.25 : 0.12))
+        .background(Color.white)
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.radiusFull)
+                .stroke(DesignTokens.accentMuscle, lineWidth: 1)
+        )
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusFull))
         .emberGlow(isActive: dayComplete)
         .shadow(color: dayComplete ? color.opacity(0.4) : .clear, radius: 6, x: 0, y: 0)
@@ -271,7 +283,7 @@ struct TodayScreen: View {
         VStack(spacing: 0) {
             HStack {
                 Text("Wellbeing Score")
-                    .font(DesignTokens.titleFont)
+                    .font(.custom("Geist-Regular", size: 20))
                     .foregroundStyle(DesignTokens.textPrimary)
                 Spacer()
                 chartRangeToggle
@@ -287,45 +299,56 @@ struct TodayScreen: View {
                     }
                 }
             )
-            .id(viewModel.chartRange)
 
-            if let day = selectedDay {
+            // Selected day details
+            if let day = selectedDay, day.hasData {
                 Rectangle()
                     .fill(DesignTokens.borderDefault)
                     .frame(height: 1)
                     .padding(.vertical, DesignTokens.spacing12)
 
-                if day.hasData {
-                    let variance: String? = {
-                        guard day.isToday,
-                              let checkIn = appState.mostRecentWellbeingScore,
-                              let v = computeOverallVariance(for: checkIn),
-                              let label = varianceLabelText else { return nil }
-                        let sign = v >= 0 ? "+" : ""
-                        return "\(sign)\(String(format: "%.1f", v)) \(label)"
-                    }()
+                let variance: String? = {
+                    guard day.isToday,
+                          let checkIn = appState.mostRecentWellbeingScore,
+                          let v = computeOverallVariance(for: checkIn),
+                          let label = varianceLabelText else { return nil }
+                    let sign = v >= 0 ? "+" : ""
+                    return "\(sign)\(String(format: "%.1f", v)) \(label)"
+                }()
 
-                    DailyOverviewCard(dayData: day, varianceText: variance)
-                } else if day.isToday && !viewModel.wellbeingSubmitted {
-                    CTAButton(title: "Complete Your Check-In", style: .primary) {
-                        showCheckInSheet = true
-                    }
-                } else {
-                    Text("No check-in recorded")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textTertiary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                DailyOverviewCard(dayData: day, varianceText: variance)
+            } else if let day = selectedDay, !day.isToday {
+                Rectangle()
+                    .fill(DesignTokens.borderDefault)
+                    .frame(height: 1)
+                    .padding(.vertical, DesignTokens.spacing12)
+
+                Text("No check-in recorded")
+                    .font(DesignTokens.captionFont)
+                    .foregroundStyle(DesignTokens.textTertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            // Persistent check-in CTA when today hasn't been logged
+            if !viewModel.wellbeingSubmitted {
+                Rectangle()
+                    .fill(DesignTokens.borderDefault)
+                    .frame(height: 1)
+                    .padding(.vertical, DesignTokens.spacing12)
+
+                CTAButton(title: "Complete Your Check-In", style: .primary) {
+                    showCheckInSheet = true
                 }
             }
         }
         .padding(.vertical, DesignTokens.spacing12)
         .padding(.horizontal, DesignTokens.spacing16)
         .background(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .fill(DesignTokens.bgSurface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
@@ -384,12 +407,12 @@ struct TodayScreen: View {
             }
         }
         .background(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .fill(DesignTokens.bgSurface)
         )
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
@@ -403,17 +426,13 @@ struct TodayScreen: View {
             let visible = viewModel.visibleSupplements(for: phase, plan: plan)
 
             if !visible.isEmpty {
-                VStack(alignment: .leading, spacing: DesignTokens.spacing2) {
-                    Text("Your Daily Stack")
-                        .font(DesignTokens.titleFont)
-                        .foregroundStyle(DesignTokens.textPrimary)
-                    Text("Log the supplements you've taken today.")
-                        .font(DesignTokens.captionFont)
-                        .foregroundStyle(DesignTokens.textSecondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, DesignTokens.spacing4)
-                .padding(.bottom, -DesignTokens.spacing12)
+                Text("Your Daily Stack")
+                    .font(.custom("Geist-Regular", size: 20))
+                    .foregroundStyle(DesignTokens.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, DesignTokens.spacing4)
+                    .padding(.top, DesignTokens.spacing8)
+                    .padding(.bottom, -DesignTokens.spacing12)
 
                 SupplementLogList(
                     supplements: visible,
@@ -489,10 +508,10 @@ struct TodayScreen: View {
         if !viewModel.insightFeed.isEmpty {
             VStack(alignment: .leading, spacing: DesignTokens.spacing12) {
                 HStack {
-                    Text("RECENT INSIGHTS")
-                        .font(DesignTokens.sectionHeader)
-                        .tracking(1.5)
-                        .foregroundStyle(DesignTokens.textSecondary)
+                    Text("Recent Insights")
+                        .font(.custom("Geist-Regular", size: 20))
+                        .foregroundStyle(DesignTokens.textPrimary)
+                        .padding(.top, DesignTokens.spacing8)
 
                     Spacer()
 

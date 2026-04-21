@@ -50,9 +50,7 @@ struct PhaseProgressBar: View {
     }
 
     private func labelColor(for phase: SupplementPhase) -> Color {
-        if phase == currentPhase {
-            return accentColor
-        } else if phase < currentPhase {
+        if phase <= currentPhase {
             return DesignTokens.textPrimary
         } else {
             return DesignTokens.textTertiary

@@ -75,7 +75,7 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.plan)
         }
-        .tint(DesignTokens.positive)
+        .tint(DesignTokens.accentGut)
         .preferredColorScheme(.light)
     }
 }

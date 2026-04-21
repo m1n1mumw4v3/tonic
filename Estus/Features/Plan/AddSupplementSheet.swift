@@ -263,6 +263,7 @@ struct AddSupplementSheet: View {
                 CTAButton(
                     title: "Add \(count) Supplement\(count == 1 ? "" : "s") to Plan",
                     style: .primary,
+                    spectrumBorder: true,
                     action: {
                         let engine = RecommendationEngine(catalog: catalog, drugInteractions: drugInteractions, medications: dbMedications, deepProfileModules: deepProfileModules)
                         let newSupplements = stagedSupplements.compactMap { id -> PlanSupplement? in
@@ -272,8 +273,7 @@ struct AddSupplementSheet: View {
                         HapticManager.notification(.success)
                         onAdd(newSupplements)
                         dismiss()
-                    },
-                    spectrumBorder: true
+                    }
                 )
                 .padding(.horizontal, DesignTokens.spacing20)
                 .padding(.bottom, DesignTokens.spacing8)

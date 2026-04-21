@@ -11,10 +11,11 @@ struct HealthKitScreen: View {
     @State private var showUnavailableAlert: Bool = false
 
     private let dataPoints: [(icon: String, label: String, color: Color)] = [
+        ("person.text.rectangle.fill", "Basic profile info", DesignTokens.onboardingSelected),
         ("bed.double.fill", "Sleep duration & quality", DesignTokens.accentSleep),
         ("heart.fill", "Heart rate", DesignTokens.accentHeart),
-        ("figure.run", "Workouts & activity", DesignTokens.accentImmunity),
-        ("waveform.path.ecg", "Heart rate variability (HRV)", DesignTokens.accentLongevity)
+        ("figure.run", "Workouts & activity", DesignTokens.accentMuscle),
+        ("waveform.path.ecg", "Heart rate variability (HRV)", DesignTokens.accentMood)
     ]
 
     var body: some View {
