@@ -18,10 +18,9 @@ struct WellnessSlider: View {
     private let detentInterval: Double = 1
     @State private var lastDetent: Int = -1
 
-    @State private var splashProgress: CGFloat = 0
-    @State private var splashOpacity: Double = 0
+    @State private var pulseProgress: CGFloat = 0
+    @State private var pulseOpacity: Double = 0
     @State private var thumbLanding: Bool = false
-    @State private var droplets: [SplashDroplet] = []
     @State private var showPrompt = false
 
     private let trackHeightIdle: CGFloat = 6
@@ -117,29 +116,23 @@ struct WellnessSlider: View {
                         .offset(x: thumbX - 16)
                         .animation(springCurve, value: isDragging)
 
-                    // Landing splash — soft core blob + droplets
+                    // Landing pulse — layered soft glow rings
                     ZStack {
-                        // Soft core blob
+                        // Outer ring — expands farthest, fades quickly
+                        Circle()
+                            .stroke(accentColor, lineWidth: 1.5)
+                            .frame(width: 24, height: 24)
+                            .blur(radius: 2)
+                            .scaleEffect(0.8 + pulseProgress * 1.8)
+                            .opacity(pulseOpacity * 0.35)
+
+                        // Inner bloom — soft glow close to the thumb
                         Circle()
                             .fill(accentColor)
                             .frame(width: 24, height: 24)
-                            .blur(radius: 3)
-                            .scaleEffect(0.5 + splashProgress * 0.9)
-                            .opacity(splashOpacity * 0.55)
-
-                        // Droplets radiating outward
-                        ForEach(droplets) { droplet in
-                            Circle()
-                                .fill(accentColor)
-                                .frame(width: droplet.size, height: droplet.size)
-                                .blur(radius: 0.6)
-                                .offset(
-                                    x: cos(droplet.angle) * droplet.distance * splashProgress,
-                                    y: sin(droplet.angle) * droplet.distance * splashProgress
-                                )
-                                .scaleEffect(1.0 - splashProgress * 0.4)
-                                .opacity(splashOpacity)
-                        }
+                            .blur(radius: 8)
+                            .scaleEffect(0.7 + pulseProgress * 0.9)
+                            .opacity(pulseOpacity * 0.45)
                     }
                     .frame(width: 24, height: 24)
                     .offset(x: thumbX - 12)
@@ -208,29 +201,18 @@ struct WellnessSlider: View {
     }
 
     private func triggerLandingSplash() {
-        // Seed fresh droplets with randomized angle jitter, distance, size
-        let baseCount = 7
-        let angleStep = (2 * .pi) / Double(baseCount)
-        droplets = (0..<baseCount).map { i in
-            SplashDroplet(
-                angle: Double(i) * angleStep + Double.random(in: -0.35...0.35),
-                distance: CGFloat.random(in: 18...30),
-                size: CGFloat.random(in: 4...8)
-            )
-        }
-
-        splashProgress = 0
-        splashOpacity = 1.0
+        pulseProgress = 0
+        pulseOpacity = 1.0
         thumbLanding = true
 
-        // Squishy outward burst — spring gives the bounce/overshoot feel
-        withAnimation(.spring(response: 0.55, dampingFraction: 0.58)) {
-            splashProgress = 1.0
+        // Smooth outward glow — gentle ease, no bounce
+        withAnimation(.easeOut(duration: 0.7)) {
+            pulseProgress = 1.0
         }
 
-        // Fade out on a slightly longer curve so the blobs linger
-        withAnimation(.easeOut(duration: 0.65)) {
-            splashOpacity = 0
+        // Fade out slightly quicker than the expansion for a clean tail
+        withAnimation(.easeOut(duration: 0.55)) {
+            pulseOpacity = 0
         }
 
         // Thumb squish then spring back
@@ -238,13 +220,6 @@ struct WellnessSlider: View {
             thumbLanding = false
         }
     }
-}
-
-private struct SplashDroplet: Identifiable {
-    let id = UUID()
-    let angle: Double
-    let distance: CGFloat
-    let size: CGFloat
 }
 
 #Preview {

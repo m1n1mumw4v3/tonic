@@ -4,8 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export function Navigation() {
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/blog" ? pathname === "/blog" || pathname.startsWith("/blog/") : pathname === href;
   const [overDark, setOverDark] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -67,13 +71,13 @@ export function Navigation() {
               href="/about"
               className={`text-[16px] font-medium rounded-full px-4 py-1.5 transition-all duration-300 ${overDark ? "text-white hover:bg-white/20" : "text-text-primary/70 hover:text-text-primary hover:bg-white/50"}`}
             >
-              About
+              <span className={isActive("/about") ? "underline underline-offset-[6px] decoration-2 decoration-[#C25D93]" : ""}>About</span>
             </Link>
             <Link
               href="/blog"
               className={`text-[16px] font-medium rounded-full px-4 py-1.5 transition-all duration-300 ${overDark ? "text-white hover:bg-white/20" : "text-text-primary/70 hover:text-text-primary hover:bg-white/50"}`}
             >
-              Blog
+              <span className={isActive("/blog") ? "underline underline-offset-[6px] decoration-2 decoration-[#C25D93]" : ""}>Learn</span>
             </Link>
             <a
               href="#"
@@ -123,7 +127,7 @@ export function Navigation() {
             <div className="flex flex-col items-center gap-8 pt-12">
               {[
                 { href: "/about", label: "About" },
-                { href: "/blog", label: "Blog" },
+                { href: "/blog", label: "Learn" },
               ].map((link, i) => (
                 <motion.div
                   key={link.href}
@@ -136,7 +140,7 @@ export function Navigation() {
                     onClick={() => setMenuOpen(false)}
                     className="text-[28px] font-light text-text-primary"
                   >
-                    {link.label}
+                    <span className={isActive(link.href) ? "underline underline-offset-[6px] decoration-2 decoration-[#C25D93]" : ""}>{link.label}</span>
                   </Link>
                 </motion.div>
               ))}

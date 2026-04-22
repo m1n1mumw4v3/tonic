@@ -23,7 +23,7 @@ struct BaselineScreen: View {
 
                 // Wellness Sliders
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
+                    VStack(spacing: DesignTokens.spacing8) {
                         WellnessSlider(
                             dimension: .sleep,
                             value: Bindable(viewModel).baselineSleep,

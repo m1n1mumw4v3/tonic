@@ -38,10 +38,6 @@ struct AccountCreationScreen: View {
         return "Your \(dims[0].label.lowercased()) and \(dims[1].label.lowercased()) scores have the most room for growth."
     }
 
-    private var sortedGoals: [HealthGoal] {
-        Array(viewModel.healthGoals).sorted { $0.rawValue < $1.rawValue }
-    }
-
     private var snapshotLabel: String {
         "YOUR BASELINE"
     }
@@ -70,25 +66,6 @@ struct AccountCreationScreen: View {
                             lineWidth: 12,
                             animated: true
                         )
-
-                        if !sortedGoals.isEmpty {
-                            VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                                Text("YOUR GOALS")
-                                    .font(DesignTokens.labelMono)
-                                    .tracking(1.5)
-                                    .foregroundStyle(DesignTokens.textTertiary)
-
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: DesignTokens.spacing8) {
-                                        ForEach(sortedGoals, id: \.self) { goal in
-                                            goalPill(for: goal)
-                                        }
-                                    }
-                                    .padding(.vertical, 2)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
                     }
                     .padding(.horizontal, DesignTokens.spacing24)
                     .padding(.vertical, DesignTokens.spacing8)
@@ -213,23 +190,6 @@ struct AccountCreationScreen: View {
                 onContinue()
             })
         }
-    }
-
-    // MARK: - Goal Pill
-
-    @ViewBuilder
-    private func goalPill(for goal: HealthGoal) -> some View {
-        Text(goal.shortLabel)
-            .font(DesignTokens.captionFont)
-            .foregroundStyle(goal.accentColor)
-            .padding(.horizontal, DesignTokens.spacing12)
-            .padding(.vertical, DesignTokens.spacing8)
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 26))
-            .overlay(
-                RoundedRectangle(cornerRadius: 26)
-                    .stroke(goal.accentColor, lineWidth: 1)
-            )
     }
 
     // MARK: - Terms Attributed String

@@ -79,9 +79,9 @@ struct HealthKitScreen: View {
                             }
                         }
                         .background(DesignTokens.bgSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+                        .clipShape(RoundedRectangle(cornerRadius: 26))
                         .overlay(
-                            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                            RoundedRectangle(cornerRadius: 26)
                                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
                         )
                         .padding(.horizontal, DesignTokens.spacing24)

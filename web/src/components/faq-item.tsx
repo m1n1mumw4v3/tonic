@@ -20,7 +20,7 @@ export function FAQItem({ question, answer, delay = 0 }: FAQItemProps) {
           onClick={() => setIsOpen(!isOpen)}
           className="w-full flex items-center justify-between py-5 text-left cursor-pointer"
         >
-          <span className="text-[18px] font-semibold text-text-primary pr-4">
+          <span className="text-[18px] font-normal text-text-primary pr-4">
             {question}
           </span>
           <motion.span

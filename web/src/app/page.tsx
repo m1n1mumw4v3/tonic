@@ -13,14 +13,6 @@ import { ScienceSection } from "@/components/science-section";
 import { PrivacyCallout } from "@/components/privacy-callout";
 import { FAQSection } from "@/components/faq-section";
 
-const dimensions = [
-  { name: "Sleep", color: "#8F3B43", description: "Restfulness & recovery" },
-  { name: "Energy", color: "#C25D93", description: "Vitality & stamina" },
-  { name: "Clarity", color: "#6A93DE", description: "Focus & cognition" },
-  { name: "Mood", color: "#96953F", description: "Balance & resilience" },
-  { name: "Gut", color: "#E0B23D", description: "Digestion & comfort" },
-];
-
 export default function Home() {
   const reducedMotion = useReducedMotion();
   const instant = reducedMotion ? 0 : undefined;
@@ -29,7 +21,7 @@ export default function Home() {
     <>
       {/* ─── Hero ─── */}
       <section className="relative flex items-center justify-center px-6 pt-28 pb-6">
-        <div data-hero className="relative w-full max-w-6xl rounded-xl md:rounded-[28px] overflow-hidden">
+        <div data-hero className="relative w-full max-w-6xl rounded-3xl md:rounded-[48px] overflow-hidden">
           <HeroOrbBackground />
 
           {/* Content overlay */}
@@ -134,44 +126,6 @@ export default function Home() {
 
       {/* ─── Science & Methodology ─── */}
       <ScienceSection />
-
-      {/* ─── Wellness Dimensions ─── */}
-      <section className="py-20 md:py-28 bg-bg-surface">
-        <div className="mx-auto max-w-6xl px-6">
-          <SectionHeading
-            label="Five Dimensions"
-            headline="Wellness is more than one number"
-            subheadline="Track the dimensions that matter most to how you feel every day."
-          />
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {dimensions.map((dim, i) => (
-              <AnimatedEntrance key={dim.name} delay={i * 0.1}>
-                <div className="relative overflow-hidden rounded-lg p-6 text-white aspect-square flex flex-col justify-end">
-                  <div
-                    className="absolute inset-0 opacity-90"
-                    style={{ backgroundColor: dim.color }}
-                  />
-                  <div className="relative z-10">
-                    <div className="text-[20px] font-semibold mb-1">
-                      {dim.name}
-                    </div>
-                    <div className="text-[13px] text-white/80">
-                      {dim.description}
-                    </div>
-                  </div>
-                </div>
-              </AnimatedEntrance>
-            ))}
-          </div>
-
-          {/* Spectrum bar */}
-          <AnimatedEntrance delay={0.5}>
-            <div className="bg-spectrum h-[3px] rounded-full mt-8" />
-          </AnimatedEntrance>
-        </div>
-      </section>
-
 
       {/* ─── Privacy ─── */}
       <PrivacyCallout />

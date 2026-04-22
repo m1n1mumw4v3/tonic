@@ -47,7 +47,7 @@ export function ScienceSection() {
                   style={{ backgroundColor: point.color }}
                 />
                 <div>
-                  <h3 className="text-[18px] font-semibold text-text-primary mb-1">
+                  <h3 className="text-[18px] font-normal text-text-primary mb-1">
                     {point.title}
                   </h3>
                   <p className="text-[15px] text-text-secondary leading-relaxed">

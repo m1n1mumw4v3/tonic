@@ -75,8 +75,16 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.plan)
         }
-        .tint(DesignTokens.accentGut)
+        .tint(tint(for: state.selectedTab))
         .preferredColorScheme(.light)
+    }
+
+    private func tint(for tab: AppTab) -> Color {
+        switch tab {
+        case .today:    return DesignTokens.accentMood
+        case .progress: return DesignTokens.accentGut
+        case .plan:     return DesignTokens.accentEnergy
+        }
     }
 }
 

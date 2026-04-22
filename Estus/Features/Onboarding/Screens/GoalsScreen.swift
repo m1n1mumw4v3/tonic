@@ -7,8 +7,8 @@ struct GoalsScreen: View {
     @State private var showMaxError = false
 
     private let columns = [
-        GridItem(.flexible(), spacing: DesignTokens.spacing12),
-        GridItem(.flexible(), spacing: DesignTokens.spacing12)
+        GridItem(.flexible(), spacing: DesignTokens.spacing4),
+        GridItem(.flexible(), spacing: DesignTokens.spacing4)
     ]
 
     var body: some View {
@@ -31,7 +31,7 @@ struct GoalsScreen: View {
                         .padding(.top, DesignTokens.spacing24)
 
                         // Goals grid
-                        LazyVGrid(columns: columns, spacing: DesignTokens.spacing12) {
+                        LazyVGrid(columns: columns, spacing: DesignTokens.spacing4) {
                             ForEach(HealthGoal.allCases) { goal in
                                 goalCard(for: goal)
                             }
@@ -104,11 +104,11 @@ struct GoalsScreen: View {
             }
             .padding(.horizontal, DesignTokens.spacing12)
             .frame(maxWidth: .infinity)
-            .frame(height: 88)
+            .frame(height: 96)
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 26))
+            .clipShape(RoundedRectangle(cornerRadius: 52))
             .overlay(
-                RoundedRectangle(cornerRadius: 26)
+                RoundedRectangle(cornerRadius: 52)
                     .stroke(isSelected ? accent : DesignTokens.borderDefault, lineWidth: isSelected ? 1.5 : 1)
             )
             .opacity(!isSelected && viewModel.isAtGoalLimit ? 0.4 : 1.0)
