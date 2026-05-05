@@ -190,6 +190,13 @@ struct PlanScreen: View {
             }
     }
 
+    private func dosageBinding(for supplement: PlanSupplement) -> Binding<Double?> {
+        Binding(
+            get: { supplement.userOverriddenDosageMg },
+            set: { viewModel.setUserDosage(supplement, mg: $0) }
+        )
+    }
+
     // MARK: - Header
 
     private var planHeader: some View {
@@ -242,6 +249,11 @@ struct PlanScreen: View {
                     showBottomLearnMore: true,
                     products: viewModel.products(for: supplement),
                     productsLoading: viewModel.isLoadingProducts(for: supplement),
+                    doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
+                    dosageUnit: supplement.dosage.dosageUnit,
+                    recommendedDosageMg: supplement.dosageMg,
+                    userDosageMg: dosageBinding(for: supplement),
+                    onDosageCommit: { mg in viewModel.setUserDosage(supplement, mg: mg) },
                     onEvidenceInfoTapped: { level in
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                             evidenceInfoLevel = level
@@ -334,6 +346,11 @@ struct PlanScreen: View {
                         isIncluded: false,
                         isExpanded: expandedCardId == supplement.id,
                         showBottomLearnMore: true,
+                        doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
+                        dosageUnit: supplement.dosage.dosageUnit,
+                        recommendedDosageMg: supplement.dosageMg,
+                        userDosageMg: dosageBinding(for: supplement),
+                        onDosageCommit: { mg in viewModel.setUserDosage(supplement, mg: mg) },
                         onEvidenceInfoTapped: { level in
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                 evidenceInfoLevel = level
@@ -381,7 +398,7 @@ struct PlanScreen: View {
                     Image(systemName: "chevron.down")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(DesignTokens.textSecondary)
-                        .rotationEffect(.degrees(isOverviewExpanded ? 0 : -90))
+                        .rotationEffect(.degrees(isOverviewExpanded ? 180 : 0))
                 }
             }
             .buttonStyle(.plain)

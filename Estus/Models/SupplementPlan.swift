@@ -58,6 +58,8 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
     var name: String
     var dosage: String
     var dosageMg: Double?
+    /// User-set dosage that overrides the engine's recommendation. Persisted; nil means "use recommendation".
+    var userOverriddenDosageMg: Double?
     var timing: SupplementTiming
     var frequency: SupplementFrequency = .daily
     var reasoning: String?
@@ -86,7 +88,7 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
     var formUpgradeNote: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, planId, supplementId, name, dosage, dosageMg, timing, frequency
+        case id, planId, supplementId, name, dosage, dosageMg, userOverriddenDosageMg, timing, frequency
         case reasoning, category, sortOrder, isTaken, tier, matchedGoals
         case tierScore = "goalOverlapScore"
         case isIncluded, isRemoved, researchNote
@@ -94,6 +96,26 @@ struct PlanSupplement: Codable, Identifiable, Hashable {
         case whatToLookFor, formAndBioavailability, interactionNote
         case evidenceDisplay, evidenceLevel, interactionWarnings
         case formUpgradeNote
+    }
+
+    /// User override takes precedence over the engine-computed recommendation.
+    var effectiveDosageMg: Double? {
+        userOverriddenDosageMg ?? dosageMg
+    }
+
+    /// Dosage string honoring a user override. Falls back to the engine-formatted `dosage`
+    /// when no override is set so non-numeric supplements (e.g. "30B CFU") display unchanged.
+    var displayDosage: String {
+        guard let override = userOverriddenDosageMg,
+              abs(override - (dosageMg ?? .infinity)) > 0.0001 else {
+            return dosage
+        }
+        let unit = dosage.dosageUnit
+        let valueString: String = (override >= 10 || override == override.rounded())
+            ? String(Int(override.rounded()))
+            : String(format: "%.1f", override)
+        let separator = dosage.contains(" \(unit)") ? " " : ""
+        return "\(valueString)\(separator)\(unit)"
     }
 
     static func == (lhs: PlanSupplement, rhs: PlanSupplement) -> Bool {
@@ -116,6 +138,7 @@ extension PlanSupplement {
         name = try container.decode(String.self, forKey: .name)
         dosage = try container.decode(String.self, forKey: .dosage)
         dosageMg = try container.decodeIfPresent(Double.self, forKey: .dosageMg)
+        userOverriddenDosageMg = try container.decodeIfPresent(Double.self, forKey: .userOverriddenDosageMg)
         timing = try container.decode(SupplementTiming.self, forKey: .timing)
         frequency = try container.decodeIfPresent(SupplementFrequency.self, forKey: .frequency) ?? .daily
         reasoning = try container.decodeIfPresent(String.self, forKey: .reasoning)

@@ -285,7 +285,7 @@ struct PlanRevealScreen: View {
                     Image(systemName: "chevron.down")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(DesignTokens.textSecondary)
-                        .rotationEffect(.degrees(isSummaryExpanded ? 0 : -90))
+                        .rotationEffect(.degrees(isSummaryExpanded ? 180 : 0))
                 }
                 .padding(.horizontal, DesignTokens.spacing20)
                 .padding(.vertical, DesignTokens.spacing16)
@@ -348,6 +348,11 @@ struct PlanRevealScreen: View {
                                 showBottomLearnMore: false,
                                 products: supplement.supplementId.flatMap { productsBySupplementId[$0] },
                                 productsLoading: supplement.supplementId.map { loadingProductIds.contains($0) } ?? false,
+                                doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
+                                dosageUnit: supplement.dosage.dosageUnit,
+                                recommendedDosageMg: supplement.dosageMg,
+                                userDosageMg: dosageBinding(for: supplement),
+                                onDosageCommit: { mg in setUserDosage(supplement.id, mg: mg) },
                                 onEvidenceInfoTapped: { level in
                                     showEvidenceInfo = level
                                 },
@@ -423,6 +428,11 @@ struct PlanRevealScreen: View {
                     showBottomLearnMore: false,
                     products: supplement.supplementId.flatMap { productsBySupplementId[$0] },
                     productsLoading: supplement.supplementId.map { loadingProductIds.contains($0) } ?? false,
+                    doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
+                    dosageUnit: supplement.dosage.dosageUnit,
+                    recommendedDosageMg: supplement.dosageMg,
+                    userDosageMg: dosageBinding(for: supplement),
+                    onDosageCommit: { mg in setUserDosage(supplement.id, mg: mg) },
                     onEvidenceInfoTapped: { level in
                         showEvidenceInfo = level
                     },
@@ -569,6 +579,19 @@ struct PlanRevealScreen: View {
         if let index = viewModel.generatedPlan?.supplements.firstIndex(where: { $0.id == id }) {
             viewModel.generatedPlan?.supplements[index].isIncluded.toggle()
         }
+    }
+
+    private func setUserDosage(_ id: UUID, mg: Double?) {
+        if let index = viewModel.generatedPlan?.supplements.firstIndex(where: { $0.id == id }) {
+            viewModel.generatedPlan?.supplements[index].userOverriddenDosageMg = mg
+        }
+    }
+
+    private func dosageBinding(for supplement: PlanSupplement) -> Binding<Double?> {
+        Binding(
+            get: { supplement.userOverriddenDosageMg },
+            set: { setUserDosage(supplement.id, mg: $0) }
+        )
     }
 
     // MARK: - Product Loading

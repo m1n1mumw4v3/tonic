@@ -130,6 +130,7 @@
 		9C5D3E27F7ED0DB591427966 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 79A5974ED8DE0D0A0D1E8FB1 /* GeistMono-Regular.ttf */; };
 		9C6B0B41FC2BA89E33AC5862 /* estus-icon-01.ai in Resources */ = {isa = PBXBuildFile; fileRef = 8AE9492FD865AB79BB099009 /* estus-icon-01.ai */; };
 		9C8732C8126518D0BAB9B30C /* WeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001FA343772A4C791183F821 /* WeightScreen.swift */; };
+		9E096AB0FE6A22E25F604085 /* DosageRangeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5314ED6814F4D06857EB1531 /* DosageRangeEditor.swift */; };
 		9FDEEC77B8A1D86FCBA3FC61 /* PhaseProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5AE5ED3E6859C78692D7D0 /* PhaseProgressBar.swift */; };
 		A0A5E6D691B1E89A83C0A277 /* SleepCircadianModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFE6A0BA40F20A7F2AE11C9 /* SleepCircadianModule.swift */; };
 		A4ABE68AFB52E8DF5B3F61DC /* PlanScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E01CA365CC744519DA3BF0 /* PlanScreen.swift */; };
@@ -286,6 +287,7 @@
 		5106F507DC78CA04E83DA71C /* ScrollWheelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollWheelPicker.swift; sourceTree = "<group>"; };
 		51B92BA1A9FE5178C5586A70 /* NameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameScreen.swift; sourceTree = "<group>"; };
 		52DED26EABBD93EC1EDD5FDF /* Geist-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-SemiBold.ttf"; sourceTree = "<group>"; };
+		5314ED6814F4D06857EB1531 /* DosageRangeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DosageRangeEditor.swift; sourceTree = "<group>"; };
 		559806B70575D68B03570B5C /* GeistPixel-Grid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistPixel-Grid.ttf"; sourceTree = "<group>"; };
 		55D67467EC10CB586CFE12AE /* EnvironmentExposuresModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentExposuresModule.swift; sourceTree = "<group>"; };
 		56E8148A4BF49E6631B0AD4C /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngine.swift; sourceTree = "<group>"; };
@@ -810,6 +812,7 @@
 				828DABE09B98556F1388DFCA /* CTAButton.swift */,
 				6384EA09BC0842776763623B /* DiscoveryCard.swift */,
 				0DFF71D861C73058DB9A44BF /* DiscoveryCarousel.swift */,
+				5314ED6814F4D06857EB1531 /* DosageRangeEditor.swift */,
 				D2A96B9A80411F2720CABB5D /* EvidenceInfoModal.swift */,
 				BBF4421C446895FBC6E459EC /* FlowLayout.swift */,
 				E26F0C4C327364CA43DD0F35 /* GhostTrendsTeaser.swift */,
@@ -1027,6 +1030,7 @@
 				7C45262B7519E4F0C09D789D /* DiscoveryCarousel.swift in Sources */,
 				B36842BF9FB556FB89B44FB2 /* DiscoveryTip.swift in Sources */,
 				F6E3A3501119A51D4BBC1F40 /* DiscoveryTipProvider.swift in Sources */,
+				9E096AB0FE6A22E25F604085 /* DosageRangeEditor.swift in Sources */,
 				24B96BFF3E08954EDAE497BF /* EmberGlowModifier.swift in Sources */,
 				6164D53C8DD26C5AE2242E9E /* EmberGlowShader.metal in Sources */,
 				F14B35E97B70E53C1D77E839 /* EnvironmentExposuresModule.swift in Sources */,

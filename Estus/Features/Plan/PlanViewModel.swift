@@ -85,6 +85,14 @@ class PlanViewModel {
         activePlan = plan
     }
 
+    /// Persist a user-set dosage override. Pass `nil` to clear the override and revert to the engine's recommendation.
+    func setUserDosage(_ supplement: PlanSupplement, mg: Double?) {
+        guard var plan = activePlan,
+              let index = plan.supplements.firstIndex(where: { $0.id == supplement.id }) else { return }
+        plan.supplements[index].userOverriddenDosageMg = mg
+        activePlan = plan
+    }
+
     // MARK: - Product Cache
 
     var detailProductCache: [UUID: RankedProduct] = [:]

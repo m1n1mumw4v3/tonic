@@ -45,6 +45,11 @@ struct SupplementCardView: View {
     var showBottomLearnMore: Bool = false
     var products: [RankedProduct]? = nil
     var productsLoading: Bool = false
+    var doseRange: (low: Double, high: Double, limit: Double?)? = nil
+    var dosageUnit: String? = nil
+    var recommendedDosageMg: Double? = nil
+    var userDosageMg: Binding<Double?>? = nil
+    var onDosageCommit: ((Double?) -> Void)? = nil
     var onEvidenceInfoTapped: ((EvidenceLevel) -> Void)? = nil
     var onShopTapped: (() -> Void)? = nil
     var onProductTapped: ((RankedProduct) -> Void)? = nil
@@ -183,7 +188,7 @@ struct SupplementCardView: View {
 
                     Spacer()
 
-                    Text(supplement.dosage)
+                    Text(supplement.displayDosage)
                         .font(DesignTokens.labelMono)
                         .foregroundStyle(DesignTokens.textTertiary)
                 }
@@ -191,7 +196,7 @@ struct SupplementCardView: View {
             } else {
                 HStack {
                     Spacer()
-                    Text(supplement.dosage)
+                    Text(supplement.displayDosage)
                         .font(DesignTokens.labelMono)
                         .foregroundStyle(DesignTokens.textTertiary)
                 }
@@ -271,6 +276,9 @@ struct SupplementCardView: View {
 
             // How and when to take it
             howAndWhenSection
+
+            // Editable dosage range (only when catalog data is available)
+            dosageEditorSection
 
             // Dosage rationale (full detail only)
             if detailLevel == .full {
@@ -395,6 +403,36 @@ struct SupplementCardView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+        }
+    }
+
+    // MARK: - Dosage Editor Section
+
+    @ViewBuilder
+    private var dosageEditorSection: some View {
+        if let range = doseRange,
+           let unit = dosageUnit,
+           let recommended = recommendedDosageMg,
+           let userBinding = userDosageMg {
+            DosageRangeEditor(
+                low: range.low,
+                high: range.high,
+                limit: range.limit,
+                recommended: recommended,
+                unit: unit,
+                step: Double.niceStep(low: range.low, high: range.high),
+                value: Binding(
+                    get: { userBinding.wrappedValue ?? recommended },
+                    set: { newValue in
+                        let cleaned: Double? = abs(newValue - recommended) < 0.0001 ? nil : newValue
+                        userBinding.wrappedValue = cleaned
+                    }
+                ),
+                onCommit: { newValue in
+                    let cleaned: Double? = abs(newValue - recommended) < 0.0001 ? nil : newValue
+                    onDosageCommit?(cleaned)
+                }
+            )
         }
     }
 
