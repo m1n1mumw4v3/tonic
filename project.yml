@@ -3,9 +3,11 @@ options:
   bundleIdPrefix: com.estus
   deploymentTarget:
     iOS: "17.0"
-  xcodeVersion: "16.0"
+  xcodeVersion: "26.0"
   createIntermediateGroups: true
   generateEmptyDirectories: true
+  postGenCommand: |
+    /usr/bin/sed -i '' 's|lastKnownFileType = folder; name = AppIcon.icon|lastKnownFileType = folder.iconcomposer.icon; name = AppIcon.icon|' Estus.xcodeproj/project.pbxproj
 
 settings:
   base:
@@ -38,6 +40,11 @@ targets:
           - "Resources/**"
           - "Info.plist"
       - path: Estus/Resources
+        buildPhase: resources
+        excludes:
+          - "AppIcon.icon"
+      - path: Estus/Resources/AppIcon.icon
+        type: folder
         buildPhase: resources
     info:
       path: Estus/Info.plist

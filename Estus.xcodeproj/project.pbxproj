@@ -108,6 +108,7 @@
 		7C8D02E5FF6AE8E7C542C0BA /* GrainOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8186C845CFB5E02F645F7B47 /* GrainOverlay.swift */; };
 		7E4C4BE4BDC388D5A090D78B /* StressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC85AD27564600634E8489ED /* StressScreen.swift */; };
 		7EA9043DDC0812356ADC7A64 /* DeepProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1103C2D927BD3913096D2A /* DeepProfileService.swift */; };
+		8078F60B6773F0435F6122E7 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6147758D9B02C4C841E510E8 /* AppIcon.icon */; };
 		80CED78E6F3FC2067E14E410 /* SupabaseSynergyPairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F51D37F399CA1C04C9CEFE /* SupabaseSynergyPairing.swift */; };
 		81581B2D35BAF104F139D437 /* SupplementIconography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931202A037BA275D71720D9 /* SupplementIconography.swift */; };
 		82672D6F45135A4EDE7F946A /* SupplementNameMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06623EFDBC90EC0BC30C5FD7 /* SupplementNameMatcher.swift */; };
@@ -299,6 +300,7 @@
 		5E9930B6892445D3428F49A1 /* InlineProductCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineProductCardView.swift; sourceTree = "<group>"; };
 		5E9CD2DA4AB8C5BBFA0C2EA8 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		60E01CA365CC744519DA3BF0 /* PlanScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanScreen.swift; sourceTree = "<group>"; };
+		6147758D9B02C4C841E510E8 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; name = AppIcon.icon; path = Estus/Resources/AppIcon.icon; sourceTree = SOURCE_ROOT; };
 		633033AB209D0CE7DC58AF3E /* EstusTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = EstusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6384EA09BC0842776763623B /* DiscoveryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCard.swift; sourceTree = "<group>"; };
 		64537947A100FEF72B90C5AB /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
@@ -498,6 +500,7 @@
 		2CE4DA6C777F56906053F8BE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6147758D9B02C4C841E510E8 /* AppIcon.icon */,
 				881BA2611A13F63AA37C9A8C /* Assets.xcassets */,
 				38B0089EF233A432E2556EE1 /* Fonts */,
 			);
@@ -903,7 +906,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					623B8D6E00BDE1D78E54BF3D = {
 						DevelopmentTeam = "";
@@ -943,6 +946,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8078F60B6773F0435F6122E7 /* AppIcon.icon in Resources */,
 				10B7617FCDBEC7FD006A95A1 /* Assets.xcassets in Resources */,
 				BA9118D7EDBF0EEE72A2CD63 /* Geist-Bold.ttf in Resources */,
 				080CF1E5C9841BE9A76C1D28 /* Geist-Light.ttf in Resources */,
