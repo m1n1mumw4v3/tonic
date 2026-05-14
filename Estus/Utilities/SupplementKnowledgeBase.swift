@@ -21,14 +21,36 @@ enum EvidenceLevel: String, Codable {
         }
     }
 
+    /// Number of filled flask icons (out of 3) used in the inline research-level visual.
+    var filledFlasks: Int {
+        switch self {
+        case .strong: return 3
+        case .moderate: return 2
+        case .emerging: return 1
+        }
+    }
+
+    /// 2–3 sentence summary shown inline next to the flask visual on supplement cards.
+    var shortDescription: String {
+        switch self {
+        case .strong:
+            return "Multiple high-quality clinical trials and meta-analyses confirm the benefits. Effects are well-established and consistently replicated across diverse populations. This is the gold standard for nutrition evidence."
+        case .moderate:
+            return "Multiple human clinical trials demonstrate clear, repeatable benefits with high confidence in the effect. The research simply hasn't yet covered every population, dose, or long-term outcome needed for textbook status. For most uses, the evidence is more than sufficient."
+        case .emerging:
+            return "Early human trials and mechanistic studies show promise, with plausible pathways of action. Initial findings are encouraging across multiple endpoints, but larger, longer-term trials are still needed to confirm efficacy and refine dosing."
+        }
+    }
+
+    /// One-sentence summary used in the research-grading modal where space is tighter.
     var description: String {
         switch self {
         case .strong:
-            return "This supplement is backed by a large body of high-quality evidence, including multiple randomized controlled trials and systematic reviews. Benefits are well-established and consistently replicated across diverse populations."
+            return "Multiple high-quality trials and meta-analyses confirm consistent benefits — the gold standard for nutrition evidence."
         case .moderate:
-            return "This supplement is supported by human clinical trials demonstrating clear benefits. The evidence is strong, though it may not yet span the breadth of populations, dosages, or long-term outcomes needed to be considered fully established. Confidence is high — the research just hasn't reached textbook status yet."
+            return "Clinical trials show clear, repeatable benefits with high confidence — robust evidence, just not yet textbook-status across every population and dose."
         case .emerging:
-            return "This supplement shows promise based on preliminary studies, animal models, or early-phase human trials. The mechanism of action is plausible and initial findings are encouraging, but large-scale human trials are still needed to confirm efficacy."
+            return "Early human trials and mechanistic studies show promise; larger, longer-term trials still needed to confirm."
         }
     }
 }

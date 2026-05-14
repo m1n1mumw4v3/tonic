@@ -346,36 +346,52 @@ struct SupplementCardView: View {
 
     @ViewBuilder
     private var evidenceSection: some View {
-        if let evidence = supplement.evidenceDisplay, !evidence.isEmpty {
-            let level = supplement.evidenceLevel ?? .moderate
-            let chipColor: Color = switch level {
-            case .strong: DesignTokens.positive
-            case .moderate: DesignTokens.info
-            case .emerging: DesignTokens.accentEnergy
-            }
-            HStack(alignment: .firstTextBaseline, spacing: DesignTokens.spacing8) {
+        if let level = supplement.evidenceLevel ?? (supplement.evidenceDisplay?.isEmpty == false ? .moderate : nil) {
+            let levelColor: Color = DesignTokens.accentMood
+
+            HStack(alignment: .top, spacing: DesignTokens.spacing8) {
                 Image(systemName: "checkmark.shield")
                     .font(.system(size: 14))
                     .foregroundStyle(DesignTokens.textSecondary)
                     .frame(width: 18, alignment: .center)
+                    .padding(.top, 2)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Research level")
-                        .font(.custom("Geist-Regular", size: 16))
-                        .foregroundStyle(DesignTokens.textPrimary)
-
-                    HStack(spacing: 4) {
-                        Image(systemName: level.icon)
-                            .font(.system(size: 10))
-                            .foregroundStyle(chipColor)
-                        Text(evidence)
-                            .font(DesignTokens.labelMono)
-                            .foregroundStyle(chipColor)
+                    HStack(spacing: DesignTokens.spacing8) {
+                        Text("Research level")
+                            .font(.custom("Geist-Regular", size: 16))
+                            .foregroundStyle(DesignTokens.textPrimary)
+                        Spacer(minLength: 0)
+                        if onEvidenceInfoTapped != nil {
+                            Button {
+                                HapticManager.selection()
+                                onEvidenceInfoTapped?(level)
+                            } label: {
+                                Image(systemName: "info.circle")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(DesignTokens.textTertiary)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(chipColor.opacity(0.08))
-                    .clipShape(Capsule())
+
+                    HStack(spacing: 8) {
+                        HStack(spacing: 3) {
+                            ForEach(0..<3, id: \.self) { idx in
+                                Image(systemName: idx < level.filledFlasks ? "flask.fill" : "flask")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(idx < level.filledFlasks ? levelColor : DesignTokens.textTertiary.opacity(0.45))
+                            }
+                        }
+                        Text(level.displayText)
+                            .font(DesignTokens.labelMono)
+                            .foregroundStyle(levelColor)
+                    }
+
+                    Text(level.shortDescription)
+                        .font(DesignTokens.captionFont)
+                        .foregroundStyle(DesignTokens.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
