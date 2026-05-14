@@ -260,8 +260,8 @@ struct PlanRevealScreen: View {
     // MARK: - Summary Blurb
 
     private func summaryBlurb(_ text: String) -> some View {
-        VStack(spacing: 0) {
-            // Header pill
+        VStack(alignment: .leading, spacing: 0) {
+            // Header — always visible, tappable to toggle
             Button {
                 HapticManager.selection()
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -290,29 +290,27 @@ struct PlanRevealScreen: View {
                 .padding(.horizontal, DesignTokens.spacing20)
                 .padding(.vertical, DesignTokens.spacing16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
-                .clipShape(Capsule())
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
-            // Description card (clipped so collapse animation hides behind pill)
-            VStack(spacing: 0) {
-                if isSummaryExpanded {
-                    Text(text)
-                        .font(.custom("Geist-Regular", size: 14))
-                        .foregroundStyle(DesignTokens.textSecondary)
-                        .lineSpacing(2)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
-                        .padding(DesignTokens.spacing20)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 26))
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
+            // Description body — appears within the same container when expanded
+            if isSummaryExpanded {
+                Text(text)
+                    .font(.custom("Geist-Regular", size: 14))
+                    .foregroundStyle(DesignTokens.textSecondary)
+                    .lineSpacing(2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .modifier(OneShotShimmerModifier(isActive: showShimmer && !reduceMotion))
+                    .padding(.horizontal, DesignTokens.spacing20)
+                    .padding(.bottom, DesignTokens.spacing20)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            .clipped()
         }
+        .background(Color.white)
+        // Capsule-like radius when collapsed, card radius when expanded.
+        .clipShape(RoundedRectangle(cornerRadius: isSummaryExpanded ? DesignTokens.radiusCard : 28))
         .opacity(showSummary ? 1 : 0)
         .offset(y: showSummary || reduceMotion ? 0 : 8)
     }
