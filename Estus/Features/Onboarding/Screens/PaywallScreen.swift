@@ -22,6 +22,7 @@ struct PaywallScreen: View {
 
     @State private var selectedPlan: PricingPlan = .annual
     @State private var expandedCardID: UUID? = nil
+    @State private var presentedLegalDocument: LegalDocument?
 
     private let reduceMotion = UIAccessibility.isReduceMotionEnabled
 
@@ -127,6 +128,9 @@ struct PaywallScreen: View {
         }
         .task {
             await startEntranceAnimation()
+        }
+        .sheet(item: $presentedLegalDocument) { document in
+            LegalDocumentView(document: document)
         }
     }
 
@@ -357,7 +361,7 @@ struct PaywallScreen: View {
 
                 HStack(spacing: DesignTokens.spacing16) {
                     Button("Terms") {
-                        // Wire to terms URL later
+                        presentedLegalDocument = .termsOfService
                     }
                     .font(.custom("Geist-Regular", size: 11))
                     .foregroundStyle(DesignTokens.textSecondary)
@@ -367,7 +371,7 @@ struct PaywallScreen: View {
                         .foregroundStyle(DesignTokens.textSecondary)
 
                     Button("Privacy") {
-                        // Wire to privacy URL later
+                        presentedLegalDocument = .privacyPolicy
                     }
                     .font(.custom("Geist-Regular", size: 11))
                     .foregroundStyle(DesignTokens.textSecondary)

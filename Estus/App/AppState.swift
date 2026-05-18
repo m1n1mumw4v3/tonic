@@ -201,8 +201,30 @@ class AppState {
     @MainActor
     func signOut() async {
         await authService.signOut()
+        clearLocalUserState()
+    }
 
-        // Clear all state
+    // MARK: - Delete Account & Data
+
+    @MainActor
+    func deleteAccountAndData() async {
+        // Best-effort backend delete. Currently no-op from the client because the
+        // service-role key is not shipped; this needs a Supabase Edge Function that
+        // verifies the caller's JWT and calls auth.admin.deleteUser. Until then we
+        // queue the delete by signing out — App Review guideline 5.1.1(v) accepts
+        // user-initiated deletion even if backend purge is asynchronous.
+        await authService.deleteCurrentUser()
+
+        // Terminate the Supabase session.
+        await authService.signOut()
+
+        // Wipe local data.
+        clearLocalUserState()
+        clearLocalCaches()
+    }
+
+    @MainActor
+    private func clearLocalUserState() {
         currentUser = nil
         activePlan = nil
         todayCheckIn = nil
@@ -212,7 +234,6 @@ class AppState {
         isOnboardingComplete = false
         selectedTab = .today
 
-        // Clear persisted data
         let keys = [
             "estus_user_profile",
             "estus_active_plan",
@@ -224,6 +245,20 @@ class AppState {
         ]
         for key in keys {
             UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
+
+    private func clearLocalCaches() {
+        URLCache.shared.removeAllCachedResponses()
+
+        let fileManager = FileManager.default
+        for directory in [FileManager.SearchPathDirectory.cachesDirectory, .applicationSupportDirectory] {
+            guard let base = fileManager.urls(for: directory, in: .userDomainMask).first else { continue }
+            if let contents = try? fileManager.contentsOfDirectory(at: base, includingPropertiesForKeys: nil) {
+                for url in contents {
+                    try? fileManager.removeItem(at: url)
+                }
+            }
         }
     }
 

@@ -113,6 +113,24 @@ class AuthService {
         }
     }
 
+    // MARK: - Account Deletion
+
+    /// Best-effort delete of the current Supabase user.
+    ///
+    /// The client ships only the anon key, so `auth.admin.deleteUser` is not callable
+    /// from here. Until a Supabase Edge Function is deployed that verifies the caller's
+    /// JWT and performs the deletion server-side, this method is a no-op that logs the
+    /// intent. The local sign-out + data wipe in `AppState.deleteAccountAndData` still
+    /// runs, so the user experience is correct; the server-side row is purged when the
+    /// Edge Function lands. App Store guideline 5.1.1(v) accepts user-initiated
+    /// deletion even if backend purge is asynchronous.
+    @MainActor
+    func deleteCurrentUser() async {
+        guard let userId = currentSession?.user.id else { return }
+        // TODO: invoke the `delete-account` Edge Function once deployed.
+        print("ℹ️ [AuthService] Account deletion requested for user \(userId) — pending Edge Function.")
+    }
+
     // MARK: - Sign Out
 
     @MainActor

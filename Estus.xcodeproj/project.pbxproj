@@ -10,6 +10,7 @@
 		01213C3616411B8B48914F00 /* EvidenceInfoModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A96B9A80411F2720CABB5D /* EvidenceInfoModal.swift */; };
 		016F706B8D1D1A2DD15A85E3 /* SupplementPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DC425DA5D860290670047F /* SupplementPickerSheet.swift */; };
 		01A7F1A76CD05DB3445D60DE /* SupabaseMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF53F9CA46480F5D1F40977B /* SupabaseMechanism.swift */; };
+		03278465BF5BA7FC00CDEF3C /* PrivacyPolicy.md in Resources */ = {isa = PBXBuildFile; fileRef = 3C626D0D39E84B583D2EBF27 /* PrivacyPolicy.md */; };
 		05BCF1906322593227A5F630 /* GutHealthModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC4FB69681AD9618FEFA00A /* GutHealthModule.swift */; };
 		07483AE09C21CE0960DFC801 /* GrainShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 83A1E041607F0ED6CC83B9AF /* GrainShader.metal */; };
 		075B0FB3587B101E852A2EA8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C0B3F1C6C121443E693F25 /* Extensions.swift */; };
@@ -76,6 +77,7 @@
 		5012AD282EC1CD2A2498D845 /* DeepProfileCompletionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1094E731364D406D631C36EC /* DeepProfileCompletionScreen.swift */; };
 		540157B2AC3B94D7D7A97FC1 /* SafetyRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0392C1B9392C91C87BE5FE /* SafetyRules.swift */; };
 		55052D77443442A98F366777 /* PillboxCompartment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DB18A2706C2C98734CD09 /* PillboxCompartment.swift */; };
+		55A1BF9A11997D4C3F9AC60E /* TermsOfService.md in Resources */ = {isa = PBXBuildFile; fileRef = 0E6212857E029C37564378D1 /* TermsOfService.md */; };
 		56164E03C26D3585C6F26FCE /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF4421C446895FBC6E459EC /* FlowLayout.swift */; };
 		578E4C3BAF98CB08875F0AB2 /* SupabasePersonalizationSignal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954082930E4AAF0D2C77B0E9 /* SupabasePersonalizationSignal.swift */; };
 		59C522C83AE1B2AE51CB0DC4 /* CompletionShimmerShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8821D2438A4C8F9ACB82693F /* CompletionShimmerShader.metal */; };
@@ -90,6 +92,7 @@
 		626E6FAE4C149B90DE5FFABD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 934E3161AE486E4141621D1F /* Supabase */; };
 		6362E83137F21938ADC7B66A /* AddSupplementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF89DD3F3BCB3591AF5BC233 /* AddSupplementSheet.swift */; };
 		65820F94A393E31578924819 /* SupplementCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756083B3241C10D7C8303732 /* SupplementCard.swift */; };
+		667450A1E799C7C18B8C3DA0 /* LegalDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C874C44BDCBF0C3A6E6586D /* LegalDocumentView.swift */; };
 		66A3924285AF571384C13EE2 /* MicroRewardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4A8E1FD766544D824B33A7 /* MicroRewardCard.swift */; };
 		6BE189BF76A83624BFABDA58 /* CTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828DABE09B98556F1388DFCA /* CTAButton.swift */; };
 		6BF53C9AA1D0127265F521DB /* SexScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52B78AC98CC873E4298C6EF /* SexScreen.swift */; };
@@ -231,10 +234,12 @@
 		09F03651CBEA0CA734CD62C7 /* DeepProfileHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileHub.swift; sourceTree = "<group>"; };
 		0B83C201D24CF634EA85C7D1 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		0C34EB4A91282036F9D4334C /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
+		0C874C44BDCBF0C3A6E6586D /* LegalDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDocumentView.swift; sourceTree = "<group>"; };
 		0D181605DF536F5A832860E3 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		0DFF71D861C73058DB9A44BF /* DiscoveryCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryCarousel.swift; sourceTree = "<group>"; };
 		0E0392C1B9392C91C87BE5FE /* SafetyRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyRules.swift; sourceTree = "<group>"; };
 		0E162ECD2B7939C8B269F52A /* DeepProfileHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileHomeCard.swift; sourceTree = "<group>"; };
+		0E6212857E029C37564378D1 /* TermsOfService.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TermsOfService.md; sourceTree = "<group>"; };
 		0F1DC877D4FDA9264274E333 /* WeeklyWellbeingChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyWellbeingChart.swift; sourceTree = "<group>"; };
 		0FD02ECC4548378EC32C6BC8 /* AlcoholScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcoholScreen.swift; sourceTree = "<group>"; };
 		1094E731364D406D631C36EC /* DeepProfileCompletionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileCompletionScreen.swift; sourceTree = "<group>"; };
@@ -271,6 +276,7 @@
 		39A16D62DCE658E29D2198E1 /* CompletionShimmerModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionShimmerModifier.swift; sourceTree = "<group>"; };
 		3A0DC9BEAA7FBE5AE3DBEAA6 /* MedicalDisclaimerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicalDisclaimerScreen.swift; sourceTree = "<group>"; };
 		3AE8D37A1495D3D1DCD8707D /* Geist-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Bold.ttf"; sourceTree = "<group>"; };
+		3C626D0D39E84B583D2EBF27 /* PrivacyPolicy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PrivacyPolicy.md; sourceTree = "<group>"; };
 		3D6C771DA94BA1BC2395699D /* MusculoskeletalRecoveryModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusculoskeletalRecoveryModule.swift; sourceTree = "<group>"; };
 		3E2ABEDAEDBF3D84089C484D /* DeepProfileModuleRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepProfileModuleRegistry.swift; sourceTree = "<group>"; };
 		3E9C8D091E5F7F5D6F878A69 /* MicroReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicroReward.swift; sourceTree = "<group>"; };
@@ -478,6 +484,15 @@
 			path = Today;
 			sourceTree = "<group>";
 		};
+		244987D63F749F9EF4006648 /* Legal */ = {
+			isa = PBXGroup;
+			children = (
+				3C626D0D39E84B583D2EBF27 /* PrivacyPolicy.md */,
+				0E6212857E029C37564378D1 /* TermsOfService.md */,
+			);
+			path = Legal;
+			sourceTree = "<group>";
+		};
 		290876C14A1876E7DE2467BE /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -503,6 +518,7 @@
 				6147758D9B02C4C841E510E8 /* AppIcon.icon */,
 				881BA2611A13F63AA37C9A8C /* Assets.xcassets */,
 				38B0089EF233A432E2556EE1 /* Fonts */,
+				244987D63F749F9EF4006648 /* Legal */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -620,6 +636,7 @@
 			children = (
 				17EE453BE0D9BE57C81387B4 /* BaselineProfileSheet.swift */,
 				31265096D48726E12B13D42A /* BaselineProfileViewModel.swift */,
+				0C874C44BDCBF0C3A6E6586D /* LegalDocumentView.swift */,
 				C2F705B4F0126A041EBDB4AF /* NotificationSettingsSheet.swift */,
 				4397C9AAADB83CC08BE658B6 /* SettingsScreen.swift */,
 			);
@@ -956,7 +973,9 @@
 				0C624F8CAB6EC96723CA5E7D /* GeistMono-Medium.ttf in Resources */,
 				9C5D3E27F7ED0DB591427966 /* GeistMono-Regular.ttf in Resources */,
 				1A10F667E7C90F36495E650A /* GeistPixel-Grid.ttf in Resources */,
+				03278465BF5BA7FC00CDEF3C /* PrivacyPolicy.md in Resources */,
 				4F3A89155FADE72878EF5D03 /* Roboto-Medium.ttf in Resources */,
+				55A1BF9A11997D4C3F9AC60E /* TermsOfService.md in Resources */,
 				9C6B0B41FC2BA89E33AC5862 /* estus-icon-01.ai in Resources */,
 				1F602BFA674EE8BFFF7A00E6 /* estus-icon-01.png in Resources */,
 				BE130042DB8F9487AEC86C49 /* estus-icon-01.svg in Resources */,
@@ -1066,6 +1085,7 @@
 				398835105D56470B249A091F /* KnowledgeBaseProvider.swift in Sources */,
 				45F66ACA005BEC91FD43277E /* KnowledgeBaseSnapshot.swift in Sources */,
 				42CA44C8F1A5834297DA7EBA /* LabWorkBiomarkersModule.swift in Sources */,
+				667450A1E799C7C18B8C3DA0 /* LegalDocumentView.swift in Sources */,
 				40E0160C45232EA056B02F52 /* LocalStorageService.swift in Sources */,
 				8692D3CE468EB8E015B6DCFE /* LockedOverlay.swift in Sources */,
 				292D4CA2865A45E4C8FE740F /* MedicalDisclaimerScreen.swift in Sources */,

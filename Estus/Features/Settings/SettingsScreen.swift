@@ -9,6 +9,9 @@ struct SettingsScreen: View {
     @State private var isHealthKitConnecting = false
     @State private var showHealthKitUnavailable = false
     @State private var showSignOutConfirmation = false
+    @State private var showDeleteAccountConfirmation = false
+    @State private var isDeletingAccount = false
+    @State private var presentedLegalDocument: LegalDocument?
     @State private var isEditingName = false
     @State private var editedName = ""
     @FocusState private var nameFieldFocused: Bool
@@ -49,12 +52,12 @@ struct SettingsScreen: View {
                                 HStack(spacing: DesignTokens.spacing12) {
                                     Image(systemName: "rectangle.portrait.and.arrow.right")
                                         .font(.system(size: 16))
-                                        .foregroundStyle(DesignTokens.negative)
+                                        .foregroundStyle(DesignTokens.textSecondary)
                                         .frame(width: 24)
 
                                     Text("Sign out")
                                         .font(DesignTokens.bodyFont)
-                                        .foregroundStyle(DesignTokens.negative)
+                                        .foregroundStyle(DesignTokens.textPrimary)
 
                                     Spacer()
                                 }
@@ -73,10 +76,20 @@ struct SettingsScreen: View {
                         }
 
                         settingsSection(title: "ABOUT") {
-                            settingsRow(icon: "doc.text", label: "Privacy Policy")
-                            settingsRow(icon: "doc.text", label: "Terms of Service")
+                            Button { presentedLegalDocument = .privacyPolicy } label: {
+                                settingsRow(icon: "doc.text", label: "Privacy Policy")
+                            }
+                            .buttonStyle(.plain)
+
+                            Button { presentedLegalDocument = .termsOfService } label: {
+                                settingsRow(icon: "doc.text", label: "Terms of Service")
+                            }
+                            .buttonStyle(.plain)
+
                             settingsRow(icon: "info.circle", label: "Version 1.0.0")
                         }
+
+                        dangerZoneSection
                     }
                     .padding(.horizontal, DesignTokens.screenMargin)
                     .padding(.bottom, DesignTokens.spacing32)
@@ -102,6 +115,60 @@ struct SettingsScreen: View {
             } message: {
                 Text("You'll need to sign in again to access your plan and data.")
             }
+            .alert("Delete account & data?", isPresented: $showDeleteAccountConfirmation) {
+                Button("Delete everything", role: .destructive) {
+                    Task {
+                        isDeletingAccount = true
+                        await appState.deleteAccountAndData()
+                        isDeletingAccount = false
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This permanently deletes your account, supplement plan, check-in history, and deep-profile answers. This cannot be undone.")
+            }
+            .sheet(item: $presentedLegalDocument) { document in
+                LegalDocumentView(document: document)
+            }
+        }
+    }
+
+    // MARK: - Delete Account
+
+    private var dangerZoneSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
+            Button { showDeleteAccountConfirmation = true } label: {
+                HStack(spacing: DesignTokens.spacing12) {
+                    if isDeletingAccount {
+                        ProgressView()
+                            .controlSize(.small)
+                            .frame(width: 24)
+                    } else {
+                        Image(systemName: "trash")
+                            .font(.system(size: 16))
+                            .foregroundStyle(DesignTokens.negative)
+                            .frame(width: 24)
+                    }
+
+                    Text("Delete Account & Data")
+                        .font(DesignTokens.bodyFont)
+                        .foregroundStyle(DesignTokens.negative)
+
+                    Spacer()
+                }
+                .padding(.vertical, DesignTokens.spacing12)
+                .padding(.horizontal, DesignTokens.spacing16)
+            }
+            .buttonStyle(.plain)
+            .disabled(isDeletingAccount)
+            .background(DesignTokens.bgSurface)
+            .clipShape(Capsule())
+
+            Text("Removes your account, supplement plan, and all check-in history. This action cannot be undone.")
+                .font(DesignTokens.captionFont)
+                .foregroundStyle(DesignTokens.textTertiary)
+                .padding(.horizontal, DesignTokens.spacing4)
         }
     }
 
@@ -254,16 +321,17 @@ struct SettingsScreen: View {
 
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 14))
-                    .foregroundStyle(DesignTokens.positive)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(DesignTokens.bgSurface, DesignTokens.textPrimary)
             }
             .padding(.vertical, DesignTokens.spacing12)
             .padding(.horizontal, DesignTokens.spacing16)
         }
         .buttonStyle(.plain)
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(Capsule())
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            Capsule()
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
         .sheet(isPresented: $showBaselineProfile) {
@@ -401,7 +469,8 @@ struct SettingsScreen: View {
                 if isCompleted {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 14))
-                        .foregroundStyle(DesignTokens.positive)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(DesignTokens.bgSurface, DesignTokens.textPrimary)
                 } else {
                     Image(systemName: "circle")
                         .font(.system(size: 14))
@@ -413,9 +482,9 @@ struct SettingsScreen: View {
         }
         .buttonStyle(.plain)
         .background(DesignTokens.bgSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+        .clipShape(Capsule())
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+            Capsule()
                 .stroke(DesignTokens.borderDefault, lineWidth: 1)
         )
     }
@@ -433,9 +502,9 @@ struct SettingsScreen: View {
                 content()
             }
             .background(DesignTokens.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
+                RoundedRectangle(cornerRadius: DesignTokens.radiusCard)
                     .stroke(DesignTokens.borderDefault, lineWidth: 1)
             )
         }

@@ -11,6 +11,7 @@ struct AccountCreationScreen: View {
     @State private var showSignInSheet = false
     @State private var showPreview = false
     @State private var isAuthenticating = false
+    @State private var presentedLegalDocument: LegalDocument?
 
     // MARK: - Computed Properties
 
@@ -190,6 +191,21 @@ struct AccountCreationScreen: View {
                 onContinue()
             })
         }
+        .sheet(item: $presentedLegalDocument) { document in
+            LegalDocumentView(document: document)
+        }
+        .environment(\.openURL, OpenURLAction { url in
+            switch url.absoluteString {
+            case "estus-legal://terms":
+                presentedLegalDocument = .termsOfService
+                return .handled
+            case "estus-legal://privacy":
+                presentedLegalDocument = .privacyPolicy
+                return .handled
+            default:
+                return .systemAction
+            }
+        })
     }
 
     // MARK: - Terms Attributed String
@@ -200,9 +216,13 @@ struct AccountCreationScreen: View {
 
         if let termsRange = full.range(of: "Terms of Service") {
             full[termsRange].underlineStyle = .single
+            full[termsRange].link = URL(string: "estus-legal://terms")
+            full[termsRange].foregroundColor = UIColor(DesignTokens.textSecondary)
         }
         if let privacyRange = full.range(of: "Privacy Policy") {
             full[privacyRange].underlineStyle = .single
+            full[privacyRange].link = URL(string: "estus-legal://privacy")
+            full[privacyRange].foregroundColor = UIColor(DesignTokens.textSecondary)
         }
 
         return full

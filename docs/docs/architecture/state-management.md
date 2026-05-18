@@ -52,7 +52,15 @@ Async. Fetches `DBMedication` records from Supabase. Logs success/failure. The m
 Async, called once at app launch. Reads profile, plan, recent check-ins, today check-in, streak, insights, deep-profile modules from `LocalStorageService`. Auto-flips `isOnboardingComplete = true` if both profile and plan are present. If the flag was set but data is missing, resets to onboarding.
 
 ### `signOut()`
-Clears all state and removes all `estus_*` keys from `UserDefaults`. Note: `supplementCatalog` is *not* cleared because it's reference data, not user data.
+Calls `authService.signOut()` then `clearLocalUserState()`. Note: `supplementCatalog` is *not* cleared because it's reference data, not user data.
+
+### `deleteAccountAndData()`
+User-initiated account deletion (App Store guideline 5.1.1(v)). Calls `authService.deleteCurrentUser()` (currently a logged no-op — see below), terminates the Supabase session, clears all `estus_*` UserDefaults keys via `clearLocalUserState()`, and removes everything under `Library/Caches` and `Library/Application Support` via `clearLocalCaches()`. Setting `isOnboardingComplete = false` returns the app to the onboarding/sign-in flow on next render.
+
+The backend purge is a TODO — the client only has the anon key, so `auth.admin.deleteUser` is not callable. A Supabase Edge Function that verifies the caller's JWT and deletes the auth row needs to be deployed; until then, deletion is local-only with a server-side row that gets cleaned up out of band. App Review accepts user-initiated deletion even if the backend purge is asynchronous.
+
+### `clearLocalUserState()` / `clearLocalCaches()`
+Private helpers shared by `signOut` and `deleteAccountAndData`. The first zeroes the in-memory `@Observable` properties and removes the seven `estus_*` UserDefaults keys; the second wipes `URLCache.shared` plus the contents of the Caches and Application Support directories.
 
 ### `loadDemoData()`
 Demo-mode bootstrap. Populates the catalog from static, builds a fake `UserProfile`, runs `engine.generatePlan` against it, generates 30 days of synthetic check-ins with progressive scores, and seeds three sample insights. Used for design reviews and previews.
