@@ -29,6 +29,10 @@ targets:
   Estus:
     type: application
     platform: iOS
+    scheme:
+      testTargets:
+        - EstusTests
+      gatherCoverageData: false
     configFiles:
       Debug: Configuration/Debug.xcconfig
       Release: Configuration/Release.xcconfig

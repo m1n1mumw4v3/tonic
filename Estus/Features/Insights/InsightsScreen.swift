@@ -215,7 +215,7 @@ struct InsightsScreen: View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
             HStack(alignment: .bottom) {
                 Text("Insights")
-                    .font(.custom("Geist-Regular", size: 28))
+                    .font(DesignTokens.headlineFont)
                     .foregroundStyle(DesignTokens.textPrimary)
 
                 Spacer()
@@ -225,9 +225,7 @@ struct InsightsScreen: View {
                 }
             }
 
-            Rectangle()
-                .fill(DesignTokens.borderDefault)
-                .frame(height: 1)
+            SpectrumBar(height: 2)
                 .padding(.top, DesignTokens.spacing4)
         }
         .padding(.top, DesignTokens.spacing8)

@@ -136,14 +136,15 @@ struct SupplementLogList: View {
                         HapticManager.impact(.light)
                         onTakeAllSection?(supplements.map(\.id))
                     } label: {
-                        Text("Take all")
-                            .font(DesignTokens.captionFont)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, DesignTokens.spacing12)
-                            .padding(.vertical, DesignTokens.spacing4)
-                            .background(DesignTokens.accentMood)
-                            .clipShape(Capsule())
+                        HStack(spacing: DesignTokens.spacing8) {
+                            Text("Log All")
+                                .font(DesignTokens.captionFont)
+                                .foregroundStyle(DesignTokens.textSecondary)
+                            takeAllToggle(fired: takeAllFired.wrappedValue)
+                                .frame(width: 19, height: 19)
+                        }
                     }
+                    .buttonStyle(.plain)
                     .disabled(takeAllFired.wrappedValue)
                 }
             }
@@ -215,6 +216,21 @@ struct SupplementLogList: View {
                 )
         )
         .shadow(color: DesignTokens.cardShadowColor, radius: DesignTokens.cardShadowRadius, x: 0, y: DesignTokens.cardShadowY)
+    }
+
+    private func takeAllToggle(fired: Bool) -> some View {
+        ZStack {
+            Circle()
+                .stroke(fired ? DesignTokens.textPrimary : DesignTokens.borderDefault, lineWidth: 1.5)
+                .background(
+                    Circle()
+                        .fill(fired ? DesignTokens.textPrimary : Color.clear)
+                )
+
+            if fired {
+                AnimatedCheckmark(isChecked: true, color: .white, size: 10)
+            }
+        }
     }
 }
 

@@ -14,7 +14,7 @@ struct EstusApp: App {
                 .preferredColorScheme(.light)
                 .task {
                     #if DEBUG
-                    resetOnboardingForSimulator()
+                    resetOnboardingForSimulatorIfRequested()
                     #endif
 
                     Task { await appState.authService.startListening() }
@@ -27,6 +27,12 @@ struct EstusApp: App {
                     async let catalog: Void = appState.loadSupplementCatalog()
                     async let meds: Void = appState.loadMedications()
                     _ = await (catalog, meds)
+
+                    #if DEBUG
+                    if CommandLine.arguments.contains("-bypassOnboarding") {
+                        await appState.seedDevUserIfNeeded()
+                    }
+                    #endif
 
                     await appState.syncHealthKitIfEnabled()
 
@@ -43,9 +49,11 @@ struct EstusApp: App {
     }
 
     #if DEBUG
-    /// Wipes locally-stored onboarding state so simulator launches always land on the welcome screen.
-    private func resetOnboardingForSimulator() {
+    /// Wipes locally-stored onboarding state when launched with `-resetOnboarding`.
+    /// Off by default so simulator launches preserve state across runs.
+    private func resetOnboardingForSimulatorIfRequested() {
         #if targetEnvironment(simulator)
+        guard CommandLine.arguments.contains("-resetOnboarding") else { return }
         let defaults = UserDefaults.standard
         let keys = [
             "estus_onboarding_complete",

@@ -17,20 +17,6 @@ enum SupplementCardDetailLevel {
     case full       // + dosageRationale + interactionNote
 }
 
-struct SupplementCardMenuAction {
-    let title: String
-    let icon: String
-    let role: ButtonRole?
-    let action: () -> Void
-
-    init(_ title: String, icon: String, role: ButtonRole? = nil, action: @escaping () -> Void) {
-        self.title = title
-        self.icon = icon
-        self.role = role
-        self.action = action
-    }
-}
-
 // MARK: - SupplementCardView
 
 struct SupplementCardView: View {
@@ -38,11 +24,9 @@ struct SupplementCardView: View {
     var trailingAccessory: SupplementCardTrailingAccessory = .goalChips([])
     var expansionMode: SupplementCardExpansionMode = .inline
     var detailLevel: SupplementCardDetailLevel = .standard
-    var menuActions: [SupplementCardMenuAction] = []
     var inlineGoals: [HealthGoal] = []
     var isIncluded: Bool = true
     var isExpanded: Bool = false
-    var showBottomLearnMore: Bool = false
     var products: [RankedProduct]? = nil
     var productsLoading: Bool = false
     var doseRange: (low: Double, high: Double, limit: Double?)? = nil
@@ -119,11 +103,6 @@ struct SupplementCardView: View {
                     )
             }
 
-            // Bottom-centered learn more
-            if expansionMode == .inline && showBottomLearnMore {
-                bottomLearnMore
-                    .padding(.top, isExpanded ? DesignTokens.spacing8 : DesignTokens.spacing12)
-            }
         }
         .padding(DesignTokens.spacing16)
         .background(cardBackground)
@@ -135,7 +114,7 @@ struct SupplementCardView: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusCard))
         .overlay(alignment: .topTrailing) {
-            if expansionMode == .inline && !showBottomLearnMore {
+            if expansionMode == .inline {
                 chevronHint
                     .padding(.top, DesignTokens.spacing24)
                     .padding(.trailing, DesignTokens.spacing16)
@@ -175,11 +154,6 @@ struct SupplementCardView: View {
                 Spacer()
 
                 trailingAccessoryView
-
-                if !menuActions.isEmpty {
-                    kebabMenu
-                }
-
             }
 
             if !inlineGoals.isEmpty {
@@ -271,6 +245,9 @@ struct SupplementCardView: View {
         VStack(alignment: .leading, spacing: DesignTokens.spacing16) {
             Spacer().frame(height: 0)
 
+            // Product carousel or shop button
+            productSection
+
             // Why it's in your plan
             infoSection(icon: "person", label: "Why it's in your plan", text: supplement.whyInYourPlan)
 
@@ -301,9 +278,6 @@ struct SupplementCardView: View {
 
             // Research level
             evidenceSection
-
-            // Product carousel or shop button
-            productSection
 
             // Remove or restore
             if let onRestoreTapped {
@@ -339,7 +313,7 @@ struct SupplementCardView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.top, -DesignTokens.spacing4)
+        .padding(.top, DesignTokens.spacing16)
     }
 
     // MARK: - Evidence Section
@@ -601,27 +575,6 @@ struct SupplementCardView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Kebab Menu
-
-    private var kebabMenu: some View {
-        Menu {
-            ForEach(Array(menuActions.enumerated()), id: \.offset) { _, action in
-                Button(role: action.role) {
-                    action.action()
-                } label: {
-                    Label(action.title, systemImage: action.icon)
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(DesignTokens.textTertiary)
-                .rotationEffect(.degrees(90))
-                .frame(width: 28, height: 28)
-                .contentShape(Rectangle())
-        }
-    }
-
     // MARK: - Chevron Hint
 
     private var chevronHint: some View {
@@ -630,19 +583,6 @@ struct SupplementCardView: View {
             .foregroundStyle(DesignTokens.textSecondary)
             .rotationEffect(.degrees(isExpanded ? 180 : 0))
             .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
-    }
-
-    private var bottomLearnMore: some View {
-        HStack(spacing: 4) {
-            Text("LEARN MORE")
-                .font(DesignTokens.smallMono)
-                .foregroundStyle(DesignTokens.textTertiary)
-            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(DesignTokens.textTertiary)
-                .animation(.spring(response: 0.35, dampingFraction: 0.6), value: isExpanded)
-        }
-        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Card Background

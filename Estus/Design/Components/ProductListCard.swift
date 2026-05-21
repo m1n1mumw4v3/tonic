@@ -13,30 +13,21 @@ struct ProductListCard: View {
             onTap?()
         } label: {
             VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                // Pick label badge
-                if let pickLabel = score.pickLabel {
-                    Text(pickLabel.uppercased())
-                        .font(DesignTokens.smallMono)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            score.pickRank == 1 ? DesignTokens.positive : DesignTokens.info
-                        )
-                        .clipShape(Capsule())
-                }
+                // Pick label badge — always rendered so list rows align
+                Text((score.pickLabel ?? "Estus Approved").uppercased())
+                    .font(DesignTokens.smallMono)
+                    .foregroundStyle(badgeColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .overlay(
+                        Capsule()
+                            .stroke(badgeColor, lineWidth: 1)
+                    )
+                    .clipShape(Capsule())
 
                 // Main row: image | text | chevron
                 HStack(alignment: .center, spacing: DesignTokens.spacing12) {
-                    // Square image placeholder
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                        .fill(DesignTokens.bgElevated)
-                        .frame(width: 80, height: 80)
-                        .overlay(
-                            Image(systemName: "pill.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(DesignTokens.textTertiary)
-                        )
+                    ProductImageView(imageUrl: product.imageUrl, size: 80, placeholderIconSize: 20)
 
                     VStack(alignment: .leading, spacing: 4) {
                         // Brand
@@ -97,6 +88,11 @@ struct ProductListCard: View {
             )
         }
         .buttonStyle(.plain)
+    }
+
+    private var badgeColor: Color {
+        guard score.pickLabel != nil else { return DesignTokens.accentEnergyDark }
+        return score.pickRank == 1 ? DesignTokens.positive : DesignTokens.info
     }
 
     // MARK: - Stats Grid

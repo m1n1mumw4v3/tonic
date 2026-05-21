@@ -9,6 +9,7 @@ struct TodayScreen: View {
     @State private var yesterdayExpanded = false
     @State private var scrollOffset: CGFloat = 0
     @State private var selectedDayIndex: Int? = nil
+    @State private var showLogDatePicker = false
 
     private var phase: TodayViewModel.TodayPhase {
         viewModel.currentPhase(appState: appState)
@@ -94,6 +95,9 @@ struct TodayScreen: View {
         .sheet(isPresented: $showCheckInSheet) {
             wellbeingCheckInSheet
         }
+        .sheet(isPresented: $showLogDatePicker) {
+            logDatePickerSheet
+        }
         .sheet(isPresented: $state.showPaywall) {
             PaywallScreen(
                 viewModel: Self.paywallViewModel(from: appState),
@@ -122,6 +126,7 @@ struct TodayScreen: View {
             }
         }
         .onChange(of: viewModel.allTaken) { _, allTaken in
+            guard viewModel.selectedDateIsToday else { return }
             if allTaken && !viewModel.hasPlayedCompletionAnimation {
                 viewModel.hasPlayedCompletionAnimation = true
                 HapticManager.notification(.success)
@@ -426,13 +431,18 @@ struct TodayScreen: View {
             let visible = viewModel.visibleSupplements(for: phase, plan: plan)
 
             if !visible.isEmpty {
-                Text("Your Daily Stack")
-                    .font(.custom("Geist-Regular", size: 20))
-                    .foregroundStyle(DesignTokens.textPrimary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, DesignTokens.spacing4)
-                    .padding(.top, DesignTokens.spacing8)
-                    .padding(.bottom, -DesignTokens.spacing12)
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Log Supplements")
+                        .font(.custom("Geist-Regular", size: 20))
+                        .foregroundStyle(DesignTokens.textPrimary)
+
+                    Spacer()
+
+                    logDateButton
+                }
+                .padding(.leading, DesignTokens.spacing4)
+                .padding(.top, DesignTokens.spacing8)
+                .padding(.bottom, -DesignTokens.spacing12)
 
                 SupplementLogList(
                     supplements: visible,
@@ -446,6 +456,71 @@ struct TodayScreen: View {
                 )
             }
         }
+    }
+
+    // MARK: - Log Date Picker
+
+    private var logDateButton: some View {
+        Button {
+            HapticManager.selection()
+            showLogDatePicker = true
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "calendar")
+                    .font(.system(size: 14, weight: .medium))
+                Text(logDateLabel)
+                    .font(.custom("Geist-Regular", size: 14))
+            }
+            .foregroundStyle(viewModel.selectedDateIsToday ? DesignTokens.textSecondary : DesignTokens.textPrimary)
+            .padding(.horizontal, DesignTokens.spacing12)
+            .padding(.vertical, DesignTokens.spacing8)
+            .background(DesignTokens.bgSurface)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(DesignTokens.borderDefault, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var logDateLabel: String {
+        if viewModel.selectedDateIsToday { return "Today" }
+        if Calendar.current.isDateInYesterday(viewModel.selectedLogDate) { return "Yesterday" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: viewModel.selectedLogDate)
+    }
+
+    private var logDatePickerSheet: some View {
+        VStack(spacing: DesignTokens.spacing16) {
+            Text("Choose a Day to Log")
+                .font(.custom("Geist-Regular", size: 20))
+                .foregroundStyle(DesignTokens.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            DatePicker(
+                "",
+                selection: Binding(
+                    get: { viewModel.selectedLogDate },
+                    set: { viewModel.setSelectedLogDate($0, appState: appState) }
+                ),
+                in: ...Date(),
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+            .tint(DesignTokens.accentMood)
+
+            if !viewModel.selectedDateIsToday {
+                CTAButton(title: "Jump to Today", style: .ghost) {
+                    viewModel.setSelectedLogDate(Date(), appState: appState)
+                }
+            }
+        }
+        .padding(DesignTokens.spacing20)
+        .padding(.top, DesignTokens.spacing8)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 
     // MARK: - Wellbeing Check-In Sheet

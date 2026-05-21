@@ -78,15 +78,7 @@ struct ProductDetailScreen: View {
 
             // Image + product info row
             HStack(alignment: .top, spacing: DesignTokens.spacing16) {
-                // Product image
-                RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                    .fill(DesignTokens.bgElevated)
-                    .frame(width: 100, height: 100)
-                    .overlay(
-                        Image(systemName: "pill.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(DesignTokens.textTertiary)
-                    )
+                ProductImageView(imageUrl: product.imageUrl, size: 100, placeholderIconSize: 24)
 
                 // Product details
                 VStack(alignment: .leading, spacing: DesignTokens.spacing4) {
@@ -112,11 +104,11 @@ struct ProductDetailScreen: View {
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(score.scoreColor.opacity(0.08))
+                    .background(DesignTokens.bgSurface)
                     .clipShape(Capsule())
                     .overlay(
                         Capsule()
-                            .stroke(score.scoreColor.opacity(0.2), lineWidth: 1)
+                            .stroke(score.scoreColor, lineWidth: 1)
                     )
 
                 }

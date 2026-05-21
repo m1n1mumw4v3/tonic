@@ -16,32 +16,37 @@ struct ProductListScreen: View {
         ZStack {
             DesignTokens.bgDeepest.ignoresSafeArea()
 
-            ScrollView {
+            VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: DesignTokens.spacing16) {
-                    // Header
                     header
-
                     SpectrumBar(height: 2)
-
-                    if isLoading {
-                        loadingState
-                    } else if let errorMessage {
-                        errorState(errorMessage)
-                    } else if products.isEmpty {
-                        emptyState
-                    } else {
-                        ForEach(products) { rankedProduct in
-                            ProductListCard(
-                                rankedProduct: rankedProduct,
-                                onTap: {
-                                    onProductTapped?(rankedProduct)
-                                }
-                            )
-                        }
-                    }
                 }
                 .padding(.horizontal, DesignTokens.screenMargin)
-                .padding(.bottom, DesignTokens.spacing32)
+                .padding(.bottom, DesignTokens.spacing16)
+                .background(DesignTokens.bgDeepest)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: DesignTokens.spacing16) {
+                        if isLoading {
+                            loadingState
+                        } else if let errorMessage {
+                            errorState(errorMessage)
+                        } else if products.isEmpty {
+                            emptyState
+                        } else {
+                            ForEach(products) { rankedProduct in
+                                ProductListCard(
+                                    rankedProduct: rankedProduct,
+                                    onTap: {
+                                        onProductTapped?(rankedProduct)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    .padding(.horizontal, DesignTokens.screenMargin)
+                    .padding(.bottom, DesignTokens.spacing32)
+                }
             }
         }
         .navigationBarHidden(true)

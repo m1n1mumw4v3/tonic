@@ -177,6 +177,7 @@
 		CDE56E62AE39A2BE9E87332A /* AnimatedCheckmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D32DF02F6E06DD02F956C0F /* AnimatedCheckmark.swift */; };
 		CE76CF27E0895C3259E396FF /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C5B0DA41067463858C5DD /* Product.swift */; };
 		CEDFFAA407AE89793BA771F8 /* BaselineScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BA715031328F37C28BFF31 /* BaselineScreen.swift */; };
+		D082DD304551B5D9CEE01E1F /* ProductImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEFDD258546D82A5B462F5F /* ProductImageView.swift */; };
 		D154EC89EB981BED901554F6 /* WellnessSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A303D04125D6C5960345CB1 /* WellnessSlider.swift */; };
 		D5173043D91B2A43C3E7238E /* NotificationSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F705B4F0126A041EBDB4AF /* NotificationSettingsSheet.swift */; };
 		D5AE476D0DD9CBDBBDDE7442 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B0D8779C4B8F2A1F1E8157 /* WelcomeScreen.swift */; };
@@ -320,6 +321,7 @@
 		6C09569F8501D3051169AB3C /* Geist-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Regular.ttf"; sourceTree = "<group>"; };
 		6CC4FB69681AD9618FEFA00A /* GutHealthModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GutHealthModule.swift; sourceTree = "<group>"; };
 		6D32DF02F6E06DD02F956C0F /* AnimatedCheckmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedCheckmark.swift; sourceTree = "<group>"; };
+		6FEFDD258546D82A5B462F5F /* ProductImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductImageView.swift; sourceTree = "<group>"; };
 		70628058A4602D76A3D203FE /* SupplementPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementPhase.swift; sourceTree = "<group>"; };
 		72653A13F5AB9686CD6CD008 /* AnimatedGrainShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = AnimatedGrainShader.metal; sourceTree = "<group>"; };
 		742931DEF3289D2B53D4CC0A /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
@@ -849,6 +851,7 @@
 				1A3DB18A2706C2C98734CD09 /* PillboxCompartment.swift */,
 				D073CB7295861DCE06C104D8 /* PillboxLid.swift */,
 				F5C403894F6050BE4EF0C3A2 /* ProductCardView.swift */,
+				6FEFDD258546D82A5B462F5F /* ProductImageView.swift */,
 				20841A2E761CE4BAEC3654BC /* ProductListCard.swift */,
 				2F12306891707C3CBF0DE1F3 /* RecommendationCard.swift */,
 				BE36872D32AB82D7E0C97A4D /* RemovableChip.swift */,
@@ -1115,6 +1118,7 @@
 				CE76CF27E0895C3259E396FF /* Product.swift in Sources */,
 				903CE24BC842CCFF1202A0DD /* ProductCardView.swift in Sources */,
 				282DD2CA6EB316947F9EAB1C /* ProductDetailScreen.swift in Sources */,
+				D082DD304551B5D9CEE01E1F /* ProductImageView.swift in Sources */,
 				C2032C064453061A715E8D23 /* ProductListCard.swift in Sources */,
 				EE8BDCEA5B43D02C2D7C69D9 /* ProductListScreen.swift in Sources */,
 				C5FF75F52EC9187D7C6C664E /* ProductListSheet.swift in Sources */,

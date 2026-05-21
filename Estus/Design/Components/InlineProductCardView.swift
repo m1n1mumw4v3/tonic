@@ -15,30 +15,21 @@ struct InlineProductCardView: View {
             onTap?()
         } label: {
             VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                // Pick label badge
-                if let pickLabel = score.pickLabel {
-                    Text(pickLabel.uppercased())
-                        .font(DesignTokens.smallMono)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            score.pickRank == 1 ? DesignTokens.positive : DesignTokens.info
-                        )
-                        .clipShape(Capsule())
-                }
+                // Pick label badge — always rendered so carousel cards align
+                Text((score.pickLabel ?? "Estus Approved").uppercased())
+                    .font(DesignTokens.smallMono)
+                    .foregroundStyle(badgeColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .overlay(
+                        Capsule()
+                            .stroke(badgeColor, lineWidth: 1)
+                    )
+                    .clipShape(Capsule())
 
                 // Image left, text right
                 HStack(alignment: .top, spacing: DesignTokens.spacing12) {
-                    // Square image placeholder
-                    RoundedRectangle(cornerRadius: DesignTokens.radiusSmall)
-                        .fill(DesignTokens.bgElevated)
-                        .frame(width: 80, height: 80)
-                        .overlay(
-                            Image(systemName: "pill.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(DesignTokens.textTertiary)
-                        )
+                    ProductImageView(imageUrl: product.imageUrl, size: 80, placeholderIconSize: 20)
 
                     VStack(alignment: .leading, spacing: 4) {
                         // Brand
@@ -95,6 +86,11 @@ struct InlineProductCardView: View {
         .buttonStyle(.plain)
     }
 
+    private var badgeColor: Color {
+        guard score.pickLabel != nil else { return DesignTokens.accentEnergyDark }
+        return score.pickRank == 1 ? DesignTokens.positive : DesignTokens.info
+    }
+
     // MARK: - Stats Grid
 
     private var statsGrid: some View {
@@ -143,34 +139,33 @@ struct SeeAllProductCard: View {
 
                 Image(systemName: "bag")
                     .font(.system(size: 24))
-                    .foregroundStyle(DesignTokens.positive)
+                    .foregroundStyle(DesignTokens.accentMood)
 
                 VStack(spacing: 2) {
-                    Text("See all")
+                    Text("View All")
                         .font(DesignTokens.captionFont)
                         .fontWeight(.semibold)
-                        .foregroundStyle(DesignTokens.positive)
+                        .foregroundStyle(DesignTokens.accentMood)
 
                     Text(supplementName)
                         .font(DesignTokens.smallMono)
-                        .foregroundStyle(DesignTokens.positive.opacity(0.7))
+                        .foregroundStyle(DesignTokens.accentMood.opacity(0.7))
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
                 }
 
                 Image(systemName: "arrow.right")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(DesignTokens.positive)
+                    .foregroundStyle(DesignTokens.accentMood)
 
                 Spacer()
             }
             .frame(width: 130)
             .padding(DesignTokens.spacing12)
-            .background(DesignTokens.positive.opacity(0.06))
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.radiusMedium)
-                    .stroke(DesignTokens.positive.opacity(0.2), lineWidth: 1)
+                    .stroke(DesignTokens.accentMood, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

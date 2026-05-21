@@ -68,11 +68,11 @@ struct PlanScreen: View {
                                     .foregroundStyle(DesignTokens.positive)
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 48)
-                                    .background(DesignTokens.positive.opacity(0.08))
+                                    .background(DesignTokens.bgSurface)
                                     .clipShape(Capsule())
                                     .overlay(
                                         Capsule()
-                                            .stroke(DesignTokens.positive.opacity(0.25), lineWidth: 1)
+                                            .stroke(DesignTokens.positive, lineWidth: 1)
                                     )
                                 }
 
@@ -202,7 +202,7 @@ struct PlanScreen: View {
     private var planHeader: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: DesignTokens.spacing8) {
-                Text("\(viewModel.userName)'s Supplement Plan")
+                Text("\(viewModel.userName)'s Plan")
                     .font(DesignTokens.headlineFont)
                     .foregroundStyle(DesignTokens.textPrimary)
 
@@ -235,18 +235,8 @@ struct PlanScreen: View {
                     trailingAccessory: .goalChips(userGoals),
                     expansionMode: .inline,
                     detailLevel: .full,
-                    menuActions: [
-                        SupplementCardMenuAction("Remove from Plan", icon: "trash", role: .destructive) {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                viewModel.removeSupplement(supplement)
-                                undoMessage = "\(supplement.name) removed"
-                                showUndoToast = true
-                            }
-                        }
-                    ],
                     inlineGoals: sortedGoals(for: supplement),
                     isExpanded: expandedCardId == supplement.id,
-                    showBottomLearnMore: true,
                     products: viewModel.products(for: supplement),
                     productsLoading: viewModel.isLoadingProducts(for: supplement),
                     doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
@@ -275,6 +265,13 @@ struct PlanScreen: View {
                             supplementName: supplement.name
                         ))
                     } : nil,
+                    onRemoveTapped: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            viewModel.removeSupplement(supplement)
+                            undoMessage = "\(supplement.name) removed"
+                            showUndoToast = true
+                        }
+                    },
                     onTap: {
                         HapticManager.selection()
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
@@ -313,7 +310,7 @@ struct PlanScreen: View {
                         .tracking(1.5)
                         .foregroundStyle(DesignTokens.textTertiary)
 
-                    Text("\(viewModel.removedSupplements.count)")
+                    Text("(\(viewModel.removedSupplements.count))")
                         .font(DesignTokens.labelMono)
                         .foregroundStyle(DesignTokens.textTertiary)
 
@@ -334,19 +331,10 @@ struct PlanScreen: View {
                         trailingAccessory: .goalChips(userGoals),
                         expansionMode: .inline,
                         detailLevel: .full,
-                        menuActions: [
-                            SupplementCardMenuAction("Restore to Plan", icon: "arrow.uturn.backward", role: nil) {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    viewModel.restoreSupplement(supplement)
-                                }
-                                HapticManager.notification(.success)
-                            }
-                        ],
                         inlineGoals: sortedGoals(for: supplement),
                         isIncluded: false,
                         isExpanded: expandedCardId == supplement.id,
-                        showBottomLearnMore: true,
-                        doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
+                            doseRange: appState.supplementCatalog.doseRange(for: supplement.name),
                         dosageUnit: supplement.dosage.dosageUnit,
                         recommendedDosageMg: supplement.dosageMg,
                         userDosageMg: dosageBinding(for: supplement),
@@ -355,6 +343,12 @@ struct PlanScreen: View {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                 evidenceInfoLevel = level
                             }
+                        },
+                        onRestoreTapped: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                viewModel.restoreSupplement(supplement)
+                            }
+                            HapticManager.notification(.success)
                         },
                         onTap: {
                             HapticManager.selection()

@@ -40,6 +40,11 @@ class TodayViewModel {
     var amJustCompleted = false
     var pmJustCompleted = false
     var hasPlayedCompletionAnimation = false
+    var selectedLogDate: Date = Calendar.current.startOfDay(for: Date())
+
+    var selectedDateIsToday: Bool {
+        Calendar.current.isDateInToday(selectedLogDate)
+    }
 
     // MARK: - Yesterday Retroactive
 
@@ -149,6 +154,33 @@ class TodayViewModel {
                 supplementStates[supplement.id] = false
             }
         }
+    }
+
+    func setSelectedLogDate(_ date: Date, appState: AppState) {
+        let normalized = Calendar.current.startOfDay(for: date)
+        guard normalized != selectedLogDate else { return }
+        selectedLogDate = normalized
+        loadSupplementStatesForSelectedDate(appState: appState)
+    }
+
+    private func loadSupplementStatesForSelectedDate(appState: AppState) {
+        guard let plan = appState.activePlan else { return }
+        let active = plan.supplements.filter { !$0.isRemoved }
+        let calendar = Calendar.current
+
+        let checkIn = appState.recentCheckIns.first(where: {
+            calendar.isDate($0.checkInDate, inSameDayAs: selectedLogDate)
+        })
+
+        for supplement in active {
+            let taken = checkIn?.supplementLogs.first { $0.planSupplementId == supplement.id }?.taken ?? false
+            supplementStates[supplement.id] = taken
+        }
+
+        previousAmComplete = amComplete
+        previousPmComplete = pmComplete
+        // Suppress completion animations when reviewing a past date
+        hasPlayedCompletionAnimation = !selectedDateIsToday || allTaken
     }
 
     // MARK: - Supplement Toggling
@@ -274,25 +306,40 @@ class TodayViewModel {
 
     private func persistSupplementLog(appState: AppState) {
         guard let plan = appState.activePlan else { return }
+        let calendar = Calendar.current
 
-        var checkIn = appState.todayCheckIn ?? DailyCheckIn(wellbeingCompleted: false)
+        var checkIn: DailyCheckIn
+        if selectedDateIsToday {
+            checkIn = appState.todayCheckIn ?? DailyCheckIn(wellbeingCompleted: false)
+        } else {
+            checkIn = appState.recentCheckIns.first(where: {
+                calendar.isDate($0.checkInDate, inSameDayAs: selectedLogDate)
+            }) ?? DailyCheckIn(checkInDate: selectedLogDate, wellbeingCompleted: false)
+        }
+
         checkIn.supplementLogs = plan.supplements.filter { !$0.isRemoved }.map { supplement in
             SupplementLog(
                 planSupplementId: supplement.id,
-                taken: supplementStates[supplement.id] ?? false
+                loggedDate: selectedLogDate,
+                taken: supplementStates[supplement.id] ?? false,
+                loggedAt: Date()
             )
         }
 
         try? dataStore.saveCheckIn(checkIn)
-        appState.todayCheckIn = checkIn
+
+        if selectedDateIsToday {
+            appState.todayCheckIn = checkIn
+        }
 
         // Update recentCheckIns
         if let index = appState.recentCheckIns.firstIndex(where: {
-            Calendar.current.isDate($0.checkInDate, inSameDayAs: checkIn.checkInDate)
+            calendar.isDate($0.checkInDate, inSameDayAs: checkIn.checkInDate)
         }) {
             appState.recentCheckIns[index] = checkIn
         } else {
             appState.recentCheckIns.insert(checkIn, at: 0)
+            appState.recentCheckIns.sort { $0.checkInDate > $1.checkInDate }
         }
     }
 

@@ -262,6 +262,52 @@ class AppState {
         }
     }
 
+    // MARK: - Dev Seed (skip onboarding for simulator iteration)
+
+    #if DEBUG
+    /// Seeds a profile + plan using **real Supabase catalog data** so subsequent product fetches succeed.
+    /// No-op if a profile is already restored from local storage. Persists like a normal onboarding completion,
+    /// so future launches without the flag still find the seeded user.
+    @MainActor
+    func seedDevUserIfNeeded() async {
+        guard currentUser == nil else { return }
+
+        if !supplementCatalog.isLoaded {
+            await loadSupplementCatalog()
+        }
+
+        var profile = UserProfile(firstName: "Matt")
+        profile.age = 32
+        profile.sex = .male
+        profile.healthGoals = [.sleep, .energy, .focus, .gutHealth]
+        profile.exerciseFrequency = .threeToFour
+        profile.stressLevel = .moderate
+        profile.dietType = .omnivore
+        profile.baselineSleep = 5
+        profile.baselineEnergy = 5
+        profile.baselineClarity = 6
+        profile.baselineMood = 6
+        profile.baselineGut = 5
+
+        let engine = RecommendationEngine(catalog: supplementCatalog)
+        let plan = engine.generatePlan(for: profile)
+
+        currentUser = profile
+        activePlan = plan
+
+        let storage = LocalStorageService()
+        do { try storage.saveProfile(profile) } catch {
+            print("⚠️ [DevSeed] Failed to save profile: \(error)")
+        }
+        do { try storage.savePlan(plan) } catch {
+            print("⚠️ [DevSeed] Failed to save plan: \(error)")
+        }
+
+        isOnboardingComplete = true
+        print("✅ [DevSeed] Seeded dev user with \(plan.supplements.count) supplements")
+    }
+    #endif
+
     // MARK: - Demo Data
 
     func loadDemoData() {
