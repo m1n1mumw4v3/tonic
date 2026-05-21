@@ -127,6 +127,7 @@ struct PaywallScreen: View {
             }
         }
         .task {
+            AnalyticsService.shared.capture(.paywallShown(source: "onboarding"))
             await startEntranceAnimation()
         }
         .sheet(item: $presentedLegalDocument) { document in
@@ -351,7 +352,13 @@ struct PaywallScreen: View {
                     title: "Start My Free Trial",
                     style: .primary,
                     spectrumBorder: false,
-                    action: onSubscribe
+                    action: {
+                        AnalyticsService.shared.capture(.subscribed(
+                            plan: selectedPlan.rawValue,
+                            source: "onboarding"
+                        ))
+                        onSubscribe()
+                    }
                 )
 
                 Text(ctaSubtext)

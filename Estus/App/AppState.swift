@@ -29,6 +29,11 @@ class AppState {
     // Session restore
     var isRestoringSession: Bool = true
 
+    // Tracks whether the `onboarding_started` analytics event has fired this
+    // launch. Guards against duplicate fires when OnboardingFlow re-mounts (e.g.
+    // briefly during catalog-load transitions).
+    var hasFiredOnboardingStarted: Bool = false
+
     // Navigation
     var selectedTab: AppTab = .today
     var showSettings: Bool = false
@@ -182,6 +187,10 @@ class AppState {
 
         deepProfileService.loadCompletedModules()
 
+        if let profile = currentUser {
+            AnalyticsService.shared.identify(profile: profile, email: authService.userEmail)
+        }
+
         // Auto-complete onboarding if we have profile + plan
         if currentUser != nil && activePlan != nil {
             isOnboardingComplete = true
@@ -200,7 +209,9 @@ class AppState {
 
     @MainActor
     func signOut() async {
+        AnalyticsService.shared.capture(.signedOut)
         await authService.signOut()
+        AnalyticsService.shared.reset()
         clearLocalUserState()
     }
 
@@ -213,10 +224,12 @@ class AppState {
         // verifies the caller's JWT and calls auth.admin.deleteUser. Until then we
         // queue the delete by signing out — App Review guideline 5.1.1(v) accepts
         // user-initiated deletion even if backend purge is asynchronous.
+        AnalyticsService.shared.capture(.accountDeleted)
         await authService.deleteCurrentUser()
 
         // Terminate the Supabase session.
         await authService.signOut()
+        AnalyticsService.shared.reset()
 
         // Wipe local data.
         clearLocalUserState()

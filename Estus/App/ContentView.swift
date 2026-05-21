@@ -7,7 +7,7 @@ struct ContentView: View {
         Group {
             if appState.authService.isLoading || appState.isRestoringSession {
                 splashView
-            } else if appState.isCatalogLoading && !appState.supplementCatalog.isLoaded {
+            } else if !appState.supplementCatalog.isLoaded {
                 catalogLoadingView
             } else if !appState.isOnboardingComplete {
                 OnboardingFlow()

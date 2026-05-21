@@ -53,6 +53,7 @@ class AuthService {
         do {
             let response = try await client.auth.signUp(email: email, password: password)
             currentSession = response.session
+            AnalyticsService.shared.capture(.signedUp(method: .email))
         } catch {
             authError = mapAuthError(error)
             throw error
@@ -65,6 +66,7 @@ class AuthService {
         do {
             let session = try await client.auth.signIn(email: email, password: password)
             currentSession = session
+            AnalyticsService.shared.capture(.signedIn(method: .email))
         } catch {
             authError = mapAuthError(error)
             throw error
@@ -81,6 +83,7 @@ class AuthService {
                 credentials: .init(provider: .apple, idToken: idToken)
             )
             currentSession = session
+            captureAuthEvent(for: session, method: .apple)
 
             // Apple only provides the full name on first sign-in, so persist it
             if let fullName, let givenName = fullName.givenName {
@@ -153,10 +156,22 @@ class AuthService {
         do {
             let session = try await client.auth.session(from: url)
             currentSession = session
+            // Google OAuth completes here via redirect; emit the auth event now.
+            captureAuthEvent(for: session, method: .google)
         } catch {
             print("⚠️ [AuthService] Deep link handling error: \(error)")
             authError = mapAuthError(error)
         }
+    }
+
+    // MARK: - Analytics Helpers
+
+    /// Differentiates sign-up vs sign-in for OAuth providers by checking how
+    /// recently the Supabase user row was created. Apple/Google don't tell us
+    /// directly, so we treat sub-60s account age as "just created."
+    private func captureAuthEvent(for session: Session, method: AnalyticsAuthMethod) {
+        let isNew = Date().timeIntervalSince(session.user.createdAt) < 60
+        AnalyticsService.shared.capture(isNew ? .signedUp(method: method) : .signedIn(method: method))
     }
 
     // MARK: - Error Mapping

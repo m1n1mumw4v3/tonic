@@ -129,6 +129,7 @@
 		953B23B48DE73C066E41EF39 /* RecommendationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F12306891707C3CBF0DE1F3 /* RecommendationCard.swift */; };
 		9791143076605394E9A9E515 /* UndoToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D27B3DDD7D508F2BB368F7 /* UndoToast.swift */; };
 		98E5100F8460E1F931F7F58C /* InsightsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D258EC98BF5D2912186371 /* InsightsScreen.swift */; };
+		99A04F29310AB19239ED04E1 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5477F1EF0E5952A4751089C /* AnalyticsService.swift */; };
 		9A5C1C84AA358CD20E4EFD3A /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06888BC1B72BEAE75121F3FA /* Geist-Medium.ttf */; };
 		9C4681D231517B180921919A /* DeepProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31430DB0E2FFFE5A385C670 /* DeepProfile.swift */; };
 		9C5D3E27F7ED0DB591427966 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 79A5974ED8DE0D0A0D1E8FB1 /* GeistMono-Regular.ttf */; };
@@ -365,6 +366,7 @@
 		B15F045B1E15862E1D1A8FD4 /* SupabaseContraindication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseContraindication.swift; sourceTree = "<group>"; };
 		B20333F6423EF135982DE37C /* AgeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeScreen.swift; sourceTree = "<group>"; };
 		B2BFDDA5F9482A0A6EAFC99B /* DeficiencyRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeficiencyRingView.swift; sourceTree = "<group>"; };
+		B5477F1EF0E5952A4751089C /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		B93BE181FD7E18643EE37A2D /* SpectrumBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectrumBar.swift; sourceTree = "<group>"; };
 		B94D7DC9B3A16AD14B7A63E7 /* WellbeingScoreRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellbeingScoreRing.swift; sourceTree = "<group>"; };
 		BA5DD4AD1FA809BBB39C0B94 /* ValuePropSolutionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuePropSolutionScreen.swift; sourceTree = "<group>"; };
@@ -787,6 +789,7 @@
 		CE7C479E08113479B15E4B4B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B5477F1EF0E5952A4751089C /* AnalyticsService.swift */,
 				0B83C201D24CF634EA85C7D1 /* AuthService.swift */,
 				1129A9438CFE388C082DAD18 /* DataStore.swift */,
 				BC1103C2D927BD3913096D2A /* DeepProfileService.swift */,
@@ -1016,6 +1019,7 @@
 				ED8F3989D17AF0AF2C8E45CB /* AgeScreen.swift in Sources */,
 				5EA8137F3770D714FE1B6A17 /* AlcoholScreen.swift in Sources */,
 				CBB8F93086B4C23C8E19AE99 /* AllergiesScreen.swift in Sources */,
+				99A04F29310AB19239ED04E1 /* AnalyticsService.swift in Sources */,
 				CDE56E62AE39A2BE9E87332A /* AnimatedCheckmark.swift in Sources */,
 				E8C496DA54F04D7D1CB9B64A /* AnimatedGrainModifier.swift in Sources */,
 				E28390B68805110C727D1B11 /* AnimatedGrainShader.metal in Sources */,

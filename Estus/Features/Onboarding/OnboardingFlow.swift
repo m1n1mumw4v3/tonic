@@ -112,6 +112,11 @@ struct OnboardingFlow: View {
             }
         }
         .animation(.easeInOut(duration: 0.35), value: currentScreen)
+        .task {
+            guard !appState.hasFiredOnboardingStarted else { return }
+            appState.hasFiredOnboardingStarted = true
+            AnalyticsService.shared.capture(.onboardingStarted)
+        }
         .sheet(isPresented: $showSignInSheet) {
             SignInSheet(appState: appState, viewModel: viewModel, onSignIn: {
                 showSignInSheet = false
@@ -160,6 +165,10 @@ struct OnboardingFlow: View {
         let engine = makeEngine()
         let plan = engine.generatePlan(for: profile)
         viewModel.generatedPlan = plan
+        AnalyticsService.shared.capture(.planGenerated(
+            supplementCount: plan.supplements.filter(\.isIncluded).count,
+            source: .onboarding
+        ))
         nextScreen()
     }
 
@@ -195,6 +204,11 @@ struct OnboardingFlow: View {
         }
 
         NotificationService.scheduleNotifications(for: profile)
+        AnalyticsService.shared.identify(profile: profile, email: appState.authService.userEmail)
+        AnalyticsService.shared.capture(.onboardingCompleted(
+            goalCount: profile.healthGoals.count,
+            healthGoals: profile.healthGoals.map(\.rawValue)
+        ))
         appState.isOnboardingComplete = true
     }
 
@@ -228,6 +242,11 @@ struct OnboardingFlow: View {
         }
 
         NotificationService.scheduleNotifications(for: profile)
+        AnalyticsService.shared.identify(profile: profile, email: appState.authService.userEmail)
+        AnalyticsService.shared.capture(.onboardingCompleted(
+            goalCount: profile.healthGoals.count,
+            healthGoals: profile.healthGoals.map(\.rawValue)
+        ))
         appState.isOnboardingComplete = true
         // isSubscribed remains false — user gets limited home screen
     }

@@ -189,12 +189,21 @@ class TodayViewModel {
         allJustCompleted = false
         amJustCompleted = false
         pmJustCompleted = false
-        supplementStates[id] = !(supplementStates[id] ?? false)
+        let nowTaken = !(supplementStates[id] ?? false)
+        supplementStates[id] = nowTaken
 
         detectTrayCompletions()
 
         if allTaken {
             allJustCompleted = true
+        }
+
+        if let name = appState.activePlan?.supplements.first(where: { $0.id == id })?.name {
+            AnalyticsService.shared.capture(.supplementLogged(
+                name: name,
+                taken: nowTaken,
+                source: selectedDateIsToday ? .today : .backfill
+            ))
         }
 
         persistSupplementLog(appState: appState)
@@ -436,6 +445,14 @@ class TodayViewModel {
         }) {
             appState.recentCheckIns[index] = checkIn
         }
+
+        let activeSupplements = appState.activePlan?.supplements.filter { !$0.isRemoved } ?? []
+        let loggedCount = supplementStates.values.filter { $0 }.count
+        AnalyticsService.shared.capture(.checkInCompleted(
+            wellbeingScore: checkIn.wellbeingScore,
+            supplementsLogged: loggedCount,
+            supplementsTotal: activeSupplements.count
+        ))
 
         // Check if day is now complete (supplements + check-in)
         updateStreakIfDayComplete(appState: appState)

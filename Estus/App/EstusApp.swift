@@ -17,6 +17,8 @@ struct EstusApp: App {
                     resetOnboardingForSimulatorIfRequested()
                     #endif
 
+                    AnalyticsService.shared.start()
+
                     Task { await appState.authService.startListening() }
 
                     // Restore local data first — UserDefaults reads are instant
