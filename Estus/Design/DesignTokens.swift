@@ -19,6 +19,9 @@ enum DesignTokens {
     static let borderDefault = Color(hex: "#EBEBEB")
     static let borderSubtle  = Color(hex: "#F2F2F2")
 
+    // MARK: - Brand
+    static let logoInk = Color(hex: "#010101") // fill of estus-logo-01.svg
+
     // MARK: - Dimension Accents
     static let accentSleep   = Color(hex: "#42467A")
     static let accentEnergy  = Color(hex: "#FAC655")

@@ -7,7 +7,6 @@ struct WelcomeScreen: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    @State private var showLogo = false
     @State private var showTagline = false
     @State private var showButtons = false
 
@@ -28,14 +27,11 @@ struct WelcomeScreen: View {
 
                     Spacer()
 
-                    // Logo
-                    Image("EstusLogomark")
-                        .resizable()
-                        .renderingMode(.original)
-                        .aspectRatio(contentMode: .fit)
+                    // Logo — plays its own gather-to-lockup intro (~3.3 s)
+                    AnimatedLogoLockup()
                         .padding(.horizontal, 28)
-                        .opacity(showLogo ? 1 : 0)
-                        .scaleEffect(showLogo ? 1 : 0.98)
+                        // The enlarged intro mark overhangs the card below.
+                        .zIndex(1)
 
                     Spacer().frame(height: 20)
 
@@ -85,28 +81,20 @@ struct WelcomeScreen: View {
         }
         .onAppear {
             guard !reduceMotion else {
-                showLogo = true
                 showTagline = true
                 showButtons = true
                 return
             }
 
-            // Beat 1: Logo breathes in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                withAnimation(.easeInOut(duration: 1.8)) {
-                    showLogo = true
-                }
-            }
-
-            // Beat 2: Tagline fades in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            // Beat 1: Tagline fades in once the logo has landed
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.04) {
                 withAnimation(.easeInOut(duration: 1.0)) {
                     showTagline = true
                 }
             }
 
-            // Beat 3: CTA buttons + haptic
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+            // Beat 2: CTA buttons + haptic
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.52) {
                 withAnimation(.easeInOut(duration: 0.8)) {
                     showButtons = true
                 }
