@@ -37,7 +37,7 @@ struct WelcomeScreen: View {
 
                     // Animated gradient card
                     ZStack(alignment: .bottom) {
-                        OrbBackground(style: .singleMorph)
+                        OrbBackground(style: .singleMorph, palette: .yellowPink)
 
                         VStack(spacing: DesignTokens.spacing12) {
                             Button(action: {

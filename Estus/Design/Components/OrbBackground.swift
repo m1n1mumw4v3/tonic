@@ -8,7 +8,35 @@ struct OrbBackground: View {
         case singleMorph
     }
 
+    /// Color pair that the blob slowly crossfades through. Inner is the hot
+    /// core; outer is the rim. The blob sine-lerps between phases A and B over
+    /// `cycleDuration`, with the outer offset slightly so the body's two layers
+    /// aren't always perfectly in sync — that's what gives the viscous, never-
+    /// quite-repeating lava-lamp color shift.
+    struct Palette {
+        let innerA: Color
+        let outerA: Color
+        let innerB: Color
+        let outerB: Color
+        let cycleDuration: TimeInterval
+
+        /// Yellow ↔ pink, using the Estus accent tokens (bright + dark variants
+        /// of `accentEnergy` and `accentMood`). 22-second cycle reads as
+        /// languid lava-lamp motion at typical view durations.
+        static let yellowPink = Palette(
+            innerA: Color(hex: "#FAC655"), // accentEnergy
+            outerA: Color(hex: "#E0B23D"), // accentEnergyDark
+            innerB: Color(hex: "#DE62A4"), // accentMood
+            outerB: Color(hex: "#C25D93"), // accentMoodDark
+            cycleDuration: 22
+        )
+    }
+
     var style: Style = .multiDrops
+    /// When nil, the legacy static yellow/olive + hue-rotation drift is used
+    /// (keeps existing screens visually unchanged). When set, the blob
+    /// crossfades through the palette's two phases and hue rotation is off.
+    var palette: Palette? = nil
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var startDate = Date()
@@ -19,7 +47,7 @@ struct OrbBackground: View {
 
             ZStack {
                 Color(hex: "#0D0D0D")
-                MorphingBlob(time: t, style: style)
+                MorphingBlob(time: t, style: style, palette: palette)
             }
         }
     }
@@ -30,9 +58,19 @@ struct OrbBackground: View {
 private struct MorphingBlob: View {
     let time: TimeInterval
     let style: OrbBackground.Style
+    let palette: OrbBackground.Palette?
 
-    private let innerColor = Color(hex: "#FAC655")
-    private let outerColor = Color(hex: "#96953F")
+    private var innerColor: Color {
+        guard let p = palette else { return Color(hex: "#FAC655") }
+        return Self.lerp(p.innerA, p.innerB, t: Self.phase(time: time, period: p.cycleDuration))
+    }
+
+    private var outerColor: Color {
+        guard let p = palette else { return Color(hex: "#96953F") }
+        // Inner and outer share the same phase so the core and rim stay in
+        // the same color family — yellow-yellow or pink-pink, never mixed.
+        return Self.lerp(p.outerA, p.outerB, t: Self.phase(time: time, period: p.cycleDuration))
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -73,10 +111,34 @@ private struct MorphingBlob: View {
                     singleMorphFill(blobs: blobs, silhouette: silhouette, size: size)
                 }
             }
-            .hueRotation(.degrees(metrics.hueDegrees))
+            // Hue rotation only when no explicit palette is set — palettes
+            // control color directly via lerp.
+            .hueRotation(.degrees(palette == nil ? metrics.hueDegrees : 0))
             .compositingGroup()
             .drawingGroup()
         }
+    }
+
+    /// Sine-based 0…1 phase. Smooth ease-in-out at the extremes is what gives
+    /// the color crossfade a viscous, settling feel rather than a constant pan.
+    private static func phase(time: TimeInterval, period: TimeInterval, offset: Double = 0) -> Double {
+        let omega = (time / period + offset) * 2 * .pi
+        return (sin(omega) + 1) / 2
+    }
+
+    private static func lerp(_ a: Color, _ b: Color, t: Double) -> Color {
+        let ua = UIColor(a), ub = UIColor(b)
+        var r1: CGFloat = 0, g1: CGFloat = 0, b1: CGFloat = 0, a1: CGFloat = 0
+        var r2: CGFloat = 0, g2: CGFloat = 0, b2: CGFloat = 0, a2: CGFloat = 0
+        ua.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
+        ub.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
+        let k = CGFloat(max(0, min(1, t)))
+        return Color(
+            red:     Double(r1 + (r2 - r1) * k),
+            green:   Double(g1 + (g2 - g1) * k),
+            blue:    Double(b1 + (b2 - b1) * k),
+            opacity: Double(a1 + (a2 - a1) * k)
+        )
     }
 
     // MARK: - Multi-drop fill
@@ -157,9 +219,9 @@ private struct MorphingBlob: View {
             // the silhouette boundary.
             RadialGradient(
                 gradient: Gradient(stops: [
-                    .init(color: innerColor.opacity(0.35), location: 0.00),
-                    .init(color: outerColor.opacity(0.22), location: 0.45),
-                    .init(color: outerColor.opacity(0.07), location: 0.80),
+                    .init(color: innerColor.opacity(0.55), location: 0.00),
+                    .init(color: outerColor.opacity(0.38), location: 0.45),
+                    .init(color: outerColor.opacity(0.12), location: 0.80),
                     .init(color: .clear, location: 1.00)
                 ]),
                 center: unit,
@@ -173,9 +235,9 @@ private struct MorphingBlob: View {
             // continuous (no opacity jump, no visible ring).
             RadialGradient(
                 gradient: Gradient(stops: [
-                    .init(color: innerColor.opacity(0.55), location: 0.00),
-                    .init(color: innerColor.opacity(0.40), location: 0.40),
-                    .init(color: outerColor.opacity(0.25), location: 0.75),
+                    .init(color: innerColor.opacity(0.92), location: 0.00),
+                    .init(color: innerColor.opacity(0.72), location: 0.40),
+                    .init(color: outerColor.opacity(0.48), location: 0.75),
                     .init(color: outerColor.opacity(0.00), location: 1.00)
                 ]),
                 center: unit,
